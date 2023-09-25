@@ -142,3 +142,24 @@
 .rotate-icon {
     transform: rotate(180deg);
 }
+
+.dataTables_paginate {
+    @apply flex justify-center items-center;
+    .previous {
+        margin-right: 0px !important;
+    }
+    .first,
+    .last {
+        @apply top-[2px] relative;
+        margin-right: 0px !important;
+    }
+    span {
+        @apply relative flex justify-center items-center space-x-2 top-[2px];
+        .ellipsis {
+            @apply rounded-sm relative top-0 px-1.5;
+        }
+        .paginate_button {
+            @apply first:mr-0;
+        }
+    }
+}

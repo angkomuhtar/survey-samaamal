@@ -1,18 +1,15 @@
 <x-app-layout>
     <div class="space-y-8">
-        <div>
-          <x-breadcrumb :page-title="$pageTitle" :breadcrumb-items="$breadcrumbItems" />
-        </div>
-
         <div class=" space-y-5">
             <div class="card">
               <header class=" card-header noborder">
-                <button class="btn inline-flex justify-center btn-primary "> 
+                <h4 class="card-title">{{$pageTitle}}</h4>
+                <a href={{route('employee.create')}} class="btn btn-sm inline-flex justify-center btn-primary "> 
                     <span class="flex items-center">
                         <span>Tambah Data</span>
                         <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="mdi:database-plus-outline"></iconify-icon>
                     </span>
-                </button>
+                </a>
               </header>
               <div class="card-body px-6 pb-6">
                 <div class="overflow-x-auto -mx-6 dashcode-data-table">
@@ -24,22 +21,25 @@
                         <thead class=" bg-slate-200 dark:bg-slate-700">
                           <tr>
                               <th scope="col" class=" table-th ">
-                                Id
+                                Username
                               </th>
                               <th scope="col" class=" table-th ">
-                                Order
+                                Nama
                               </th>
                               <th scope="col" class=" table-th ">
-                                Customer
+                                Departement
                               </th>
                               <th scope="col" class=" table-th ">
-                                Date
+                                Jabatan
                               </th>
                               <th scope="col" class=" table-th ">
-                                Quantity
+                                WorkHours Tipe
                               </th>
                               <th scope="col" class=" table-th ">
-                                Amount
+                                Gender
+                              </th>
+                              <th scope="col" class=" table-th ">
+                                DOH
                               </th>
                               <th scope="col" class=" table-th ">
                                 Status
@@ -49,64 +49,6 @@
                               </th>
                           </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-                            @foreach($tableData as $item)
-                            <tr>
-                              <td class="table-td">{{ $item['id'] }}</td>
-                              <td class="table-td ">#{{ $item['order'] }}</td>
-                              <td class="table-td">
-                                <span class="flex">
-                                  <span class="w-7 h-7 rounded-full ltr:mr-3 rtl:ml-3 flex-none">
-                                    <img src="images/all-img/{{ $item['customer']['image'] }}" alt="{{ $item['id'] }}" class="object-cover w-full h-full rounded-full">
-                                  </span>
-                                  <span class="text-sm text-slate-600 dark:text-slate-300 capitalize">{{ $item['customer']['name'] }}</span>
-                                </span>
-                              </td>
-                              <td class="table-td ">{{ $item['date'] }}</td>
-                              <td class="table-td ">
-                                <div>
-                                  {{ $item['quantity'] }}
-                                </div>
-                              </td>
-                              <td class="table-td ">
-                                <div>
-                                  {{ $item['amount'] }}
-                                </div>
-                              </td>
-                              <td class="table-td ">
-                                @if($item['status'] == "paid")
-                                  <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-success-500
-                                      bg-success-500">
-                                    {{ $item['status'] }}
-                                  </div>
-                                @elseif($item['status'] == "due")
-                                  <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-warning-500
-                                      bg-warning-500">
-                                    {{ $item['status'] }}
-                                  </div>
-                                @else
-                                  <div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-danger-500
-                                      bg-danger-500">
-                                    {{ $item['status'] }}
-                                  </div>
-                                @endif
-                              </td>
-                              <td class="table-td ">
-                                <div class="flex space-x-3 rtl:space-x-reverse">
-                                  <button class="action-btn" type="button">
-                                    <iconify-icon icon="heroicons:eye"></iconify-icon>
-                                  </button>
-                                  <button class="action-btn" type="button">
-                                    <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
-                                  </button>
-                                  <button class="action-btn" type="button">
-                                    <iconify-icon icon="heroicons:trash"></iconify-icon>
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
                       </table>
                     </div>
                   </div>
@@ -120,23 +62,96 @@
     @push('scripts')
         <script type="module">
             // data table validation
-            $("#data-table, .data-table").DataTable({
+            var table = $("#data-table, .data-table").DataTable({
+                processing:true,
+                serverSide: true,
+                ajax : '{!! route('employee') !!}',
                 dom: "<'grid grid-cols-12 gap-5 px-6 mt-6'<'col-span-4'l><'col-span-8 flex justify-end'f><'#pagination.flex items-center'>><'min-w-full't><'flex justify-end items-center'p>",
                 paging: true,
                 ordering: true,
                 info: false,
                 searching: true,
+                pagingType:'full_numbers',
                 lengthChange: true,
                 lengthMenu: [10, 25, 50, 100],
                 language: {
-                    lengthMenu: "Show _MENU_ entries",
-                    paginate: {
-                        previous: `<iconify-icon icon="ic:round-keyboard-arrow-left"></iconify-icon>`,
-                        next: `<iconify-icon icon="ic:round-keyboard-arrow-right"></iconify-icon>`,
-                    },
-                    search: "Search:",
+                  lengthMenu: "Show _MENU_",
+                  paginate: {
+                    previous: `<iconify-icon icon="heroicons:chevron-left-20-solid"></iconify-icon>`,
+                    next: `<iconify-icon icon="heroicons:chevron-right-20-solid"></iconify-icon>`,
+                    first: `<iconify-icon icon="heroicons:chevron-double-left-20-solid"></iconify-icon>`,
+                    last: `<iconify-icon icon="heroicons:chevron-double-right-20-solid"></iconify-icon>`,
+                  },
+                  search: "Search:",
                 },
+                "columnDefs": [
+                  { "searchable": false, "targets": [3, 4] },
+                  { "orderable" : false, "targets": [3, 4] },
+                  {
+                    'className' : 'table-td', 
+                    "targets" : "_all"
+                  }
+                ],
+                columns: [
+                  {
+                    data: 'username', 
+                    name :'username',
+                    render: ( data, type, row, meta ) =>{
+                        return `<span class="flex items-center">
+                                  <span class="w-7 h-7 rounded-full ltr:mr-3 rtl:ml-3 flex-none">
+                                    <img src={!! asset('images/avatar.png') !!} alt="" class="object-cover w-full h-full rounded-full">
+                                  </span>
+                                  <span class="text-sm text-slate-600 dark:text-slate-300 capitalize">${data}</span>
+                                </span>`;
+                      }
+                  },
+                  {
+                    data: 'profile.name'
+                  },
+                  {
+                    data: 'employee.division.division'
+                  },
+                  {
+                    data: 'employee.position.position'
+                  },
+                  {
+                    data: 'employee.shift.shift'
+                  },
+                  {
+                    data: 'profile.gender',
+                    render: (data)=>{
+                      return data == 'M' ? 'Laki Laki' : 'Perempuan';
+                    }
+                  },
+                  {
+                    data: 'employee.doh', 
+                    render: function (data){
+                      return data ? moment(data).format('YYYY-MM-DD') : 'Not set';
+                    }
+                  },
+                  {
+                    data: 'employee.status'
+                  },
+                  {
+                    data: 'id', 
+                    name :'action', 
+                    render: (data)=>{
+                      return  `<div class="flex space-x-3 rtl:space-x-reverse">
+                                  <a href={!! route('employee') !!} class="action-btn">
+                                    <iconify-icon icon="heroicons:eye"></iconify-icon>
+                                  </a>
+                                  <a class="action-btn">
+                                    <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
+                                  </a>
+                                  <a class="action-btn">
+                                    <iconify-icon icon="heroicons:trash"></iconify-icon>
+                                  </a>
+                                </div>`
+                    }
+                 },
+                ],
             });
+            table.tables().body().to$().addClass('bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700');
         </script>
     @endpush
 </x-app-layout>

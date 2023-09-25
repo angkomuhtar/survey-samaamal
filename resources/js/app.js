@@ -5,6 +5,13 @@ window.$ = jQuery;
 window.jQuery = jQuery;
 
 import "tw-elements";
+// import { initTE, Ripple, Offcanvas } from "tw-elements";
+// window.initTE = initTE;
+// window.Ripple = Ripple;
+// window.Offcanvas = Offcanvas;
+
+import moment from "moment";
+window.moment = moment;
 
 import SimpleBar from "simplebar";
 window.SimpleBar = SimpleBar;
@@ -56,7 +63,6 @@ import tippy from "tippy.js";
 import "tippy.js/dist/tippy.css";
 window.tippy = tippy;
 
-
 // DATA-TABLE
 import DataTable from "datatables.net-dt";
 window.DataTable = DataTable;
@@ -64,7 +70,7 @@ window.DataTable = DataTable;
 // OWL CAROUSEL
 // import 'owl.carousel/dist/assets/owl.carousel.css';
 // import 'owl.carousel';
-import cleave from 'cleave.js'
+import cleave from "cleave.js";
 window.cleave = cleave;
 
 // jQuery validation

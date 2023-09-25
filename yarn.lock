@@ -898,7 +898,7 @@ minimist@^1.2.6:
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
 
-moment@^2.10.2:
+moment@^2.10.2, moment@^2.29.4:
   version "2.29.4"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
   integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
@@ -1260,7 +1260,7 @@ svg.select.js@^3.0.1:
   dependencies:
     svg.js "^2.6.5"
 
-sweetalert2@^11.6.10:
+sweetalert2@^11.7.27:
   version "11.7.27"
   resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-11.7.27.tgz#de19294e1b5ae7991de27bb4ae34aff3570aaa0e"
   integrity sha512-QbRXGQn1sb7HEhzA/K2xtWIwQHh/qkSbb1w6jYcTql2xy17876lTREEt1D4X6Q0x2wHtfUjKJ+Cb8IVkRoq7DQ==

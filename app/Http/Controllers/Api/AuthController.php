@@ -28,22 +28,33 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return ResponseHelper::jsonError($validator->errors(), 422);
         }
-        $credentials = $request->only('email', 'password');
+        // $credentials = $request->only('email', 'password');
+        $field = filter_var($request->email, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        $credentials =[
+            $field =>$request->email,
+            'password' =>$request->password
+        ];
 
         $token = Auth::guard('api')->attempt($credentials);
         if (!$token) {
             return ResponseHelper::jsonError('Unauthorized', 401);
+        }else{
+            $user = Auth::guard('api')->user();
+            if ($user->phone_id == null || $user->phone_id == $request->phone_id) {
+                return response()->json([
+                        'status' => 'success',
+                        'user' => $user,
+                        'authorisation' => [
+                            'token' => $token,
+                            'type' => 'bearer',
+                        ]
+                    ]);
+            }else{
+                Auth::guard('api')->logout();
+                return ResponseHelper::jsonError('Phone connect to other device', 401);
+            }
         }
 
-        $user = Auth::guard('api')->user();
-        return response()->json([
-                'status' => 'success',
-                'user' => $user,
-                'authorisation' => [
-                    'token' => $token,
-                    'type' => 'bearer',
-                ]
-            ]);
 
     }
 
@@ -77,7 +88,7 @@ class AuthController extends Controller
     }
 
     public function logout(){
-        Auth::logout();
+        Auth::guard('api')->logout();
         return response()->json([
             'status' => 'success',
             'message' => 'Successfully logged out',

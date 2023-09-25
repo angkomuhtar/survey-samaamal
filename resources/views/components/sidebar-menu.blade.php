@@ -26,7 +26,7 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('employee') }}" class="navItem {{ (\Request::route()->getName() == 'employee') ? 'active' : '' }}">
+                <a href="{{ route('employee') }}" class="navItem {{ (stripos(\Request::route()->getName(), 'employee')) !== FALSE ? 'active' : '' }}">
                     <span class="flex items-center">
                         <iconify-icon class="nav-icon" icon="game-icons:mining-helmet"></iconify-icon>
                         <span>Karyawan</span>
@@ -34,23 +34,43 @@
                 </a>
             </li>
             {{-- <li class="sidebar-menu-title">{{ __('S') }}</li> --}}
-            <li class="{{ (\Request::route()->getName() == 'dashboards*') ? 'active' : '' }}">
+            <li class="{{ (\Request::route()->getName() == 'absensi*') ? 'active' : '' }}">
                 <a href="#" class="navItem">
                     <span class="flex items-center">
-                        <iconify-icon class=" nav-icon" icon="heroicons:cog-6-tooth"></iconify-icon>
-                        <span>Settings</span>
+                        <iconify-icon class=" nav-icon" icon="heroicons:finger-print-20-solid"></iconify-icon>
+                        <span>Attendance</span>
                     </span>
                     <iconify-icon class="icon-arrow" icon="heroicons-outline:chevron-right"></iconify-icon>
                 </a>
                 <ul class="sidebar-submenu">
                     <li>
-                        <a href="" class="navItem {{ (\Request::route()->getName() == 'dashboards.analytic') ? 'active' : '' }}">Users</a>
+                        <a href={{ route('absensi.attendance') }} class="navItem {{ (stripos(\Request::route()->getName(), 'absensi.attendance')) !== FALSE ? 'active' : '' }}">Attendance</a>
                     </li>
                     <li>
-                        <a href="" class="navItem {{ (\Request::route()->getName() == 'dashboards.analytic') ? 'active' : '' }}">Roles</a>
+                        <a href={{ route('absensi.workhours') }} class="navItem {{ (stripos(\Request::route()->getName(), 'absensi.workhours')) !== FALSE ? 'active' : '' }}">Work Hours</a>
                     </li>
                     <li>
-                        <a href="" class="navItem {{ (\Request::route()->getName() == 'dashboards.ecommerce') ? 'active' : '' }}">Permission</a>
+                        <a href={{ route('absensi.clocklocations') }} class="navItem {{ (stripos(\Request::route()->getName(), 'absensi.clocklocations')) !== FALSE ? 'active' : '' }}">Clock Location</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="{{ (\Request::route()->getName() == 'masters*') ? 'active' : '' }}">
+                <a href="#" class="navItem">
+                    <span class="flex items-center">
+                        <iconify-icon class=" nav-icon" icon="heroicons:cog-6-tooth"></iconify-icon>
+                        <span>Master</span>
+                    </span>
+                    <iconify-icon class="icon-arrow" icon="heroicons-outline:chevron-right"></iconify-icon>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li>
+                        <a href={{ route('masters.users') }} class="navItem {{ (stripos(\Request::route()->getName(), 'masters.users')) !== FALSE ? 'active' : '' }}">Users</a>
+                    </li>
+                    <li>
+                        <a href={{ route('masters.division') }} class="navItem {{ (stripos(\Request::route()->getName(), 'masters.division')) !== FALSE ? 'active' : '' }}">Departement</a>
+                    </li>
+                    <li>
+                        <a href={{ route('masters.position') }} class="navItem {{ (stripos(\Request::route()->getName(), 'masters.position')) !== FALSE ? 'active' : '' }}">Jabatan</a>
                     </li>
                 </ul>
             </li>
