@@ -17,18 +17,17 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('jwtAuth', ['except' => ['login','register']]);
+        $this->middleware('api', ['except' => ['login','register']]);
     }
 
     public function login(Request $request){
         $validator = Validator::make($request->all(), [
             'email'     => 'required|string',
-            'password'  => 'required|min:8'
+            'password'  => 'required|min:6'
         ]);
         if ($validator->fails()) {
             return ResponseHelper::jsonError($validator->errors(), 422);
         }
-        // $credentials = $request->only('email', 'password');
         $field = filter_var($request->email, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
         $credentials =[
             $field =>$request->email,
@@ -37,10 +36,13 @@ class AuthController extends Controller
 
         $token = Auth::guard('api')->attempt($credentials);
         if (!$token) {
-            return ResponseHelper::jsonError('Unauthorized', 401);
+            return ResponseHelper::jsonError('password not match', 401);
         }else{
-            $user = Auth::guard('api')->user();
+            $user = Auth::guard('api')->user()->load(['employee','profile', 'employee.division', 'employee.position']);
             if ($user->phone_id == null || $user->phone_id == $request->phone_id) {
+                $db = User::find($user->id);               
+                $db->phone_id = $request->phone_id;
+                $db->save();
                 return response()->json([
                         'status' => 'success',
                         'user' => $user,
@@ -48,7 +50,7 @@ class AuthController extends Controller
                             'token' => $token,
                             'type' => 'bearer',
                         ]
-                    ]);
+                    ])->withCookie(cookie('jwt', $token, 60));
             }else{
                 Auth::guard('api')->logout();
                 return ResponseHelper::jsonError('Phone connect to other device', 401);

@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('clock_locations', function (Blueprint $table) {
-            $table->id();
-            $table->double('latitude', 10, 7);
-            $table->double('longitude', 10, 7);
-            $table->string('name');
-            $table->enum('status', ['Y', 'N']);
-            $table->timestamps();
+        Schema::table('clocks', function (Blueprint $table) {
+            $table->integer('clock_location_id')->after('user_id');
         });
     }
 
@@ -26,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('clock_locations');
+        Schema::table('clocks', function (Blueprint $table) {
+           $table->dropColumn('clock_location_id');
+        });
     }
 };
