@@ -1,4 +1,4 @@
-<x-auth-layout>
+<x-authLayout>
     <div class="auth-box h-full flex flex-col justify-center">
         <div class="mobile-logo text-center mb-6 lg:hidden flex justify-center">
             <div class="mb-10 inline-flex items-center justify-center">
@@ -25,4 +25,4 @@
             </a>
         </div>
     </div>
-</x-auth-layout>
+</x-authLayout>

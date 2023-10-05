@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-appLayout>
     <div class="space-y-8">
         <div class="wizard card">
             <div class="card-header">
@@ -416,4 +416,4 @@
             });
         </script>
     @endpush
-</x-app-layout>
+</x-appLayout>

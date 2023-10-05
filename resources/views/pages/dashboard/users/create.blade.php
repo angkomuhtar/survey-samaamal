@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-appLayout>
     <div class="space-y-8">
         <div class="grid xl:grid-cols-2 grid-cols-1 gap-6">
             <div class="card xl:col-span-2">
@@ -224,4 +224,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-appLayout>

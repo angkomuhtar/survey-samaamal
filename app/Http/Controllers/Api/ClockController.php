@@ -108,7 +108,7 @@ class ClockController extends Controller
                     return ResponseHelper::jsonSuccess('Berhasil Absen Masuk', $insert);
                 }
             }elseif ($request->type == 'OUT') {
-                $clock = Clock::where('user_id', Auth::user()->id)->get();
+                $clock = Clock::where('user_id', Auth::user()->id)->where->get();
                 return ResponseHelper::jsonSuccess('Berhasil Absen Masuk', $clock);
             }
         } catch (\Throwable $err) {

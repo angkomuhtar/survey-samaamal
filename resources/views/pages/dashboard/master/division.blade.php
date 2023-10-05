@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-appLayout>
 
     {{-- form offcanvas --}}
     <div class="offcanvas offcanvas-end fixed bottom-0 flex flex-col max-w-full bg-white dark:bg-slate-800 invisible bg-clip-padding shadow-sm outline-none transition duration-300 ease-in-out text-gray-700 top-0 ltr:right-0 rtl:left-0 border-none w-96"
@@ -266,4 +266,4 @@
 
     </script>
     @endpush
-</x-app-layout>
+</x-appLayout>
