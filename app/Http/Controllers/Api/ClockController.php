@@ -16,7 +16,7 @@ class ClockController extends Controller
 {
     public function index(){
         try {
-            $clock = Clock::where('user_id', Auth::user()->id)->get();
+            $clock = Clock::where('user_id', Auth::user()->id)->orderBy('date', 'asc')->get();
             return ResponseHelper::jsonSuccess('success get data', $clock);
         } catch (\Throwable $err) {
             return ResponseHelper::jsonError('internal Error', 500);
@@ -25,7 +25,7 @@ class ClockController extends Controller
 
     public function home(Request $request){
         try {
-            $absen = Clock::whereBetween('date', ['2023-09-26', '2023-10-25']);
+            $absen = Clock::whereBetween('date', ['2023-09-26', '2023-10-25'])->where('user_id', Auth::user()->id);
             $hadir = $absen->where('status', 'H')->count();
             $rekap = [
                 'hadir'=>$hadir,
@@ -95,7 +95,9 @@ class ClockController extends Controller
                 return ResponseHelper::jsonError($validator->errors(), 422);
             }
 
-            if ($request->type == 'IN') {
+            // dd($request);
+
+            if ($request->type == 'in') {
                 $insert = Clock::insert([
                     'user_id'=> Auth::user()->id,
                     'clock_location_id'=> $request->location,
@@ -106,10 +108,18 @@ class ClockController extends Controller
                 ]);
                 if ($insert) {
                     return ResponseHelper::jsonSuccess('Berhasil Absen Masuk', $insert);
+                }else{
+                    return ResponseHelper::jsonError('error absen', 400);
                 }
-            }elseif ($request->type == 'OUT') {
-                $clock = Clock::where('user_id', Auth::user()->id)->where->get();
-                return ResponseHelper::jsonSuccess('Berhasil Absen Masuk', $clock);
+            }elseif ($request->type == 'out'){
+                $clock = Clock::where('user_id', Auth::user()->id)
+                    ->where('date', $request->date)
+                    ->update(['clock_out' => $request->time]);
+                if ($clock) {
+                    return ResponseHelper::jsonSuccess('Berhasil Absen Pulang', $clock);
+                }else{
+                    return ResponseHelper::jsonError('error on update', 400);
+                }
             }
         } catch (\Throwable $err) {
             return ResponseHelper::jsonError('internal Error', 500);
