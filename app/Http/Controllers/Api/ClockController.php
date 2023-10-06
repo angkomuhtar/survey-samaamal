@@ -18,8 +18,8 @@ class ClockController extends Controller
         try {
             $clock = Clock::where('user_id', Auth::user()->id)->orderBy('date', 'asc')->get();
             return ResponseHelper::jsonSuccess('success get data', $clock);
-        } catch (\Throwable $err) {
-            return ResponseHelper::jsonError('internal Error', 500);
+        } catch (\Exception $err) {
+            return ResponseHelper::jsonError($err->getMessage(), 500);
         }
     }
 
@@ -48,8 +48,8 @@ class ClockController extends Controller
             ->get();
             $data = collect(['rekap'=>$rekap, 'today'=>$today]);
             return ResponseHelper::jsonSuccess('success get data', $data);
-        } catch (\Throwable $err) {
-            return ResponseHelper::jsonError('internal Error', 500);
+        } catch (\Exception $err) {
+            return ResponseHelper::jsonError($err->getMessage(), 500);
         }
     }
 
@@ -69,8 +69,8 @@ class ClockController extends Controller
             })
             ->first();
             return ResponseHelper::jsonSuccess('success get data', $today);
-        } catch (\Throwable $err) {
-            return ResponseHelper::jsonError('internal Error', 500);
+        } catch (\Exception $err) {
+            return ResponseHelper::jsonError($err->getMessage(), 500);
         }
     }
 
@@ -78,8 +78,8 @@ class ClockController extends Controller
         try {
             $location = ClockLocation::All();
             return ResponseHelper::jsonSuccess('success get location', $location);
-        } catch (\Throwable $err) {
-            return ResponseHelper::jsonError('internal Error', 500);
+        } catch (\Exception $err) {
+            return ResponseHelper::jsonError($err->getMessage(), 500);
         }
     }
 
@@ -121,8 +121,8 @@ class ClockController extends Controller
                     return ResponseHelper::jsonError('error on update', 400);
                 }
             }
-        } catch (\Throwable $err) {
-            return ResponseHelper::jsonError('internal Error', 500);
+        } catch (\Exception $err) {
+            return ResponseHelper::jsonError($err->getMessage(), 500);
         }
     }
 
@@ -130,8 +130,8 @@ class ClockController extends Controller
         try {
             $work_hours = WorkHours::where('shift_id', Auth::user()->employee->shift_id)->get();
             return ResponseHelper::jsonSuccess('success get location', $work_hours);
-        } catch (\Throwable $err) {
-            return ResponseHelper::jsonError('internal Error', 500);
+        } catch (\Exception $err) {
+            return ResponseHelper::jsonError($err->getMessage(), 500);
         }
     }
 
