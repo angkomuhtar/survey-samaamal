@@ -22,6 +22,7 @@ Route::prefix('v1')->group(function(){
             return 'losee';
         });
 
+        Route::get('/me', [AuthController::class, 'me']);
         Route::get('/home', [ClockController::class, 'home']);
 
         Route::group([
@@ -33,6 +34,7 @@ Route::prefix('v1')->group(function(){
             Route::post('/', 'clock');
             Route::get('/today', 'today');
             Route::get('/location', 'location');
+            Route::get('/rekap', 'rekap');
         });
     });
 });

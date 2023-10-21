@@ -16,7 +16,7 @@ class ClockController extends Controller
 {
     public function index(){
         try {
-            $clock = Clock::where('user_id', Auth::user()->id)->orderBy('date', 'asc')->get();
+            $clock = Clock::where('user_id', Auth::user()->id)->orderBy('date', 'desc')->get();
             return ResponseHelper::jsonSuccess('success get data', $clock);
         } catch (\Exception $err) {
             return ResponseHelper::jsonError($err->getMessage(), 500);
@@ -47,6 +47,23 @@ class ClockController extends Controller
             })
             ->get();
             $data = collect(['rekap'=>$rekap, 'today'=>$today]);
+            return ResponseHelper::jsonSuccess('success get data', $data);
+        } catch (\Exception $err) {
+            return ResponseHelper::jsonError($err->getMessage(), 500);
+        }
+    }
+
+    public function rekap(Request $request){
+        try {
+            $absen = Clock::whereBetween('date', ['2023-09-26', '2023-10-25'])->where('user_id', Auth::user()->id);
+            $hadir = $absen->where('status', 'H')->count();
+            $rekap = [
+                'hadir'=>$hadir,
+                'alpa'=> 0,
+                'izin' => 1 
+            ];
+            
+            $data = collect(['rekap'=>$rekap]);
             return ResponseHelper::jsonSuccess('success get data', $data);
         } catch (\Exception $err) {
             return ResponseHelper::jsonError($err->getMessage(), 500);

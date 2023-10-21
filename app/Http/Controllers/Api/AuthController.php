@@ -99,13 +99,23 @@ class AuthController extends Controller
 
     public function refresh()
     {
+        $user = Auth::guard('api')->user()->load(['employee','profile', 'employee.division', 'employee.position']);
         return response()->json([
             'status' => 'success',
-            'user' => Auth::user(),
+            'user' => $user,
             'authorisation' => [
                 'token' => Auth::refresh(),
                 'type' => 'bearer',
             ]
+        ]);
+    }
+
+    public function me()
+    {
+        $user = Auth::guard('api')->user()->load(['employee','profile', 'employee.division', 'employee.position']);
+        return response()->json([
+            'status' => 'success',
+            'user' => $user
         ]);
     }
 
