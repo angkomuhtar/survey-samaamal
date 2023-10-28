@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClockController;
+use App\Http\Controllers\Api\LeaveApiController;
 
 
 Route::prefix('v1')->group(function(){
@@ -23,6 +24,8 @@ Route::prefix('v1')->group(function(){
         });
 
         Route::get('/me', [AuthController::class, 'me']);
+        Route::POST('/change_password', [AuthController::class, 'change_password']);
+        Route::POST('/change_avatar', [AuthController::class, 'change_avatar']);
         Route::get('/home', [ClockController::class, 'home']);
 
         Route::group([
@@ -36,6 +39,8 @@ Route::prefix('v1')->group(function(){
             Route::get('/location', 'location');
             Route::get('/rekap', 'rekap');
         });
+
+        Route::apiResource('leave', LeaveApiController::class);
     });
 });
 

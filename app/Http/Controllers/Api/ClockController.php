@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\ClockLocation;
-use App\Models\Clock;
 use App\Models\WorkHours;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\ResponseHelper;
+use App\Models\ClockLocation;
+use App\Models\Clock;
 
 
 class ClockController extends Controller

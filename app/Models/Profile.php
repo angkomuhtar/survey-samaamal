@@ -27,8 +27,14 @@ class Profile extends Model
         'user_id'
     ];
 
-    public function religion () {
-        return $this->hasOne(Option::class);
+    public function religions () {
+        return $this->belongsTo(Options::class, 'religion', 'id');
+    }
+    public function marriages () {
+        return $this->belongsTo(Options::class, 'marriage', 'id');
+    }
+    public function educations () {
+        return $this->belongsTo(Options::class, 'education', 'id');
     }
 
     public function user()

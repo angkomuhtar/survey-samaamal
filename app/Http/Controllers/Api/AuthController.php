@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Helpers\ResponseHelper;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Resources\UserResource;
 
 class AuthController extends Controller
 {
@@ -112,11 +114,89 @@ class AuthController extends Controller
 
     public function me()
     {
-        $user = Auth::guard('api')->user()->load(['employee','profile', 'employee.division', 'employee.position']);
+        $user = Auth::guard('api')->user()->load(['leaves','employee','profile','profile.religions','profile.marriages','profile.educations', 'employee.division', 'employee.position']);
         return response()->json([
             'status' => 'success',
-            'user' => $user
+            'user' => new UserResource($user)
         ]);
+    }
+
+    public function change_password(Request $request)
+    {
+        try {
+
+            $validator = Validator::make($request->all(), [
+                'password'     => 'required',
+                'new_password'  => 'required|min:6'
+            ],[
+                'password.required' => 'password tidak boleh kosong',
+                'new_password.required' => 'password baru tidak boleh kosong',
+                'new_password.min' => 'password baru minimal :min karakter',
+            ]);
+            if ($validator->fails()) {
+                return ResponseHelper::jsonError($validator->errors(), 422);
+            }
+
+            $user = User::find(Auth::user()->id);
+            $user->makeVisible('password');
+
+            if (Hash::check($request->password, $user->password)) {
+                $update = $user->update(['password' => bcrypt($request->new_password)]);
+                if ($update) {
+                    return ResponseHelper::jsonSuccess('Berhasil Absen Pulang');
+                }else{
+                    return ResponseHelper::jsonError('error on update', 400);
+                }
+            };
+            return ResponseHelper::jsonError(['password'=>['passsword not match']], 422);
+            
+        } catch (\Exception $err) {
+            return ResponseHelper::jsonError($err->getMessage(), 500);
+
+        }
+    }
+
+    public function change_avatar(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'file' => 'required|image|mimes:jpeg,png,jpg|max:5120', // Example validation rules (file is required, max 10MB)
+            ],[
+                'file.required' => 'file required',
+                'file.image' => 'hanya mendukung file image',
+                'file.max' => 'ukuran file maksimum 5 MB',
+                'file.mimes' => 'hanya mendukung file jpeg, png, jpg'
+            ]);
+            if ($validator->fails()) {
+                return ResponseHelper::jsonError($validator->errors(), 422);
+            }
+
+            if ($request->hasFile('file')) {
+
+                $directory = 'images/avatar/';
+                $prefix = Auth::user()->username.'-avatar';
+                $files = Storage::disk('public')->files($directory);
+                foreach ($files as $d) {
+                    $filename = pathinfo($d, PATHINFO_FILENAME);
+                    if (str_starts_with($filename, $prefix)) {
+                        Storage::disk('public')->delete($d);
+                    }
+                }
+                $file = $request->file('file');
+                $fileName = Auth::user()->username.'-avatar'.now()->format('His').'.'.$file->getClientOriginalExtension();
+                $fileFullPath = 'images/avatar/'.$fileName; 
+                Storage::disk('public')->put($fileFullPath, file_get_contents($file));
+
+                $user = User::find(Auth::user()->id)->update(['avatar' => $fileName]);
+                return ResponseHelper::jsonSuccess('update berhasil');
+
+            } else {
+                return ResponseHelper::jsonError('error on update', 400);
+            }            
+        } catch (\Exception $err) {
+            return ResponseHelper::jsonError($err->getMessage(), 500);
+
+        }
     }
 
 }

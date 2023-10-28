@@ -24,7 +24,8 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'email_verified_at',
         'roles',
-        'phone_id'
+        'phone_id',
+        'avatar'
     ];
 
     /**
@@ -66,6 +67,15 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
+    public function getAvatarUrlAttribute()
+    {
+        if($this->avatar !== null){
+            return asset('storage/images/avatar/'.$this->avatar);
+        }else{
+            return null;
+        }
+    }
+
     public function profile()
     {
         return $this->hasOne(Profile::class);
@@ -74,6 +84,11 @@ class User extends Authenticatable implements JWTSubject
     public function employee()
     {
         return $this->hasOne(Employee::class);
+    }
+
+    public function leaves()
+    {
+        return $this->hasMany(LeaveBalance::class)->where('start_date', '<=', now())->where('exp_date','>=', now());
     }
 
 
