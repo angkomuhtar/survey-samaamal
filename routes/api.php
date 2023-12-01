@@ -24,6 +24,7 @@ Route::prefix('v1')->group(function(){
         });
 
         Route::get('/me', [AuthController::class, 'me']);
+        Route::get('/team', [AuthController::class, 'team']);
         Route::POST('/change_password', [AuthController::class, 'change_password']);
         Route::POST('/change_avatar', [AuthController::class, 'change_avatar']);
         Route::get('/home', [ClockController::class, 'home']);
@@ -40,7 +41,18 @@ Route::prefix('v1')->group(function(){
             Route::get('/rekap', 'rekap');
         });
 
-        Route::apiResource('leave', LeaveApiController::class);
+        
+        // Route::apiResource('leave', LeaveApiController::class);
+        Route::group([
+            'prefix' => 'leave',
+            'controller'=> LeaveApiController::class
+        ], function(){
+            Route::GET('/', 'index');
+            Route::POST('/', 'store');
+            Route::GET('leave_type', 'getleavetype');
+            Route::POST('change_status', 'change_status');
+            Route::GET('/leave_request/{type}', 'leave_request');
+        });
     });
 });
 

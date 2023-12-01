@@ -50,6 +50,9 @@
                         <a href={{ route('absensi.workhours') }} class="navItem {{ (stripos(\Request::route()->getName(), 'absensi.workhours')) !== FALSE ? 'active' : '' }}">Work Hours</a>
                     </li>
                     <li>
+                        <a href={{ route('absensi.shift') }} class="navItem {{ (stripos(\Request::route()->getName(), 'absensi.shift')) !== FALSE ? 'active' : '' }}">Shift</a>
+                    </li>
+                    <li>
                         <a href={{ route('absensi.clocklocations') }} class="navItem {{ (stripos(\Request::route()->getName(), 'absensi.clocklocations')) !== FALSE ? 'active' : '' }}">Clock Location</a>
                     </li>
                 </ul>

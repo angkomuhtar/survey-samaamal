@@ -11,7 +11,8 @@ class LeaveType extends Model
     protected $table = 'leave_types';
 
     protected $fillable = [
-        'type',
+        'value',
+        'label',
         'max_day',
         'cut_leave',
         'status'

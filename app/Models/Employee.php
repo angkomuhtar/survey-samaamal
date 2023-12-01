@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Employee extends Model
 {
@@ -17,12 +18,24 @@ class Employee extends Model
         'position_id',
         'status',
         'shift_id',
-        'nip'
+        'nip',
+        'user_id',
+        'atasan_id'
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function atasan()
+    {
+        return $this->belongsTo(User::class, 'atasan_id', 'id');
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class, 'user_id', 'user_id');
     }
 
     public function position() {
@@ -33,7 +46,20 @@ class Employee extends Model
         return $this->belongsTo(Division::class);
     }
 
-    public function shift() {
-        return $this->belongsTo(Shift::class);
+    public function work_shedule()
+    {
+        return $this->hasOne(WorkSchedule::class, 'code', 'wh_code');
+    }
+
+    public static function boot(){
+        parent::boot();
+
+        static::creating(function($model){
+            $prefix = $model->company_id == 1 ? 'MAM' : 'AT';
+            $number = Employee::where('nip','like', $prefix.'%')->max('number')+1;
+            $model->number = $number;
+            $date= Carbon::parse($model->doh);
+            $model->nip = $prefix.'.'.$date->format('ym').'.'.str_pad($number,4, '0',STR_PAD_LEFT);
+        });
     }
 }

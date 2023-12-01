@@ -4,16 +4,25 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\WorkHours;
+use App\Models\WorkSchedule;
+use App\Models\Shift;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\ResponseHelper;
 use App\Models\ClockLocation;
 use App\Models\Clock;
-
+use Carbon\Carbon;
 
 class ClockController extends Controller
 {
+    public $today;
+
+    // Constructor to initialize the variable or perform any other setup
+    public function __construct()
+    {
+        // You can initialize the variable in the constructor
+        $this->today = Carbon::now()->setTimeZone('Asia/Makassar');
+    }
     public function index(){
         try {
             $clock = Clock::where('user_id', Auth::user()->id)->orderBy('date', 'desc')->get();
@@ -72,15 +81,15 @@ class ClockController extends Controller
 
     public function today(Request $request){
         try {
-            $work_hours = WorkHours::whereColumn('start', '>', 'end')->get();
+            $work_hours = Shift::whereColumn('start', '>', 'end')->get();
             $wh_id = $work_hours->pluck('id')->toArray();
             $today = Clock::where(function($query) use($request) {
                 $query->where('user_id',Auth::user()->id)
-                ->where('date', date('Y-m-d'));
+                ->where('date', $this->today->format('Y-m-d'));
             })
             ->orWhere(function($query) use($request, $wh_id) {
                 $query->where('user_id',Auth::user()->id)
-                ->where('date', date('Y-m-d', strtotime('-1 day')))
+                ->where('date', $this->today->subDays(1)->format('Y-m-d'))
                 ->whereNull('clock_out')
                 ->whereIn('work_hours_id', $wh_id);
             })
@@ -118,8 +127,8 @@ class ClockController extends Controller
                 $insert = Clock::insert([
                     'user_id'=> Auth::user()->id,
                     'clock_location_id'=> $request->location,
-                    'date' => $request->date,
-                    'clock_in'=>$request->time,
+                    'date' => $this->today->format('Y-m-d'),
+                    'clock_in'=>$this->today->format('H:i:s'),
                     'work_hours_id'=> $request->shift,
                     'status' => 'H'
                 ]);
@@ -131,7 +140,7 @@ class ClockController extends Controller
             }elseif ($request->type == 'out'){
                 $clock = Clock::where('user_id', Auth::user()->id)
                     ->where('date', $request->date)
-                    ->update(['clock_out' => $request->time]);
+                    ->update(['clock_out' => $this->today->format('H:i:s')]);
                 if ($clock) {
                     return ResponseHelper::jsonSuccess('Berhasil Absen Pulang', $clock);
                 }else{
@@ -145,7 +154,8 @@ class ClockController extends Controller
 
     public function shift(){
         try {
-            $work_hours = WorkHours::where('shift_id', Auth::user()->employee->shift_id)->get();
+            $today = $this->today->format('N');
+            $work_hours = Shift::where('wh_code', Auth::user()->employee->wh_code)->where('days', 'like', '%'.$today.'%')->get();
             return ResponseHelper::jsonSuccess('success get location', $work_hours);
         } catch (\Exception $err) {
             return ResponseHelper::jsonError($err->getMessage(), 500);

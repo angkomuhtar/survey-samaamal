@@ -8,7 +8,7 @@
         <div class="offcanvas-header flex items-center justify-between p-4 pt-3 border-b border-b-slate-300 dark:border-b-slate-900">
             <div>
                 <h3 class="block text-xl font-Inter text-slate-900 font-medium dark:text-[#eee]">
-                    Data Work Hours
+                    Data Shift 
                 </h3>
             </div>
             <button type="button"
@@ -24,6 +24,18 @@
                   <form class="space-y-4" id="sending_form">
                       <input type="hidden" name="id" id="id" value="">
                       <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                      <div class="input-area relative">
+                          <label for="largeInput" class="form-label">Schedule</label>
+                          <div class="relative">
+                              <select id="select" class="form-control !pl-9" name="wh_code">
+                                <option value="" selected disabled class="dark:bg-slate-700 text-slate-300">Pilih Data</option>
+                                @foreach ($shift as $item)
+                                  <option value="{{$item->code}}" class="dark:bg-slate-700">{{$item->name}}</option>
+                                @endforeach
+                              </select>
+                              <iconify-icon icon="heroicons-outline:building-office-2" class="absolute left-2 top-1/2 -translate-y-1/2 text-base text-slate-500"></iconify-icon>
+                          </div>
+                      </div>
                       <div class="input-area relative">
                         <label for="largeInput" class="form-label">CODE</label>
                         <div class="relative">
@@ -87,16 +99,27 @@
                                         class="bg-slate-200 dark:bg-slate-700"
                                     >
                                         <tr>
-                                         
+                                          <th scope="col" class="table-th">
+                                            Schedule Code
+                                          </th>
+                                          <th scope="col" class="table-th">
+                                            Schedule
+                                          </th>
                                           <th scope="col" class="table-th">
                                             Code
                                           </th>
                                           <th scope="col" class="table-th">
-                                            Nama
+                                            Jam Kerja
                                           </th>
-                                            <th scope="col" class="table-th">
-                                                Action
-                                            </th>
+                                          <th scope="col" class="table-th">
+                                            Jam Istirahat
+                                          </th>
+                                          <th scope="col" class="table-th">
+                                            Hari
+                                          </th>
+                                          <th scope="col" class="table-th">
+                                              Action
+                                          </th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
@@ -122,11 +145,21 @@
         time_24hr: true,
       });
 
+      function converDays(data){
+        var or_data = data.split(',').sort();
+        var start = or_data[0], end;
+        for(let x in or_data){
+          end = or_data[x]
+        }
+        console.log(start, end);
+        return 'haloo'
+      }
+
         // table
         var table = $("#data-table, .data-table").DataTable({
             processing:true,
             serverSide: true,
-            ajax : '{!! route('absensi.workhours') !!}',
+            ajax : '{!! route('absensi.shift') !!}',
             dom: "<'grid grid-cols-12 gap-5 px-6 mt-6'<'col-span-4'l><'col-span-8 flex justify-end'f><'#pagination.flex items-center'>><'min-w-full't><'flex justify-end items-center'p>",
             paging: true,
             ordering: true,
@@ -146,8 +179,8 @@
               search: "Search:",
             },
             "columnDefs": [
-              { "searchable": false, "targets": [-1] },
-              { "orderable" : false, "targets": [-1] },
+              { "searchable": false, "targets": [-1, 0] },
+              { "orderable" : false, "targets": [-1, 0] },
               {
                 'className' : 'table-td',
                 "targets" : "_all"
@@ -155,10 +188,27 @@
             ],
             columns: [
               {
-                data: 'code',
+                data: 'schedule.code',
               },
               {
-                data: 'name',
+                data: 'schedule.name',
+              },
+              {
+                data: 'shift_code'
+              },
+              {
+                render: (data, type, row, meta )=>{
+                  return moment(row.start, 'HH:mm:ss').format('HH:mm') + ' - ' +moment(row.end, 'HH:mm:ss').format('HH:mm')
+                },
+              },
+              {
+                data: 'rest',
+              },
+              {
+                data: 'days',
+                render: (data, type, row, meta )=>{
+                  return converDays(row.days)
+                },
               },
               {
                 data: 'id',

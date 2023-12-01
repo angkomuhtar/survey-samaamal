@@ -6,21 +6,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class WorkHours extends Model
+class WorkSchedule extends Model
 {
     use HasFactory;
 
-    protected $table = 'work_hours';
+    protected $table = 'work_schedule';
 
     protected $fillable = [
-        'shift_id',
-        'start',
-        'end',
+        'code',
         'name'
     ];
 
-    public function shift(): BelongsTo
+    public function shift()
     {
-        return $this->belongsTo(Shift::class);
+        return $this->hasMany(Shift::class, 'wh_code', 'code');
     }
+
 }

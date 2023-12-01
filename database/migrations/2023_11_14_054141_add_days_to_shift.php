@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('employees', function (Blueprint $table) {
-            $table->string('wh_code')->after('status')->default(1);
+        Schema::table('shifts', function (Blueprint $table) {
+            $table->set('days',['1', '2', '3', '4', '5', '6', '7'])->nullable()->after('rest');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('employees', function (Blueprint $table) {
-            $table->dropColumn('whcode');
+        Schema::table('shifts', function (Blueprint $table) {
+            $table->dropColumn('days');
         });
     }
 };

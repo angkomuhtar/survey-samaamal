@@ -20,11 +20,17 @@ class Clock extends Model
     }
 
     public function employee() {
+
         return $this->belongsTo(Employee::class, 'user_id', 'user_id');
     }
 
-    public function work_hours() {
-        return $this->belongsTo(WorkHours::class);
+    public function profile() {
+        return $this->belongsTo(Profile::class, 'user_id', 'user_id');
     }
+
+    public function shift() {
+        return $this->belongsTo(Shift::class, 'work_hours_id', 'id');
+    }
+
 
 }

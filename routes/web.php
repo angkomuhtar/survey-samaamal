@@ -42,6 +42,7 @@ Route::middleware('Admin')->prefix('admin')->group(function()
         Route::get('/','index')->name('employee');
         Route::get('/create','create')->name('employee.create');
         Route::post('/','store')->name('employee.store');
+        Route::get('/test','destroy')->name('employee.test');
     });
 
     Route::controller(usersController::class)->prefix('users')->group(function()
@@ -80,7 +81,7 @@ Route::middleware('Admin')->prefix('admin')->group(function()
         Route::post('/{id}','update')->name('absensi.attendance.update');
     });
 
-    Route::controller(WorkhoursController::class)->prefix('workhours')->group(function()
+    Route::controller(WorkhoursController::class)->prefix('work_schedule')->group(function()
     {
         Route::get('/','index')->name('absensi.workhours');
         Route::get('/create','create')->name('absensi.workhours.create');
@@ -88,6 +89,15 @@ Route::middleware('Admin')->prefix('admin')->group(function()
         Route::delete('/{id}','destroy')->name('absensi.workhours.destroy');
         Route::get('/{id}','edit')->name('absensi.workhours.edit');
         Route::post('/{id}','update')->name('absensi.workhours.update');
+    });
+    Route::controller(WorkhoursController::class)->prefix('shift')->group(function()
+    {
+        Route::get('/','index_shift')->name('absensi.shift');
+        // Route::get('/create','create')->name('absensi.shift.create');
+        // Route::post('/','store')->name('absensi.shift.store');
+        // Route::delete('/{id}','destroy')->name('absensi.shift.destroy');
+        // Route::get('/{id}','edit')->name('absensi.shift.edit');
+        // Route::post('/{id}','update')->name('absensi.shift.update');
     });
 
     Route::controller(ClocklocationsController::class)->prefix('clocklocations')->group(function()

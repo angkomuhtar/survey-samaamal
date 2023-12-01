@@ -13,7 +13,13 @@ return new class extends Migration
     {
         Schema::create('shifts', function (Blueprint $table) {
             $table->id();
-            $table->string('shift');
+            $table->string('wh_code');
+            $table->string('shift_code');
+            $table->string('name');
+            $table->time('start');
+            $table->time('end');
+            $table->time('rest');
+            $table->integer('rest_duration');
             $table->timestamps();
         });
     }

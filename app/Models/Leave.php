@@ -18,18 +18,38 @@ class Leave extends Model
         'tot_day',
         'attachment',
         'approver_note',
+        'caretaker_id',
         'note',
+        'approver_id',
         'status'
     ];
 
 
-    public function user(): HasOne
+    public function user()
     {
-        return $this->hasOne(User::class, 'user_id', 'id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 
-    public function leave_type(): BelongsTo
+    public function approver()
+    {
+        return $this->hasOne(User::class, 'id', 'approver_id');
+    }
+
+    public function caretaker()
+    {
+        return $this->hasOne(User::class, 'id', 'caretaker_id');
+    }
+
+    public function leave_type()
     {
         return $this->belongsTo(LeaveType::class, 'leave_type_id', 'id');
+    }
+
+    public static function boot(){
+        parent::boot();
+
+        static::creating(function($model){
+            $model->created_at = now();
+        });
     }
 }

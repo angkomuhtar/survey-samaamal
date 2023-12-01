@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('work_hours', function (Blueprint $table) {
+        Schema::create('work_schedule', function (Blueprint $table) {
             $table->id();
-            $table->time('start');
-            $table->time('end');
-            $table->integer('shift_id');
+            $table->string('code');
             $table->string('name');
             $table->timestamps();
         });
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('work_hours');
+        Schema::dropIfExists('work_schedule');
     }
 };

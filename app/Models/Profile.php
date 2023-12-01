@@ -37,6 +37,11 @@ class Profile extends Model
         return $this->belongsTo(Options::class, 'education', 'id');
     }
 
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'user_id', 'user_id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

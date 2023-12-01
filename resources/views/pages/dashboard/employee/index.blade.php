@@ -115,7 +115,10 @@
                     data: 'employee.position.position'
                   },
                   {
-                    data: 'employee.shift.shift'
+                    data: 'employee?.work_schedule?.name',
+                    render : function(data){
+                      return data ?? "not set"
+                    }
                   },
                   {
                     data: 'profile.gender',

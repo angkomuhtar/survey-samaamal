@@ -20,7 +20,7 @@ class EmployeeController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-          $data = User::where('roles','<>', 'superadmin')->with('employee','profile', 'employee.division', 'employee.position', 'employee.shift');
+          $data = User::where('roles','<>', 'superadmin')->with('employee','profile', 'employee.division', 'employee.position', 'employee.work_shedule');
           return DataTables::eloquent($data)->toJson();
         }
         return view('pages.dashboard.employee.index', [
@@ -86,7 +86,6 @@ class EmployeeController extends Controller
         ]));
 
         $employee = $users->employee()->create([
-          'nip' => 'MAM.9778.0002',
           'company_id' => $request->company_id,
           'division_id' => $request->division_id,
           'position_id' => $request->position_id,
@@ -94,7 +93,7 @@ class EmployeeController extends Controller
           'status' => $request->status,
         ]);
         DB::commit();
-      } catch (\Throwable $th) {
+      } catch (Exception $th) {
         DB::rollBack();
         return response()->json([
           'success' => false,
@@ -125,8 +124,17 @@ class EmployeeController extends Controller
         //
     }
     
-    public function destroy(string $id)
+    public function destroy()
     {
-        //
+      // Employee::create([
+      //   'company_id' => 1,
+      //   'division_id' => 1,
+      //   'position_id' => 1,
+      //   'doh' => '2022-06-04',
+      //   'status' => 'Permanent',
+      //   'shift_id' => 1,
+      //   'user_id' => 1,
+      // ]);
+      return 'tre';
     }
 }

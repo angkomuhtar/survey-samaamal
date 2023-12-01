@@ -11,12 +11,12 @@ class LeaveBalance extends Model
 
     protected $table = 'leave_balances';
 
-    protected $fillable = [
-        'user_id',
-        'start_date',
-        'exp_date',
-        'year',
-        'available',
-        'using'
-    ];
+protected $fillable = [
+    'user_id',
+    'start_date',
+    'exp_date',
+    'year',
+    'available',
+    'using'
+];
 }

@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Division;
 use App\Models\User;
+use App\Models\Clock;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -16,7 +17,7 @@ class AttendanceController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Position::with('division','company');
+            $data = Clock::with('employee', 'profile', 'shift')->orderBy('date', 'desc');
             return DataTables::eloquent($data)->toJson();
         }
         $division = Division::all();

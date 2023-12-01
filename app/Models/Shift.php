@@ -10,13 +10,10 @@ class Shift extends Model
     use HasFactory;
     protected $table = 'shifts';
 
-    protected $fillable = [
-        'shift',
-    ];
 
-    public function work_hours()
+    public function schedule()
     {
-        return $this->hasMany(WorkHours::class);
+        return $this->belongsTo(WorkSchedule::class, 'wh_code', 'code');
     }
 
     public function employee()

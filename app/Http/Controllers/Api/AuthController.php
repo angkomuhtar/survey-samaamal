@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
@@ -118,6 +119,25 @@ class AuthController extends Controller
         return response()->json([
             'status' => 'success',
             'user' => new UserResource($user)
+        ]);
+    }
+
+    public function team()
+    {
+        // $data =  Employee::with('profile', 'division', 'position')->where('division_id', Auth::guard('api')->user()->employee->division_id)
+        //     ->where('id', '<>',Auth::guard('api')->user()->employee->id)->get();
+
+        $data = Employee::with('profile', 'division', 'position')
+            ->where('division_id', Auth::guard('api')->user()->employee->division_id)
+            ->where('id', '<>',Auth::guard('api')->user()->employee->id)->get()
+            ->map(function (Employee $emp) {
+                    $emp->name = $emp->profile->name;
+                    $emp->pos = $emp->position->position;
+                    return $emp;
+                });
+        return response()->json([
+            'status' => 'success',
+            'user' => $data
         ]);
     }
 

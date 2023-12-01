@@ -1,73 +1,12 @@
 <x-appLayout>
-
-    {{-- form offcanvas --}}
-    <div class="offcanvas offcanvas-end fixed bottom-0 flex flex-col max-w-full bg-white dark:bg-slate-800 invisible bg-clip-padding shadow-sm outline-none transition duration-300 ease-in-out text-gray-700 top-0 ltr:right-0 rtl:left-0 border-none w-96"
-        tabindex="-1"
-        id="offcanvas"
-        aria-labelledby="offcanvas">
-        <div class="offcanvas-header flex items-center justify-between p-4 pt-3 border-b border-b-slate-300 dark:border-b-slate-900">
-            <div>
-                <h3 class="block text-xl font-Inter text-slate-900 font-medium dark:text-[#eee]">
-                    Data Jabatan
-                </h3>
-            </div>
-            <button type="button"
-                class="box-content text-2xl w-4 h-4 p-2 pt-0 -my-5 -mr-2 text-black dark:text-white border-none rounded-none opacity-100 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
-                data-bs-dismiss="offcanvas">
-                <iconify-icon icon="line-md:close"></iconify-icon>
-            </button>
-        </div>
-        <div class="offcanvas-body flex-grow overflow-y-auto">
-            <div class="settings-modal">
-                <div class="divider"></div>
-                <div class="p-6">
-                  <form class="space-y-4" id="sending_form">
-                      <input type="hidden" name="id" id="id" value="">
-                      <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-                      <div class="input-area relative">
-                          <label for="largeInput" class="form-label">Perusahaan</label>
-                          <div class="relative">
-                              <select id="select" class="form-control !pl-9" name="company">
-                                <option value="" selected disabled class="dark:bg-slate-700 text-slate-300">Pilih Data</option>
-                                <option value="1" class="dark:bg-slate-700">PT Mitra Abadi Mahakam</option>
-                                <option value="2" class="dark:bg-slate-700">PT Abadi Teknik</option>
-                              </select>
-                              <iconify-icon icon="heroicons-outline:building-office-2" class="absolute left-2 top-1/2 -translate-y-1/2 text-base text-slate-500"></iconify-icon>
-                          </div>
-                      </div>
-                      <div class="input-area relative">
-                        <label for="largeInput" class="form-label">Departement</label>
-                        <div class="relative">
-                            <select id="select" class="form-control !pl-9" name="division">
-                              <option selected disabled class="dark:bg-slate-700 text-slate-300">Pilih Data</option>
-                            </select>
-                            <iconify-icon icon="heroicons:globe-alt" class="absolute left-2 top-1/2 -translate-y-1/2 text-base text-slate-500"></iconify-icon>
-                        </div>
-                      </div>
-                      <div class="input-area relative">
-                        <label for="largeInput" class="form-label">Jabatan</label>
-                        <div class="relative">
-                          <input type="text" name="position" class="form-control !pl-9" placeholder="Jabatan">
-                          <iconify-icon icon="heroicons:globe-alt" class="absolute left-2 top-1/2 -translate-y-1/2 text-base text-slate-500"></iconify-icon>
-                        </div>
-                      </div>
-                      <div class="flex justify-end space-x-3">
-                        <button type="submit" class="btn btn-sm inline-flex justify-center btn-dark">Simpan</button>
-                        <button type="reset" id="btn_cancel" data-bs-dismiss="offcanvas" class="btn btn-sm btn-outline-danger inline-flex justify-center btn-dark">Batal</button>
-                      </div>
-                  </form>
-                </div>
-            </div>
-        </div>
-    </div>
  
     {{-- table --}}
     <div class="space-y-8">
         <div class="space-y-5">
             <div class="card">
                 <header class="card-header noborder">
-                    <h4 class="card-title">Jabatan</h4>
-                    <button
+                    <h4 class="card-title">Absensi</h4>
+                    <!-- <button
                         data-bs-toggle="offcanvas"
                         data-bs-target="#offcanvas"
                         aria-controls="offcanvas"
@@ -81,7 +20,7 @@
                                 icon="mdi:database-plus-outline"
                             ></iconify-icon>
                         </span>
-                    </button>
+                    </button> -->
                 </header>
                 <div class="card-body px-6 pb-6">
                     <div class="overflow-x-auto -mx-6 dashcode-data-table">
@@ -97,17 +36,26 @@
                                     >
                                         <tr>
                                           <th scope="col" class="table-th">
-                                            Jabatan
+                                            Nama
                                           </th>
                                           <th scope="col" class="table-th">
                                             Departement
                                           </th>
                                           <th scope="col" class="table-th">
-                                            Perusahaan
+                                            Absen Masuk
                                           </th>
-                                            <th scope="col" class="table-th">
-                                                Action
-                                            </th>
+                                          <th scope="col" class="table-th">
+                                            Absen Pulang
+                                          </th>
+                                          <th scope="col" class="table-th">
+                                            telat masuk
+                                          </th>
+                                          <th scope="col" class="table-th">
+                                            pulang cepat
+                                          </th>
+                                          <th scope="col" class="table-th">
+                                            Shift
+                                          </th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
@@ -129,7 +77,7 @@
         var table = $("#data-table, .data-table").DataTable({
             processing:true,
             serverSide: true,
-            ajax : '{!! route('masters.position') !!}',
+            ajax : '{!! route('absensi.attendance') !!}',
             dom: "<'grid grid-cols-12 gap-5 px-6 mt-6'<'col-span-4'l><'col-span-8 flex justify-end'f><'#pagination.flex items-center'>><'min-w-full't><'flex justify-end items-center'p>",
             paging: true,
             ordering: true,
@@ -149,8 +97,8 @@
               search: "Search:",
             },
             "columnDefs": [
-              { "searchable": false, "targets": [1,2,3] },
-              { "orderable" : false, "targets": [1,2,3] },
+              { "searchable": false, "targets": [-1] },
+              { "orderable" : false, "targets": [-1] },
               {
                 'className' : 'table-td',
                 "targets" : "_all"
@@ -158,31 +106,48 @@
             ],
             columns: [
               {
-                data: 'position',
-                name :'position'
-              },
-              {
-                name :'division',
-                data: 'division.division',
-              },
-              {
-                name :'company',
-                data: 'company.company',
-              },
-              {
-                data: 'id',
-                name :'action',
-                render: (data, type, row, meta )=>{
-                  return  `<div class="flex space-x-3 rtl:space-x-reverse">
-                              <button class="action-btn toolTip onTop cursor-pointer" data-tippy-content="Edit" id="btn-edit" data-id="${row.id}" data-tippy-theme="primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas">
-                                <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
-                              </button>
-                              <button class="action-btn toolTip onTop cursor-pointer" data-tippy-content="Hapus" id="btn-delete" data-id="${row.id}" data-tippy-theme="danger">
-                                <iconify-icon icon="heroicons:trash"></iconify-icon>
-                              </button>
-                            </div>`
+                render : (data, type, row) =>{
+                  return row.profile?.name ?? ''
                 }
-             },
+              },{
+                data: 'date',
+              },{
+                data: 'clock_in',
+              },{
+                data: 'clock_out',
+              },{
+                render : (data, type, row, meta) =>{
+                  var startTime = moment(row.clock_in, "hh:mm:ss");
+                  var start = moment(row?.shift?.start, "hh:mm:ss");
+                  var seconds = startTime.diff(start, 's')
+
+                  if (seconds < 0) {
+                    return '-'
+                  }else{
+                    const hours = Math.floor(seconds / 3600)
+                    const minutes = Math.floor((seconds % 3600) / 60)
+                    return `${hours} hours : ${minutes} minutes`;
+                  }
+                }
+              },{
+                render : (data, type, row, meta) =>{
+                  var clock = moment(row.clock_out, "hh:mm:ss");
+                  var end = moment(row?.shift?.end, "hh:mm:ss");
+                  var seconds = end.diff(clock, 's');
+                  console.log(isNaN(seconds));
+                  if (seconds < 0 || isNaN(seconds)) {
+                    return '-'
+                  }else{
+                    const hours = Math.floor(seconds / 3600)
+                    const minutes = Math.floor((seconds % 3600) / 60)
+                    return `${hours} hours : ${minutes} minutes`;
+                  }
+                }
+              },{
+                render : (data, type, row, meta) =>{
+                  return `${row.shift?.name} (${row.shift?.start} - ${row.shift?.end})`
+                }
+              },
             ],
         });
 

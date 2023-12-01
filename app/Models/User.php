@@ -91,6 +91,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(LeaveBalance::class)->where('start_date', '<=', now())->where('exp_date','>=', now());
     }
 
+    public function bawahan()
+    {
+        return $this->hasMany(Employee::class, 'id', 'atasan_id');
+    }
+
 
 }
 
