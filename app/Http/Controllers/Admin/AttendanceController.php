@@ -11,13 +11,21 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\ResponseHelper;
+use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
     public function index(Request $request)
     {
+        // $users = User::with('employee')->with('absen', function ($query) {
+        //     $query->where('date', '=', '2023-12-01');
+        // })->get();
+        // dd($users);
         if ($request->ajax()) {
-            $data = Clock::with('employee', 'profile', 'shift')->orderBy('date', 'desc');
+            $data = User::where('username', '!=', 'Admin')->with('employee', 'profile')->with('absen', function ($query) use ($request) {
+                $query->where('date', '=', $request->tanggal)
+                ->with('shift');
+            });
             return DataTables::eloquent($data)->toJson();
         }
         $division = Division::all();

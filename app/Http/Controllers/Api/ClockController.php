@@ -20,7 +20,6 @@ class ClockController extends Controller
     // Constructor to initialize the variable or perform any other setup
     public function __construct()
     {
-        // You can initialize the variable in the constructor
         $this->today = Carbon::now()->setTimeZone('Asia/Makassar');
     }
     public function index(){
@@ -34,15 +33,19 @@ class ClockController extends Controller
 
     public function home(Request $request){
         try {
-            $absen = Clock::whereBetween('date', ['2023-09-26', '2023-10-25'])->where('user_id', Auth::user()->id);
+            $day = $this->today->format('d');
+            $startDay = $this->today->format('d') > 25 ? $this->today->format('Y-m-26') : $this->today->subMonths(1)->format('Y-m-26');
+            $endDay = Carbon::createFromFormat('Y-m-d', $startDay)->addMonths(1)->format('Y-m-25');
+            // return $startDay.' '. $endDay;
+            $absen = Clock::whereBetween('date', [$startDay, $endDay])->where('user_id', Auth::user()->id);
             $hadir = $absen->where('status', 'H')->count();
             $rekap = [
                 'hadir'=>$hadir,
                 'alpa'=> 0,
-                'izin' => 1 
+                'izin' => 0 
             ];
             
-            $work_hours = WorkHours::whereColumn('start', '>', 'end')->get();
+            $work_hours = Shift::whereColumn('start', '>', 'end')->get();
             $wh_id = $work_hours->pluck('id')->toArray();
             $today = Clock::where(function($query) use($request) {
                 $query->where('user_id',Auth::user()->id)
@@ -64,12 +67,17 @@ class ClockController extends Controller
 
     public function rekap(Request $request){
         try {
-            $absen = Clock::whereBetween('date', ['2023-09-26', '2023-10-25'])->where('user_id', Auth::user()->id);
+            $day = $this->today->format('d');
+            $startDay = $this->today->format('d') > 25 ? $this->today->format('Y-m-26') : $this->today->subMonths(1)->format('Y-m-26');
+            $endDay = Carbon::createFromFormat('Y-m-d', $startDay)->addMonths(1)->format('Y-m-25');
+            $absen = Clock::whereBetween('date', [$startDay, $endDay])->where('user_id', Auth::user()->id);
             $hadir = $absen->where('status', 'H')->count();
+            $alpha = $absen->where('status', 'A')->count();
+            $izin = $absen->where('status', 'I')->count();
             $rekap = [
                 'hadir'=>$hadir,
-                'alpa'=> 0,
-                'izin' => 1 
+                'alpa'=> $alpha,
+                'izin' => $izin 
             ];
             
             $data = collect(['rekap'=>$rekap]);
