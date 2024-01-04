@@ -24,7 +24,15 @@ class ClockController extends Controller
     }
     public function index(){
         try {
-            $clock = Clock::where('user_id', Auth::user()->id)->orderBy('date', 'desc')->get();
+            $day = $this->today->format('d');
+            $startDay = $this->today->format('d') > 25 ? $this->today->format('Y-m-26') : $this->today->subMonths(1)->format('Y-m-26');
+            $endDay = Carbon::createFromFormat('Y-m-d', $startDay)->addMonths(1)->format('Y-m-25');
+            $clock = Clock::with('shift')->whereBetween('date', [$startDay, $endDay])->where('user_id', Auth::user()->id)->orderBy('date', 'desc')->get();
+            $clock = $clock->map(function ($clock) {
+                $clock['late'] = $clock->late;
+                $clock['early'] = $clock->early;
+                return $clock;
+            });
             return ResponseHelper::jsonSuccess('success get data', $clock);
         } catch (\Exception $err) {
             return ResponseHelper::jsonError($err->getMessage(), 500);
@@ -102,6 +110,10 @@ class ClockController extends Controller
                 ->whereIn('work_hours_id', $wh_id);
             })
             ->first();
+            if ($today) {
+                $today['late'] = $today->late;
+                $today['early'] = $today->early;
+            }
             return ResponseHelper::jsonSuccess('success get data', $today);
         } catch (\Exception $err) {
             return ResponseHelper::jsonError($err->getMessage(), 500);

@@ -42,7 +42,11 @@ class AuthController extends Controller
             return ResponseHelper::jsonError('password not match', 401);
         }else{
             $user = Auth::guard('api')->user()->load(['employee','profile', 'employee.division', 'employee.position']);
+            $phoneID = User::where('phone_id', $request->phone_id)->where('id','!=', $user->id)->get();
             if ($user->phone_id == null || $user->phone_id == $request->phone_id) {
+                if ($phoneID->count() > 0) {
+                    return ResponseHelper::jsonError('maaf, device telah terintegrasi dengan akun lain', 401);
+                }
                 $db = User::find($user->id);               
                 $db->phone_id = $request->phone_id;
                 $db->save();
@@ -56,11 +60,9 @@ class AuthController extends Controller
                     ])->withCookie(cookie('jwt', $token, 60));
             }else{
                 Auth::guard('api')->logout();
-                return ResponseHelper::jsonError('Phone connect to other device', 401);
+                return ResponseHelper::jsonError('maaf, akun telah terintgrasi dengan device lain', 401);
             }
         }
-
-
     }
 
     public function register(Request $request){
