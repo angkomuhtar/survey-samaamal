@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Options;
 use App\Models\User;
 use App\Models\Employee;
+use App\Models\Division;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -19,12 +20,25 @@ class EmployeeController extends Controller
      */
     public function index(Request $request)
     {
+        $dept = Division::all();
         if ($request->ajax()) {
-          $data = User::where('roles','<>', 'superadmin')->with('employee','profile', 'employee.division', 'employee.position', 'employee.work_shedule');
+          $data = User::where('roles','<>', 'superadmin')
+            ->with('employee','profile', 'employee.division', 'employee.position', 'employee.work_shedule')
+            ->whereHas('profile', function ($query) use ($request){
+              $query->where('name', 'LIKE', '%'.$request->name.'%');
+            });
+
+          if ($request->division != null || $request->departement != '') {
+            $data->whereHas('employee', function ($query) use ($request){
+              $query->where('division_id', $request->division);
+            });
+          }
           return DataTables::eloquent($data)->toJson();
         }
+
         return view('pages.dashboard.employee.index', [
             'pageTitle' => 'Data Karyawan',
+            'departement' => $dept 
         ]);
     }
 

@@ -22,7 +22,7 @@ class AttendanceController extends Controller
         // })->get();
         // dd($users);
         if ($request->ajax()) {
-            $data = User::where('username', '!=', 'Admin')->with('employee', 'profile')->with('absen', function ($query) use ($request) {
+            $data = User::where('username', '!=', 'Admin')->with('employee', 'employee.division', 'profile')->with('absen', function ($query) use ($request) {
                 $query->where('date', '=', $request->tanggal)
                 ->with('shift');
             });
