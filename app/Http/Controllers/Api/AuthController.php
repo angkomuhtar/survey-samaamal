@@ -44,9 +44,9 @@ class AuthController extends Controller
             $user = Auth::guard('api')->user()->load(['employee','profile', 'employee.division', 'employee.position']);
             $phoneID = User::where('phone_id', $request->phone_id)->where('id','!=', $user->id)->get();
             if ($user->phone_id == null || $user->phone_id == $request->phone_id) {
-                if ($phoneID->count() > 0) {
-                    return ResponseHelper::jsonError('maaf, device telah terintegrasi dengan akun lain', 401);
-                }
+                // if ($phoneID->count() > 0) {
+                //     return ResponseHelper::jsonError('maaf, device telah terintegrasi dengan akun lain', 401);
+                // }
                 $db = User::find($user->id);               
                 $db->phone_id = $request->phone_id;
                 $db->save();
