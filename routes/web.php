@@ -48,6 +48,13 @@ Route::prefix('admin')->group(function()
             Route::post('/{id}/employee','update_employee')->name('employee.update_employee');
             Route::get('/test','destroy')->name('employee.test');
         });
+        Route::controller(AjaxController::class)->prefix('ajax')->group(function()
+        {
+            Route::get('/division/{id}','getDivision')->name('ajax.division');
+            Route::get('/position/{id}','getPosition')->name('ajax.position');
+            Route::post('/userValidate','userValidate')->name('ajax.uservalidate');
+            Route::post('/profilevalidate','profilevalidate')->name('ajax.profilevalidate');
+        });
     });
 
     Route::middleware('Admin:superadmin')->group(function () {
@@ -113,16 +120,6 @@ Route::prefix('admin')->group(function()
             Route::delete('/{id}','destroy')->name('absensi.clocklocations.destroy');
             Route::get('/{id}','edit')->name('absensi.clocklocations.edit');
             Route::post('/{id}','update')->name('absensi.clocklocations.update');
-        });
-    
-    
-    
-        Route::controller(AjaxController::class)->prefix('ajax')->group(function()
-        {
-            Route::get('/division/{id}','getDivision')->name('ajax.division');
-            Route::get('/position/{id}','getPosition')->name('ajax.position');
-            Route::post('/userValidate','userValidate')->name('ajax.uservalidate');
-            Route::post('/profilevalidate','profilevalidate')->name('ajax.profilevalidate');
         });
     });
 
