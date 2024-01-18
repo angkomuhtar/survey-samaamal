@@ -27,7 +27,7 @@ class EmployeeController extends Controller
     {
         $user = Auth::guard('web')->user();
         $dept;
-        if ($user->roles != 'superadmin') {
+        if ($user->roles != 'superadmin' || $user->employee->division_id == 2 || $user->employee->division_id == 7 ) {
           $dept = Division::where('id', $user->employee->division_id)->get(); 
         }else{
           $dept = Division::all();
