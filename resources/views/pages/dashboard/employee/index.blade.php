@@ -4,13 +4,23 @@
             <div class="card">
                 <header class=" card-header noborder">
                     <h4 class="card-title">{{ $pageTitle }}</h4>
-                    <a href={{ route('employee.create') }} class="btn btn-sm inline-flex justify-center btn-primary ">
-                        <span class="flex items-center">
-                            <span>Tambah Data</span>
-                            <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2"
-                                icon="mdi:database-plus-outline"></iconify-icon>
-                        </span>
-                    </a>
+                    <div class="flex space-x-2">
+                        <button type="button" id="refresh" class="btn btn-sm inline-flex justify-center btn-secondary">
+                            <span class="flex items-center">
+                                <span>Reload Data</span>
+                                <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2"
+                                    icon="typcn:refresh-outline"></iconify-icon>
+                            </span>
+                        </button>
+                        <a href={{ route('employee.create') }}
+                            class="btn btn-sm inline-flex justify-center btn-primary ">
+                            <span class="flex items-center">
+                                <span>Tambah Data</span>
+                                <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2"
+                                    icon="mdi:database-plus-outline"></iconify-icon>
+                            </span>
+                        </a>
+                    </div>
                 </header>
                 <div class="card-body px-6 pb-6">
                     <div class="grid grid-cols-4 gap-3 ">
@@ -175,25 +185,58 @@
                         data: 'id',
                         name: 'action',
                         render: (data) => {
-                            return `<div class="flex space-x-3 rtl:space-x-reverse">
-                                  <a href={!! route('employee') !!} class="action-btn">
-                                    <iconify-icon icon="heroicons:eye"></iconify-icon>
-                                  </a>
-                                  <a class="action-btn">
-                                    <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
-                                  </a>
-                                  <a class="action-btn">
-                                    <iconify-icon icon="heroicons:trash"></iconify-icon>
-                                  </a>
-                                </div>`
+                            return `
+                            <div>
+                                <div class="relative">
+                                    <div class="dropdown relative">
+                                        <button class="text-xl text-center block w-full " type="button" id="tableDropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                        </button>
+                                        <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                            <li>
+                                                <a href="#" id="profile" data-id="${data}" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">
+                                                    Profile
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" id="employee" data-id="${data}" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                dark:hover:text-white">
+                                                Karyawan
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                dark:hover:text-white">
+                                                Password
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            `
                         }
                     },
                 ],
             });
             table.tables().body().to$().addClass('bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700');
+            $("#refresh").on('click', () => {
+                table.draw()
+            })
 
             $('#name,#division_id').bind('change', function() {
                 table.draw()
+            })
+
+            var profile = '{!! route('employee.edit_profile', ['id' => ':id']) !!}';
+            $(document).on('click', '#profile', (e) => {
+                var id = $(e.currentTarget).data('id');
+                window.open(profile.replace(':id', id))
+            })
+            var employee = '{!! route('employee.edit_employee', ['id' => ':id']) !!}';
+            $(document).on('click', '#employee', (e) => {
+                var id = $(e.currentTarget).data('id');
+                window.open(employee.replace(':id', id))
             })
         </script>
     @endpush

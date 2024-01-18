@@ -42,6 +42,10 @@ Route::middleware('Admin')->prefix('admin')->group(function()
         Route::get('/','index')->name('employee');
         Route::get('/create','create')->name('employee.create');
         Route::post('/','store')->name('employee.store');
+        Route::get('/{id}/profile','edit_profile')->name('employee.edit_profile');
+        Route::post('/{id}/profile','update_profile')->name('employee.update_profile');
+        Route::get('/{id}/employee','edit_employee')->name('employee.edit_employee');
+        Route::post('/{id}/employee','update_employee')->name('employee.update_employee');
         Route::get('/test','destroy')->name('employee.test');
     });
 
