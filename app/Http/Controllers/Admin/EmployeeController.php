@@ -27,11 +27,13 @@ class EmployeeController extends Controller
     {
         $user = Auth::guard('web')->user();
         $dept;
-        if ($user->roles != 'superadmin' || $user->employee->division_id != 2 || $user->employee->division_id != 7 ) {
-          $dept = Division::where('id', $user->employee->division_id)->get(); 
-        }else{
+
+        if ($user->roles == 'superadmin' || $user->employee->division_id == 2 || $user->employee->division_id == 7 ) {
           $dept = Division::all();
+        }else{
+          $dept = Division::where('id', $user->employee->division_id)->get(); 
         }
+
         if ($request->ajax()) {
           $data = User::where('roles','<>', 'superadmin')
             ->with('employee','profile', 'employee.division', 'employee.position', 'employee.work_shedule')
@@ -45,10 +47,12 @@ class EmployeeController extends Controller
             });
           }
 
-          if ($user->roles != 'superadmin') {
-            $data->whereHas('employee', function ($query) use ($user){
-              $query->where('division_id', $user->employee->division_id);
-            });
+          if ($user->roles != 'superadmin' ) {
+            if (!in_array($user->employee->division_id, [2,7])) {
+              $data->whereHas('employee', function ($query) use ($user){
+                $query->where('division_id', $user->employee->division_id);
+              });
+            }
           }
           return DataTables::eloquent($data)->toJson();
         }
