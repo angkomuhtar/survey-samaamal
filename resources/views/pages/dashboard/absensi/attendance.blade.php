@@ -6,12 +6,13 @@
             <div class="card">
                 <div class="card-header noborder !pb-0">
                     <h4 class="card-title">Absensi</h4>
-                    <button class="btn inline-flex justify-center btn-outline-primary rounded-[25px]">
+                    <a href="{{ route('absensi.attendance.export') }}" target="_blank"
+                        class="btn inline-flex justify-center btn-outline-primary rounded-[25px]">
                         <span class="flex items-center">
                             <iconify-icon class="text-xl mr-2" icon="mi:filter"></iconify-icon>
                             <span>filter</span>
                         </span>
-                    </button>
+                    </a>
                 </div>
                 <div class="h-auto grid grid-cols-4 px-5 gap-4 mb-4">
                     <div class="input-area">

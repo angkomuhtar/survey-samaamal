@@ -161,9 +161,8 @@
                         data: 'employee.position.position'
                     },
                     {
-                        data: 'employee?.work_schedule?.name',
-                        render: function(data) {
-                            return data ?? "not set"
+                        render: function(data, type, row, meta) {
+                            return row.employee?.work_schedule?.name ?? 'Not Set';
                         }
                     },
                     {

@@ -23,7 +23,7 @@ use App\Http\Controllers\LoginController;
 |
 */
 
-Route::middleware('Admin')->get('/', function () {
+Route::middleware('Admin:admin,superadmin')->get('/', function () {
     return view('welcome');
 });
 
@@ -82,6 +82,7 @@ Route::prefix('admin')->group(function()
             Route::get('/{id}','edit')->name('masters.position.edit');
             Route::post('/{id}','update')->name('masters.position.update');
         });
+        
     
         Route::controller(AttendanceController::class)->prefix('attendance')->group(function()
         {
@@ -89,6 +90,7 @@ Route::prefix('admin')->group(function()
             Route::get('/create','create')->name('absensi.attendance.create');
             Route::post('/','store')->name('absensi.attendance.store');
             Route::delete('/{id}','destroy')->name('absensi.attendance.destroy');
+            Route::get('/export','export')->name('absensi.attendance.export');
             Route::get('/{id}','edit')->name('absensi.attendance.edit');
             Route::post('/{id}','update')->name('absensi.attendance.update');
         });

@@ -36,7 +36,7 @@ class EmployeeController extends Controller
 
         if ($request->ajax()) {
           $data = User::where('roles','<>', 'superadmin')
-            ->with('employee','profile', 'employee.division', 'employee.position', 'employee.work_shedule')
+            ->with('employee','profile', 'employee.division', 'employee.position', 'employee.work_schedule')
             ->whereHas('profile', function ($query) use ($request){
               $query->where('name', 'LIKE', '%'.$request->name.'%');
             });
@@ -56,6 +56,7 @@ class EmployeeController extends Controller
           }
           return DataTables::eloquent($data)->toJson();
         }
+        // dd($data->get());
 
         return view('pages.dashboard.employee.index', [
             'pageTitle' => 'Data Karyawan',

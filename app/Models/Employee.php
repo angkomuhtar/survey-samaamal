@@ -46,7 +46,11 @@ class Employee extends Model
         return $this->belongsTo(Division::class);
     }
 
-    public function work_shedule()
+    public function project() {
+        return $this->belongsTo(Project::class);
+    }
+
+    public function work_schedule()
     {
         return $this->hasOne(WorkSchedule::class, 'code', 'wh_code');
     }
