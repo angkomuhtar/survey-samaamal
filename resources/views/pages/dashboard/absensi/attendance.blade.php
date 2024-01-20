@@ -169,7 +169,6 @@
 
     @push('scripts')
         @vite(['resources/js/plugins/flatpickr.js'])
-        @vite(['resources/js/plugins/Select2.min.js'])
 
         <script type="module">
             $("#tanggal").flatpickr({
