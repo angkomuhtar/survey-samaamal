@@ -182,8 +182,6 @@
                 dateFormat: "Y-m-d",
                 defaultDate: 'today'
             });
-
-            $("#multiSelect").select2();
             // table
             var table = $("#data-table, .data-table").DataTable({
                 processing: true,
