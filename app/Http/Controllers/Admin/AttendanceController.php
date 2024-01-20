@@ -24,16 +24,20 @@ class AttendanceController extends Controller
         $dept;
 
         if ($user->roles == 'superadmin' || $user->employee->division_id == 2 || $user->employee->division_id == 7 ) {
-          $dept = Division::all();
+          $dept = Division::where('id', '<>' , 11)->get();
         }else{
           $dept = Division::where('id', $user->employee->division_id)->get(); 
         }
 
         if ($request->ajax()) {
-            $data = User::where('username', '!=', 'Admin')->with('employee', 'employee.division', 'profile')->with('absen', function ($query) use ($request) {
-                $query->where('date', '=', $request->tanggal)
-                ->with('shift');
-            });
+            $data = User::where('username', '!=', 'Admin')->with('employee', 'employee.division', 'profile')
+                ->with('absen', function ($query) use ($request) {
+                    $query->where('date', '=', $request->tanggal)
+                    ->with('shift');
+                })
+                ->whereHas('employee', function($query) {
+                    $query->where('division_id', '<>', 11);
+                });
 
             if ($request->name != '') {
                 $data->whereHas('profile', function($query) use ($request) {
@@ -49,9 +53,7 @@ class AttendanceController extends Controller
 
             return DataTables::eloquent($data)->toJson();
         }
-        $division = Division::all();
         return view('pages.dashboard.absensi.attendance', [
-            'division' => $division,
             'departement' => $dept
         ]);
     }
@@ -136,6 +138,10 @@ class AttendanceController extends Controller
 
     public function export(Request $request)
     {
+        $date = explode(' to ', $request->tanggal);
+        $start = $date[0];
+        $end = $date[1] ?? $date[0];
+
         $HeaderStyle = [
             'font' => [
                 'bold' => true,
@@ -153,26 +159,10 @@ class AttendanceController extends Controller
             ]
         ];
 
-        // if ($request->type == 'date') {
-        //     $validator = Validator::make($request->all(), [
-        //         'start' => 'required',
-        //         'end' => 'required',
-        //     ], [
-        //         'required' => 'tidak boleh kosong',
-        //     ]);
-    
-        //     if ($validator->fails()) {
-        //         return back()
-        //         ->withErrors($validator)
-        //         ->withInput();
-        //     }
-        // }
         $data = '';
-
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
 
-        //header
         $activeWorksheet->setCellValue('A2', 'ABSENSI HARIAN EMPAPPS');
         $activeWorksheet->getStyle('A2')->applyFromArray($HeaderStyle);
         $activeWorksheet->mergeCells('A2:J2');
@@ -216,48 +206,72 @@ class AttendanceController extends Controller
         ]);
 
         
-        $data = User::where('username', '!=', 'Admin')
-            ->with('employee', 'employee.division', 'profile', 'employee.position' , 'employee.project' )
-            ->with('absen', function ($query) use ($request) {
-                $query->where('date', '2024-01-17');
-            });
-
-        $data->whereHas('employee', function ($query) use ($request){
-            $query->whereIn('division_id', [5, 3, 4])->with('shift');
-          });
+        $startDate = Carbon::parse($start);
+        $endDate = Carbon::parse($end);
+        $currentDate = $startDate;
         
-        $absen = $data->orderby('username')->get();
-        foreach ($absen as $key => $value) {
-           $num++;
-            $activeWorksheet->setCellValue('A'.$num, $value->absen[0]->date ?? '2024-01-18');
-            $activeWorksheet->setCellValue('B'.$num, $value->profile->name);
-            $activeWorksheet->setCellValue('C'.$num, $value->employee->project->name);
-            $activeWorksheet->setCellValue('D'.$num, $value->employee->division->division);
-            $activeWorksheet->setCellValue('E'.$num, $value->employee->position->position);
-            $activeWorksheet->setCellValue('F'.$num, $value->absen[0]->clock_in ?? '');
-            $activeWorksheet->setCellValue('G'.$num, $value->absen[0]->shift->start ?? '');
-            $activeWorksheet->setCellValue('H'.$num, $value->absen[0]->clock_out ?? '');
-            $activeWorksheet->setCellValue('I'.$num, $value->absen[0]->shift->end ?? '');
-            $activeWorksheet->setCellValue('J'.$num, $value->absen[0]->shift->name ?? '');
-            $activeWorksheet->getRowDimension($num)->setRowHeight(30, 'pt');
-            $activeWorksheet->getStyle('B5'.':J'.$num)->applyFromArray([
-                'font' => [
-                    'size' => 12
-                ],
-                'alignment' => [
-                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                    'wrapText' => true,
-                ],
-                // 'borders' => [
-                //     'allBorders' => [
-                //         'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                //         'color' => ['argb' => 'FF000000'],
-                //     ],
-                // ]
-            ]);
-            // $num++;
-        };
+        while ($currentDate->lte($endDate)) {
+            $data = User::where('username', '!=', 'Admin')
+                ->with('employee', 'employee.division', 'profile', 'employee.position' , 'employee.project' )
+                ->with('absen', function ($query) use ($currentDate) {
+                    $query->where('date', $currentDate->toDateString());
+                });
+    
+            $data->whereHas('employee', function ($query) use ($request){
+                $query->whereIn('division_id', $request->dept)->with('shift');
+              });
+            $absen = $data->orderby('username')->get();
+            foreach ($absen as $key => $value) {
+               $num++;
+                $activeWorksheet->setCellValue('A'.$num, $value->absen[0]->date ?? $currentDate->toDateString());
+                $activeWorksheet->setCellValue('B'.$num, $value->profile->name);
+                $activeWorksheet->setCellValue('C'.$num, $value->employee->project->name);
+                $activeWorksheet->setCellValue('D'.$num, $value->employee->division->division);
+                $activeWorksheet->setCellValue('E'.$num, $value->employee->position->position);
+                $activeWorksheet->setCellValue('F'.$num, $value->absen[0]->clock_in ?? '');
+                if (count($value->absen) > 0) {
+                    $startTime = Carbon::parse($value->absen[0]->shift->start);
+                    $finishTime = Carbon::parse($value->absen[0]->clock_in);
+                    if($startTime->lte($finishTime)){
+                        $totalDuration = $finishTime->diffInSeconds($startTime);
+                        $activeWorksheet->setCellValue('G'.$num, gmdate('H:i',$totalDuration));
+                    }else{
+                        $activeWorksheet->setCellValue('G'.$num, '');
+                    }
+                }
+                $activeWorksheet->setCellValue('H'.$num, $value->absen[0]->clock_out ?? '');
+                if (count($value->absen) > 0 && $value->absen[0]->clock_out) {
+                    $startTime = Carbon::parse($value->absen[0]->clock_out);
+                    $finishTime = Carbon::parse($value->absen[0]->shift->end);
+                    if($startTime->lte($finishTime)){
+                        $totalDuration = $finishTime->diffInSeconds($startTime);
+                        $activeWorksheet->setCellValue('I'.$num, gmdate('H:i',$totalDuration));
+                    }else{
+                        $activeWorksheet->setCellValue('I'.$num, '');
+                    }
+                }
+                $activeWorksheet->setCellValue('J'.$num, count($value->absen) > 0 ? $value->absen[0]->shift->name ." (".$value->absen[0]->shift->start ." - ".$value->absen[0]->shift->end.")" : '');
+                $activeWorksheet->getRowDimension($num)->setRowHeight(30, 'pt');
+                $activeWorksheet->getStyle('B5'.':J'.$num)->applyFromArray([
+                    'font' => [
+                        'size' => 12
+                    ],
+                    'alignment' => [
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                        'wrapText' => true,
+                    ],
+                    // 'borders' => [
+                    //     'allBorders' => [
+                    //         'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    //         'color' => ['argb' => 'FF000000'],
+                    //     ],
+                    // ]
+                ]);
+                // $num++;
+            };
+            $currentDate->addDay();
+        }
 
         $writer = new Xlsx($spreadsheet);
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

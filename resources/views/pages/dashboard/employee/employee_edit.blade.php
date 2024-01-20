@@ -166,7 +166,7 @@
 
                 $(".flatpickr").flatpickr({
                     dateFormat: "Y/m/d",
-                    defaultDate: "today",
+                    defaultDate: "{!! $employee->doh !!}",
                 });
 
                 $(document).on('change', 'select[name="company_id"]', (e) => {

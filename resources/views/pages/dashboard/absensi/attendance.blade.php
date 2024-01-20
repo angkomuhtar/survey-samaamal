@@ -6,27 +6,104 @@
             <div class="card">
                 <div class="card-header noborder !pb-0">
                     <h4 class="card-title">Absensi</h4>
-                    <a href="{{ route('absensi.attendance.export') }}" target="_blank"
-                        class="btn btn-sm inline-flex justify-center btn-outline-primary rounded-[25px]">
+                    <button class="btn btn-sm inline-flex justify-center btn-outline-primary rounded-[25px]"
+                        data-bs-toggle="modal" data-bs-target="#primaryModal">
                         <span class="flex items-center">
                             <iconify-icon class="text-xl mr-2" icon="material-symbols-light:export-notes"></iconify-icon>
                             <span>Export Data</span>
                         </span>
-                    </a>
+                    </button>
+                    <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
+                        id="primaryModal" tabindex="-1" aria-labelledby="primaryModalLabel" aria-hidden="true">
+                        <div class="modal-dialog relative w-auto pointer-events-none">
+                            <div
+                                class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding
+                                            rounded-md outline-none text-current">
+                                <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+                                    <!-- Modal header -->
+                                    <div
+                                        class="flex items-center justify-between p-5 border-b rounded-t dark:border-slate-600 bg-primary-500">
+                                        <h3 class="text-base font-medium text-white dark:text-white capitalize">
+                                            Export Data
+                                        </h3>
+                                        <button type="button"
+                                            class="text-slate-400 bg-transparent hover:text-slate-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
+                                                        dark:hover:bg-slate-600 dark:hover:text-white"
+                                            data-bs-dismiss="modal">
+                                            <svg aria-hidden="true" class="w-5 h-5" fill="#ffffff" viewbox="0 0 20 20"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd"
+                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10
+                                                                11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                    clip-rule="evenodd"></path>
+                                            </svg>
+                                            <span class="sr-only">Close modal</span>
+                                        </button>
+                                    </div>
+                                    <form action="{{ route('absensi.attendance.export') }}" target="_blank"
+                                        id="form_export">
+                                        <div class="grid p-4 gap-y-3">
+                                            <div class="input-area">
+                                                <label for="tanggal" class="form-label">Tanggal</label>
+                                                <input class="form-control py-2 flatpickr flatpickr-input active"
+                                                    name="tanggal" id="export_date" value="" type="text"
+                                                    readonly="readonly">
+                                                <div class="font-Inter text-sm text-danger-500 pt-2 error-message"
+                                                    style="display: none">This is
+                                                    invalid state.</div>
+                                            </div>
+                                            <div class="input-area">
+                                                <label for="division_id" class="form-label">Departement</label>
+                                                <div class="grid grid-cols-2 gap-y-3">
+                                                    @foreach ($departement as $item)
+                                                        <div class="checkbox-area">
+                                                            <label class="inline-flex items-center cursor-pointer">
+                                                                <input type="checkbox" class="hidden dept"
+                                                                    value="{{ $item->id }}" name="dept[]">
+                                                                <span
+                                                                    class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                                                    <img src="{{ asset('images/ck_white.svg') }}"
+                                                                        class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                                                <span
+                                                                    class="text-slate-500 dark:text-slate-400 text-sm leading-6">{{ $item->division }}</span>
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                                <div class="font-Inter text-sm text-danger-500 pt-2 error-message"
+                                                    id="dept_err" style="display: none">
+                                                    Pilih Departement</div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="flex justify-end items-center p-6 space-x-2 border-t border-slate-200 rounded-b dark:border-slate-600">
+                                            <button type="button" id="submit"
+                                                class="btn btn-sm inline-flex justify-center text-white bg-primary-500">Export
+                                                to
+                                                Excel</button>
+                                            <button type="submit" class="hidden" id="submit_forrm">sub</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="h-auto grid grid-cols-4 px-5 gap-4 mb-4">
                     <div class="input-area">
                         <label for="tanggal" class="form-label">Tanggal</label>
                         <input class="form-control py-2 flatpickr flatpickr-input active" name="tanggal" id="tanggal"
                             value="" type="text" readonly="readonly">
-                        <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">This is
+                        <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">This
+                            is
                             invalid state.</div>
                     </div>
                     <div class="input-area">
                         <label for="tanggal" class="form-label">Nama</label>
                         <input class="form-control py-2" name="Name" id="name" value=""
                             placeholder="search here" type="text">
-                        <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">This is
+                        <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">This
+                            is
                             invalid state.</div>
                     </div>
                     <div class="input-area">
@@ -92,12 +169,22 @@
 
     @push('scripts')
         @vite(['resources/js/plugins/flatpickr.js'])
+        @vite(['resources/js/plugins/Select2.min.js'])
 
         <script type="module">
-            $(".flatpickr").flatpickr({
+            $("#tanggal").flatpickr({
                 dateFormat: "Y-m-d",
                 defaultDate: "today",
             });
+
+            $("#export_date").flatpickr({
+                mode: "range",
+                maxDate: "today",
+                dateFormat: "Y-m-d",
+                defaultDate: 'today'
+            });
+
+            $("#multiSelect").select2();
             // table
             var table = $("#data-table, .data-table").DataTable({
                 processing: true,
@@ -192,6 +279,16 @@
                             '-';
                     }
                 }, ],
+            });
+
+            $(document).on('click', "#submit", function(e) {
+                $('#dept_err').hide()
+                var data = $(':checkbox:checked');
+                if (data.length <= 0) {
+                    $('#dept_err').show()
+                } else {
+                    $("#submit_forrm").click()
+                }
             });
 
             // submit data
