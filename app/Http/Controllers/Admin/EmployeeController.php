@@ -70,12 +70,16 @@ class EmployeeController extends Controller
       $education =  Options::where("type","education")->get();
       $religion =  Options::where("type","religion")->get();
       $marriage =  Options::where("type","marriage")->get();
+      $workhours =  WorkSchedule::all();
+      $project =  Project::all();
 
       return view('pages.dashboard.employee.create', [
         'pageTitle' => 'Tambah Karyawan',
         'education'=> $education,
         'religion'=> $religion,
         'marriage'=> $marriage,
+        'project'=> $project,
+        'workhours'=> $workhours,
     ]);
     }
 
@@ -87,7 +91,7 @@ class EmployeeController extends Controller
         'position_id'  => 'required',
         'doh'  => 'required|date',
         'wh_code'  => 'required',
-        'project_id'  => 'required',
+        // 'project_id'  => 'required',
         'doh'  => 'required|date',
         'status'  => 'required',
       ],[
@@ -128,6 +132,8 @@ class EmployeeController extends Controller
           'company_id' => $request->company_id,
           'division_id' => $request->division_id,
           'position_id' => $request->position_id,
+          'wh_code' => $request->wh_code,
+          'project_id' => 1,
           'doh' => $request->doh,
           'status' => $request->status,
         ]);
