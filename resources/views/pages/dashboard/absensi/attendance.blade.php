@@ -7,20 +7,40 @@
                 <div class="card-header noborder !pb-0">
                     <h4 class="card-title">Absensi</h4>
                     <a href="{{ route('absensi.attendance.export') }}" target="_blank"
-                        class="btn inline-flex justify-center btn-outline-primary rounded-[25px]">
+                        class="btn btn-sm inline-flex justify-center btn-outline-primary rounded-[25px]">
                         <span class="flex items-center">
-                            <iconify-icon class="text-xl mr-2" icon="mi:filter"></iconify-icon>
-                            <span>filter</span>
+                            <iconify-icon class="text-xl mr-2" icon="material-symbols-light:export-notes"></iconify-icon>
+                            <span>Export Data</span>
                         </span>
                     </a>
                 </div>
                 <div class="h-auto grid grid-cols-4 px-5 gap-4 mb-4">
                     <div class="input-area">
-                        <label for="tanggal" class="form-label">Tanggal Lahir</label>
-                        <input class="form-control py-2 flatpickr flatpickr-input active" name="tanggal"
-                            id="default-picker" value="" type="text" readonly="readonly">
+                        <label for="tanggal" class="form-label">Tanggal</label>
+                        <input class="form-control py-2 flatpickr flatpickr-input active" name="tanggal" id="tanggal"
+                            value="" type="text" readonly="readonly">
                         <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">This is
                             invalid state.</div>
+                    </div>
+                    <div class="input-area">
+                        <label for="tanggal" class="form-label">Nama</label>
+                        <input class="form-control py-2" name="Name" id="name" value=""
+                            placeholder="search here" type="text">
+                        <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">This is
+                            invalid state.</div>
+                    </div>
+                    <div class="input-area">
+                        <label for="division_id" class="form-label">Departement</label>
+                        <select id="division_id" class="form-control" name="division_id">
+                            <option value="" selected class="dark:bg-slate-700 !text-slate-300">Pilih
+                                Data</option>
+                            @foreach ($departement as $item)
+                                <option value="{{ $item->id }}" class="dark:bg-slate-700">{{ $item->division }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">
+                            This is invalid state.</div>
                     </div>
                 </div>
                 <div class="card-body px-6 pb-6">
@@ -84,9 +104,13 @@
                 serverSide: true,
                 ajax: {
                     'url': '{!! route('absensi.attendance') !!}',
-                    'data': function(data) {
-                        data.tanggal = $("input[name=tanggal]").val()
-                    }
+                    data: function(d) {
+                        return $.extend({}, d, {
+                            name: $('#name').val(),
+                            tanggal: $('#tanggal').val(),
+                            division: $('#division_id').val()
+                        })
+                    },
                 },
                 dom: "<'#pagination.flex items-center'><'min-w-full't><'flex justify-center items-center'p>",
                 paging: true,
@@ -209,7 +233,7 @@
                     });
             })
 
-            $(document).on('change', 'input[name=tanggal]', (e) => {
+            $('#name,#tanggal,#division_id').bind('change', function() {
                 table.draw()
             })
 

@@ -14,25 +14,45 @@ use App\Helpers\ResponseHelper;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
 {
     public function index(Request $request)
     {
-        // $users = User::with('employee')->with('absen', function ($query) {
-        //     $query->where('date', '=', '2023-12-01');
-        // })->get();
-        // dd($users);
+        $user = Auth::guard('web')->user();
+        $dept;
+
+        if ($user->roles == 'superadmin' || $user->employee->division_id == 2 || $user->employee->division_id == 7 ) {
+          $dept = Division::all();
+        }else{
+          $dept = Division::where('id', $user->employee->division_id)->get(); 
+        }
+
         if ($request->ajax()) {
             $data = User::where('username', '!=', 'Admin')->with('employee', 'employee.division', 'profile')->with('absen', function ($query) use ($request) {
                 $query->where('date', '=', $request->tanggal)
                 ->with('shift');
             });
+
+            if ($request->name != '') {
+                $data->whereHas('profile', function($query) use ($request) {
+                    $query->where('name', 'LIKE', '%'. $request->name.'%');
+                });
+            }
+            if ($request->division != '') {
+                $data->whereHas('employee', function($query) use ($request) {
+                    $query->where('division_id', $request->division);
+                });
+            }
+
+
             return DataTables::eloquent($data)->toJson();
         }
         $division = Division::all();
         return view('pages.dashboard.absensi.attendance', [
             'division' => $division,
+            'departement' => $dept
         ]);
     }
     
@@ -199,7 +219,7 @@ class AttendanceController extends Controller
         $data = User::where('username', '!=', 'Admin')
             ->with('employee', 'employee.division', 'profile', 'employee.position' , 'employee.project' )
             ->with('absen', function ($query) use ($request) {
-                $query->where('date', '2024-01-19');
+                $query->where('date', '2024-01-17');
             });
 
         $data->whereHas('employee', function ($query) use ($request){

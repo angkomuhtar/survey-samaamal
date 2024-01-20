@@ -20,7 +20,9 @@ class Employee extends Model
         'shift_id',
         'nip',
         'user_id',
-        'atasan_id'
+        'atasan_id',
+        'project_id',
+        'wh_code'
     ];
 
     public function user()
