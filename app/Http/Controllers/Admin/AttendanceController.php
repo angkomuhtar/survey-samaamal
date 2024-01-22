@@ -240,7 +240,7 @@ class AttendanceController extends Controller
                             $activeWorksheet->getStyle('F'.$num.':G'.$num)
                             ->getFill()
                             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                            ->getStartColor()->setARGB('FFFF0000');
+                            ->getStartColor()->setARGB('FFE3A6AA');
                         }
                     }else{
                         $activeWorksheet->setCellValue('G'.$num, '');
@@ -257,7 +257,7 @@ class AttendanceController extends Controller
                             $activeWorksheet->getStyle('H'.$num.':I'.$num)
                             ->getFill()
                             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                            ->getStartColor()->setARGB('FFFF0000');
+                            ->getStartColor()->setARGB('FFE3A6AA');
                         }
                     }else{
                         $activeWorksheet->setCellValue('I'.$num, '');
@@ -274,12 +274,6 @@ class AttendanceController extends Controller
                         'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
                         'wrapText' => true,
                     ],
-                    // 'borders' => [
-                    //     'allBorders' => [
-                    //         'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                    //         'color' => ['argb' => 'FF000000'],
-                    //     ],
-                    // ]
                 ]);
                 // $num++;
             };
