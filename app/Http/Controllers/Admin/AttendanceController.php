@@ -236,6 +236,12 @@ class AttendanceController extends Controller
                     if($startTime->lte($finishTime)){
                         $totalDuration = $finishTime->diffInSeconds($startTime);
                         $activeWorksheet->setCellValue('G'.$num, gmdate('H:i',$totalDuration));
+                        if ($totalDuration / 60 >= 15) {
+                            $activeWorksheet->getStyle('F'.$num.':G'.$num)
+                            ->getFill()
+                            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                            ->getStartColor()->setARGB('FFFF0000');
+                        }
                     }else{
                         $activeWorksheet->setCellValue('G'.$num, '');
                     }
@@ -247,6 +253,12 @@ class AttendanceController extends Controller
                     if($startTime->lte($finishTime)){
                         $totalDuration = $finishTime->diffInSeconds($startTime);
                         $activeWorksheet->setCellValue('I'.$num, gmdate('H:i',$totalDuration));
+                        if ($totalDuration / 60 >= 15) {
+                            $activeWorksheet->getStyle('H'.$num.':I'.$num)
+                            ->getFill()
+                            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                            ->getStartColor()->setARGB('FFFF0000');
+                        }
                     }else{
                         $activeWorksheet->setCellValue('I'.$num, '');
                     }
