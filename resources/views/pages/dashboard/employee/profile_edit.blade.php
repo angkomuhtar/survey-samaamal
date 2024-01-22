@@ -179,8 +179,7 @@
 
                 $(".flatpickr").flatpickr({
                     dateFormat: "Y/m/d",
-                    defaultDate: "{!! $profile->tgl_lahir !!}",
-                    ,
+                    defaultDate: "{!! $profile->tgl_lahir !!}"
                 });
             });
         </script>
