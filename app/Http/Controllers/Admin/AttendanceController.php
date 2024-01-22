@@ -138,6 +138,7 @@ class AttendanceController extends Controller
 
     public function export(Request $request)
     {
+        ini_set('max_execution_time', '300');
         $date = explode(' to ', $request->tanggal);
         $start = $date[0];
         $end = $date[1] ?? $date[0];
