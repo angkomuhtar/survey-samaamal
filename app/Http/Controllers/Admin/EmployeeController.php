@@ -271,4 +271,23 @@ class EmployeeController extends Controller
     {
       return 'tre';
     }
+
+    public function pass_reset($id)
+    {
+      $user = User::find($id)->update([
+        'password' => bcrypt('mam123'),
+      ]);
+
+      if ($user) {
+        return response()->json([
+            'success' => true,
+            'data' => 'Data Created'
+        ]);
+      }else{
+        return response()->json([
+          'success' => false,
+          'msg' => 'Errorki tolo'
+        ]);
+      }
+    }
 }

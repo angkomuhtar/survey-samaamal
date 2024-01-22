@@ -47,6 +47,7 @@ Route::prefix('admin')->group(function()
             Route::get('/{id}/employee','edit_employee')->name('employee.edit_employee');
             Route::post('/{id}/employee','update_employee')->name('employee.update_employee');
             Route::get('/test','destroy')->name('employee.test');
+            Route::DELETE('/delete/{id}','pass_reset')->name('employee.reset_pass');
         });
         Route::controller(AjaxController::class)->prefix('ajax')->group(function()
         {
