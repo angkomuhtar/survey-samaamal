@@ -314,6 +314,7 @@
             })
 
             $(document).on('click', '.dropdown-category li a', e => {
+                e.preventDefault()
                 var id = $(e.currentTarget).data('id');
                 var val = $(e.currentTarget).data('value');
                 var url = '{!! route('employee.update_category', ['id' => ':id']) !!}';
