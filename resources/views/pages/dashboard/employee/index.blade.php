@@ -164,7 +164,34 @@
                         data: 'employee.position.position'
                     },
                     {
-                        data: 'employee.category.value'
+                        data: 'employee.category.value',
+                        render: function(data, type, row, meta) {
+                            return `
+                            <div class="dropdown relative">
+                                <button class="btn inline-flex justify-center text-dark-500 items-center" type="button" id="darkFlatDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                    ${data}
+                                    <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="ic:round-keyboard-arrow-down"></iconify-icon>
+                                </button>
+                                <ul class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
+                                        z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none dropdown-category">
+                                    <li>
+                                        <a href="#" data-id="${row.employee.id}" data-value="DIG" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">Digger</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" data-id="${row.employee.id}" data-value="HAU" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">Hauler</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" data-id="${row.employee.id}" data-value="DOZ" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">Dozer</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" data-id="${row.employee.id}" data-value="GRD" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">Grader</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" data-id="${row.employee.id}" data-value="OTH" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">Other</a>
+                                    </li>
+                            </ul>
+                          </div>`
+                        }
                     },
                     {
                         render: function(data, type, row, meta) {
@@ -278,6 +305,33 @@
                         })
                     }
                 })
+            })
+
+            $(document).on('click', '.dropdown-category li a', e => {
+                var id = $(e.currentTarget).data('id');
+                var val = $(e.currentTarget).data('value');
+                var url = '{!! route('employee.update_category', ['id' => ':id']) !!}';
+                url = url.replace(':id', id);
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "value": val
+                    },
+                    success: (msg) => {
+                        if (msg.success) {
+                            Swal.fire(
+                                'Oke ',
+                                'Updated category',
+                                'success'
+                            ).then(() => {
+                                table.draw()
+                            })
+                        }
+                    }
+                })
+
             })
         </script>
     @endpush

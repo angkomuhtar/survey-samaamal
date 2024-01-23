@@ -48,7 +48,7 @@ class CategorySeeder extends Seeder
                 'urut' => '5',
             ]
         ];
-        DB::table('Options')->insert($data);        
+        DB::table('options')->insert($data);        
     }
 }
 

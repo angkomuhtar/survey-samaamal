@@ -292,4 +292,23 @@ class EmployeeController extends Controller
         ]);
       }
     }
+
+    public function update_category($id, Request $request)
+    {
+      $user = Employee::find($id)->update([
+        'category_id' => $request->value,
+      ]);
+
+      if ($user) {
+        return response()->json([
+            'success' => true,
+            'data' => 'Data Created'
+        ]);
+      }else{
+        return response()->json([
+          'success' => false,
+          'msg' => 'Errorki tolo'
+        ]);
+      }
+    }
 }
