@@ -43,9 +43,14 @@ class CategorySeeder extends Seeder
                 'urut' => '4',
             ],[
                 'type' => 'category',
+                'kode' => 'OPS',
+                'value' => 'Pengawas',
+                'urut' => '5',
+            ],[
+                'type' => 'category',
                 'kode' => 'OTH',
                 'value' => 'Other',
-                'urut' => '5',
+                'urut' => '6',
             ]
         ];
         DB::table('options')->insert($data);        
