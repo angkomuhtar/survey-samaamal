@@ -190,6 +190,9 @@
                                         <a href="#" data-id="${row.employee.id}" data-value="OPS" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">Pengawas</a>
                                     </li>
                                     <li>
+                                        <a href="#" data-id="${row.employee.id}" data-value="MST" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">Master</a>
+                                    </li>
+                                    <li>
                                         <a href="#" data-id="${row.employee.id}" data-value="OTH" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">Other</a>
                                     </li>
                                 </ul>
