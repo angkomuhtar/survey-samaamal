@@ -16,6 +16,7 @@ class Employee extends Model
         'company_id',
         'division_id',
         'position_id',
+        'category_id',
         'status',
         'shift_id',
         'nip',
@@ -55,6 +56,10 @@ class Employee extends Model
     public function work_schedule()
     {
         return $this->hasOne(WorkSchedule::class, 'code', 'wh_code');
+    }
+
+    public function category () {
+        return $this->belongsTo(Options::class, 'category_id', 'kode');
     }
 
     public static function boot(){

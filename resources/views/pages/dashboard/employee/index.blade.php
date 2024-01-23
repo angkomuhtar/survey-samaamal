@@ -67,6 +67,9 @@
                                                 Jabatan
                                             </th>
                                             <th scope="col" class=" table-th ">
+                                                Kategory
+                                            </th>
+                                            <th scope="col" class=" table-th ">
                                                 WorkHours Tipe
                                             </th>
                                             <th scope="col" class=" table-th ">
@@ -159,6 +162,9 @@
                     },
                     {
                         data: 'employee.position.position'
+                    },
+                    {
+                        data: 'employee.category.value'
                     },
                     {
                         render: function(data, type, row, meta) {

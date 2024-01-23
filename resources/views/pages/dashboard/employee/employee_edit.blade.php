@@ -67,6 +67,22 @@
                                 <div class="font-Inter text-sm text-danger-500 pt-2 error-message"
                                     style="display: none">This is invalid state.</div>
                             </div>
+
+                            <div class="input-area">
+                                <label for="category_id" class="form-label">Kategory</label>
+                                <select id="category_id" class="form-control" name="category_id">
+                                    <option value="" selected disabled class="dark:bg-slate-700 !text-slate-300">
+                                        Pilih Data</option>
+                                    @foreach ($category as $item)
+                                        <option value="{{ $item->kode }}"
+                                            {{ $item->kode == $employee->category_id ? 'selected' : '' }}
+                                            class="dark:bg-slate-700">
+                                            {{ $item->value }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="font-Inter text-sm text-danger-500 pt-2 error-message"
+                                    style="display: none">This is invalid state.</div>
+                            </div>
                             <div class="input-area">
                                 <label for="wh_code" class="form-label">Jam Kerja</label>
                                 <select id="wh_code" class="form-control" name="wh_code">
@@ -92,13 +108,15 @@
                             <div class="input-area">
                                 <label for="status" class="form-label">status</label>
                                 <select id="status" class="form-control" name="status">
-                                    <option value="" selected disabled class="dark:bg-slate-700 !text-slate-300">
+                                    <option value="" selected disabled
+                                        class="dark:bg-slate-700 !text-slate-300">
                                         Pilih Data</option>
                                     <option value="Permanent" {{ $employee->status == 'Permanent' ? 'selected' : '' }}
                                         class="dark:bg-slate-700">Permanent</option>
                                     <option value="Contract" {{ $employee->status == 'Contract' ? 'selected' : '' }}
                                         class="dark:bg-slate-700">Contract</option>
-                                    <option value="Internship" {{ $employee->status == 'Intership' ? 'selected' : '' }}
+                                    <option value="Internship"
+                                        {{ $employee->status == 'Intership' ? 'selected' : '' }}
                                         class="dark:bg-slate-700">Internship</option>
                                 </select>
                                 <div class="font-Inter text-sm text-danger-500 pt-2 error-message"

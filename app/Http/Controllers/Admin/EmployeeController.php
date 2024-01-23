@@ -36,7 +36,7 @@ class EmployeeController extends Controller
 
         if ($request->ajax()) {
           $data = User::where('roles','<>', 'superadmin')
-            ->with('employee','profile', 'employee.division', 'employee.position', 'employee.work_schedule')
+            ->with('employee','profile', 'employee.division', 'employee.position', 'employee.category', 'employee.work_schedule')
             ->whereHas('profile', function ($query) use ($request){
               $query->where('name', 'LIKE', '%'.$request->name.'%');
             });
@@ -223,6 +223,7 @@ class EmployeeController extends Controller
       $whcode = WorkSchedule::all();
       $departement = Division::all();
       $employee = Employee::where("user_id", $id)->first();
+      $category = Options::where("type", "category")->get();
       $position = Position::where("division_id", $employee->division_id)->get();
 
       // dd($profile);
@@ -233,6 +234,7 @@ class EmployeeController extends Controller
         'whcode' => $whcode,
         'departement' => $departement,
         'position' => $position,
+        'category' => $category,
       ]);
     }
     
