@@ -166,42 +166,39 @@
                     {
                         data: 'employee.category.value',
                         render: function(data, type, row, meta) {
-                            return `
-                            <div class="dropdown relative">
+                            var dataDiv =
+                                `<div class="dropdown relative">
                                 <button class="btn inline-flex justify-center text-dark-500 items-center" type="button" id="darkFlatDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                     ${data}
                                     <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="ic:round-keyboard-arrow-down"></iconify-icon>
                                 </button>
-                                <ul class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
-                                        z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none dropdown-category">
-                                    <li>
-                                        <a href="#" data-id="${row.employee.id}" data-value="DIG" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">Digger</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" data-id="${row.employee.id}" data-value="HAU" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">Hauler</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" data-id="${row.employee.id}" data-value="DOZ" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">Dozer</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" data-id="${row.employee.id}" data-value="GRD" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">Grader</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" data-id="${row.employee.id}" data-value="OPS" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">Pengawas</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" data-id="${row.employee.id}" data-value="MST" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">Master</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" data-id="${row.employee.id}" data-value="OTH" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">Other</a>
-                                    </li>
-                                </ul>
-                            </div>`
+                                <ul data-id="${row.employee.id}" class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
+                                        z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none dropdown-category">`
+                            $.each(row.category, function(index, value) {
+                                dataDiv += `<li>
+                                        <a href="#" data-value="${value.kode}" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">${value.value}</a>
+                                    </li>`
+                            })
+                            return dataDiv + `</ul></div>`
                         }
                     },
                     {
                         render: function(data, type, row, meta) {
-                            return row.employee?.work_schedule?.name ?? 'Not Set';
+                            // return ;
+                            var dataDiv =
+                                `<div class="dropdown relative">
+                                <button class="btn inline-flex justify-center text-dark-500 items-center" type="button" id="darkFlatDropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                    ${row.employee?.work_schedule?.name ?? 'Not Set'}
+                                    <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="ic:round-keyboard-arrow-down"></iconify-icon>
+                                </button>
+                                <ul data-id="${row.employee.id}" class=" dropdown-menu min-w-max absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700 shadow
+                                        z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none dropdown-shift">`
+                            $.each(row.shift, function(index, value) {
+                                dataDiv += `<li>
+                                        <a href="#" data-value="${value.code}" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600 dark:hover:text-white">${value.name}</a>
+                                    </li>`
+                            })
+                            return dataDiv + `</ul></div>`
                         }
                     },
                     {
@@ -243,7 +240,7 @@
                                                 </a>
                                             </li>
                                             <li>
-                                                <a href="#" data-id="${data}"  class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                                <a href="#" data-id="${data}" class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                                 dark:hover:text-white" id="pass_reset">
                                                 Password
                                                 </a>
@@ -315,7 +312,7 @@
 
             $(document).on('click', '.dropdown-category li a', e => {
                 e.preventDefault()
-                var id = $(e.currentTarget).data('id');
+                var id = $(e.currentTarget).parent().parent().data('id');
                 var val = $(e.currentTarget).data('value');
                 var url = '{!! route('employee.update_category', ['id' => ':id']) !!}';
                 url = url.replace(':id', id);
@@ -331,6 +328,34 @@
                             Swal.fire(
                                 'Oke ',
                                 'Updated category',
+                                'success'
+                            ).then(() => {
+                                table.ajax.reload(null, false)
+                            })
+                        }
+                    }
+                })
+
+            })
+
+            $(document).on('click', '.dropdown-shift li a', e => {
+                e.preventDefault()
+                var id = $(e.currentTarget).parent().parent().data('id');
+                var val = $(e.currentTarget).data('value');
+                var url = '{!! route('employee.update_shift', ['id' => ':id']) !!}';
+                url = url.replace(':id', id);
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "value": val
+                    },
+                    success: (msg) => {
+                        if (msg.success) {
+                            Swal.fire(
+                                'Oke ',
+                                'Updated Work Hours',
                                 'success'
                             ).then(() => {
                                 table.ajax.reload(null, false)

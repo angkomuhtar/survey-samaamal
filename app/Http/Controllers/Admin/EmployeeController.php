@@ -10,6 +10,7 @@ use App\Models\Employee;
 use App\Models\Profile;
 use App\Models\Division;
 use App\Models\Project;
+use App\Models\Shift;
 use App\Models\Position;
 use App\Models\WorkSchedule;
 use Illuminate\Support\Facades\Validator;
@@ -27,6 +28,9 @@ class EmployeeController extends Controller
     {
         $user = Auth::guard('web')->user();
         $dept;
+
+        $category= Options::select('kode', 'value')->where('type', 'category')->get();
+        $shift= WorkSchedule::select('code', 'name')->orderBy('name')->get();
 
         if ($user->roles == 'superadmin' || $user->employee->division_id == 2 || $user->employee->division_id == 7 ) {
           $dept = Division::all();
@@ -54,12 +58,21 @@ class EmployeeController extends Controller
               });
             }
           }
-          return DataTables::eloquent($data)->toJson();
+          $dt = DataTables::of($data->get())
+          ->addColumn('category', function ($row) use($category) {
+            return $category->toArray();
+          })
+          ->addColumn('shift', function ($row) use($shift) {
+            return $shift->toArray();
+          });
+          return $dt->make(true);
         }
         // dd($data->get());
 
         return view('pages.dashboard.employee.index', [
             'pageTitle' => 'Data Karyawan',
+            'category' => $category,
+            'shift' => $shift,
             'departement' => $dept 
         ]);
     }
@@ -297,6 +310,25 @@ class EmployeeController extends Controller
     {
       $user = Employee::find($id)->update([
         'category_id' => $request->value,
+      ]);
+
+      if ($user) {
+        return response()->json([
+            'success' => true,
+            'data' => 'Data Created'
+        ]);
+      }else{
+        return response()->json([
+          'success' => false,
+          'msg' => 'Errorki tolo'
+        ]);
+      }
+    }
+
+    public function update_shift($id, Request $request)
+    {
+      $user = Employee::find($id)->update([
+        'wh_code' => $request->value,
       ]);
 
       if ($user) {
