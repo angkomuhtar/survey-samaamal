@@ -27,47 +27,264 @@
         </div>
         <div class=" space-y-5">
             <div class="grid grid-cols-12 gap-5">
-
                 <div class="lg:col-span-4 col-span-12 space-y-5">
-                    <div class="lg:col-span-4 col-span-12 space-y-5">
-                        <div class="card">
-                            <header class="card-header">
-                                <h4 class="card-title">
-                                    Employee
-                                </h4>
-                                <div>
-                                </div>
-                            </header>
-                            <div class="card-body p-6">
-                                <ul class="divide-y divide-slate-100 dark:divide-slate-700">
+                    <div class="card">
+                        <header class="card-header">
+                            <h4 class="card-title">
+                                Employee
+                            </h4>
+                            <div>
+                            </div>
+                        </header>
+                        <div class="card-body p-6">
+                            <ul class="divide-y divide-slate-100 dark:divide-slate-700">
 
+                                <li
+                                    class="first:text-xs text-sm first:text-slate-600 text-slate-600 dark:text-slate-300 py-2 first:uppercase">
+                                    <div class="flex justify-between">
+                                        <span>Departement</span>
+                                        <span>tot</span>
+                                    </div>
+                                </li>
+
+                                @foreach ($division_count as $item)
                                     <li
                                         class="first:text-xs text-sm first:text-slate-600 text-slate-600 dark:text-slate-300 py-2 first:uppercase">
                                         <div class="flex justify-between">
-                                            <span>Departement</span>
-                                            <span>tot</span>
+                                            <span>{{ $item->division->division }}</span>
+                                            <span>{{ $item->post_count }}</span>
                                         </div>
                                     </li>
+                                @endforeach
 
-                                    @foreach ($division_count as $item)
-                                        <li
-                                            class="first:text-xs text-sm first:text-slate-600 text-slate-600 dark:text-slate-300 py-2 first:uppercase">
-                                            <div class="flex justify-between">
-                                                <span>{{ $item->division->division }}</span>
-                                                <span>{{ $item->post_count }}</span>
-                                            </div>
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-8 col-span-12 space-y-5">
+                    <div class="card">
+                        <div class="card-body flex flex-col p-6">
+                            <header
+                                class="flex mb-5 items-center border-b border-slate-100 dark:border-slate-700 pb-5 -mx-6 px-6">
+                                <div class="flex-1">
+                                    <div class="card-title text-slate-900 dark:text-white">Karyawan Hadir</div>
+                                </div>
+                            </header>
+                            <div class="card-text h-full">
+                                <div>
+                                    <ul class="nav nav-pills flex items-center flex-wrap list-none pl-0 mb-6 space-x-4 "
+                                        id="pills-tabHorizontal" role="tablist">
+                                        <li class="nav-item text-center" role="presentation">
+                                            <a href="#pills-day"
+                                                class="nav-link block font-medium font-Inter text-sm leading-tight capitalize rounded-md px-6 py-3 focus:outline-none focus:ring-0 active dark:bg-slate-900 dark:text-slate-300"
+                                                id="pills-home-tabHorizontal" data-bs-toggle="pill"
+                                                data-bs-target="#pills-day" role="tab" aria-controls="pills-day"
+                                                aria-selected="true">Shift Pagi</a>
                                         </li>
-                                    @endforeach
+                                        <li class="nav-item text-center" role="presentation">
+                                            <a href="#pills-night"
+                                                class="nav-link block font-medium font-Inter text-sm leading-tight capitalize rounded-md px-6 py-3 focus:outline-none focus:ring-0 dark:bg-slate-900 dark:text-slate-300"
+                                                id="pills-profile-tabHorizontal" data-bs-toggle="pill"
+                                                data-bs-target="#pills-night" role="tab" aria-controls="pills-night"
+                                                aria-selected="false">Shift
+                                                Malam</a>
+                                        </li>
+                                        <li class="nav-item text-center" role="presentation">
+                                            <a href="#pills-office"
+                                                class="nav-link block font-medium font-Inter text-sm leading-tight capitalize rounded-md px-6 py-3 focus:outline-none focus:ring-0 dark:bg-slate-900 dark:text-slate-300"
+                                                id="pills-profile-tabHorizontal" data-bs-toggle="pill"
+                                                data-bs-target="#pills-office" role="tab"
+                                                aria-controls="pills-office" aria-selected="false">Office</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content" id="pills-tabContentHorizontal">
+                                        <div class="tab-pane fade show active" id="pills-day" role="tabpanel"
+                                            aria-labelledby="pills-home-tabHorizontal">
+                                            <div class="overflow-x-auto -mx-6">
+                                                <div class="inline-block min-w-full align-middle">
+                                                    <div class="overflow-hidden ">
+                                                        <table
+                                                            class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                                            <thead class="  bg-slate-200 dark:bg-slate-700">
+                                                                <tr>
 
+                                                                    <th scope="col" class=" table-th ">
+                                                                        Departement
+                                                                    </th>
 
-                                </ul>
+                                                                    <th scope="col" class=" table-th ">
+                                                                        Kategori
+                                                                    </th>
+
+                                                                    <th scope="col" class=" table-th ">
+                                                                        Total
+                                                                    </th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody
+                                                                class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                                                @foreach ($day_count as $item)
+                                                                    <tr>
+                                                                        <td class="table-td">
+                                                                            <div class="flex items-center">
+                                                                                <h4
+                                                                                    class="text-sm font-medium text-slate-600 whitespace-nowrap">
+                                                                                    {{ $item->division }}
+                                                                                </h4>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <div class="flex items-center">
+                                                                                <h4
+                                                                                    class="text-sm font-medium text-slate-600 whitespace-nowrap">
+                                                                                    {{ $item->value }}
+                                                                                </h4>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="table-td ">
+                                                                            <div
+                                                                                class="flex space-x-6 items-center rtl:space-x-reverse">
+                                                                                <span>{{ $item->total }}</span>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-pane fade" id="pills-night" role="tabpanel"
+                                            aria-labelledby="pills-home-tabHorizontal">
+                                            <div class="overflow-x-auto -mx-6">
+                                                <div class="inline-block min-w-full align-middle">
+                                                    <div class="overflow-hidden ">
+                                                        <table
+                                                            class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                                            <thead class="  bg-slate-200 dark:bg-slate-700">
+                                                                <tr>
+
+                                                                    <th scope="col" class=" table-th ">
+                                                                        Departement
+                                                                    </th>
+
+                                                                    <th scope="col" class=" table-th ">
+                                                                        Kategori
+                                                                    </th>
+
+                                                                    <th scope="col" class=" table-th ">
+                                                                        Total
+                                                                    </th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody
+                                                                class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                                                @foreach ($night_count as $item)
+                                                                    <tr>
+                                                                        <td class="table-td">
+                                                                            <div class="flex items-center">
+                                                                                <h4
+                                                                                    class="text-sm font-medium text-slate-600 whitespace-nowrap">
+                                                                                    {{ $item->division }}
+                                                                                </h4>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <div class="flex items-center">
+                                                                                <h4
+                                                                                    class="text-sm font-medium text-slate-600 whitespace-nowrap">
+                                                                                    {{ $item->value }}
+                                                                                </h4>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="table-td ">
+                                                                            <div
+                                                                                class="flex space-x-6 items-center rtl:space-x-reverse">
+                                                                                <span>{{ $item->total }}</span>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-pane fade" id="pills-office" role="tabpanel"
+                                            aria-labelledby="pills-home-tabHorizontal">
+                                            <div class="overflow-x-auto -mx-6">
+                                                <div class="inline-block min-w-full align-middle">
+                                                    <div class="overflow-hidden ">
+                                                        <table
+                                                            class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
+                                                            <thead class="  bg-slate-200 dark:bg-slate-700">
+                                                                <tr>
+
+                                                                    <th scope="col" class=" table-th ">
+                                                                        Departement
+                                                                    </th>
+
+                                                                    <th scope="col" class=" table-th ">
+                                                                        Kategori
+                                                                    </th>
+
+                                                                    <th scope="col" class=" table-th ">
+                                                                        Total
+                                                                    </th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody
+                                                                class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
+                                                                @foreach ($office_count as $item)
+                                                                    <tr>
+                                                                        <td class="table-td">
+                                                                            <div class="flex items-center">
+                                                                                <h4
+                                                                                    class="text-sm font-medium text-slate-600 whitespace-nowrap">
+                                                                                    {{ $item->division }}
+                                                                                </h4>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="table-td">
+                                                                            <div class="flex items-center">
+                                                                                <h4
+                                                                                    class="text-sm font-medium text-slate-600 whitespace-nowrap">
+                                                                                    {{ $item->value }}
+                                                                                </h4>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="table-td ">
+                                                                            <div
+                                                                                class="flex space-x-6 items-center rtl:space-x-reverse">
+                                                                                <span>{{ $item->total }}</span>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
+
+
     </div>
 
 
