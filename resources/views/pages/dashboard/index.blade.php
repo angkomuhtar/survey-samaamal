@@ -73,7 +73,62 @@
                             </header>
                             <div class="card-text h-full">
                                 <div>
-                                    <ul class="nav nav-pills flex items-center flex-wrap list-none pl-0 mb-6 space-x-4 "
+                                    <div class="grid grid-cols-7 gap-3 pb-4">
+                                        <div class="input-area col-span-2">
+                                            <label for="shift" class="form-label">Shift</label>
+                                            <select id="shift" class="form-control" name="shift">
+                                                <option value="Day Shift" class="dark:bg-slate-700" selected>Day Shift
+                                                </option>
+                                                <option value="Night Shift" class="dark:bg-slate-700">Night Shift
+                                                </option>
+                                                <option value="Day Office" class="dark:bg-slate-700">Day Office
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="input-area col-span-2">
+                                            <label for="project" class="form-label">Site</label>
+                                            <select id="project" class="form-control" name="project">
+                                                <option value="A9" class="dark:bg-slate-700" selected>A9</option>
+                                                <option value="Jongkang" class="dark:bg-slate-700">Jongkang
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="input-area col-span-2">
+                                            <label for="tanggal" class="form-label">Tanggal</label>
+                                            <input class="form-control py-2 flatpickr flatpickr-input active"
+                                                name="tanggal" id="tanggal" value="" type="text"
+                                                readonly="readonly">
+                                            <div class="font-Inter text-sm text-danger-500 pt-2 error-message"
+                                                style="display: none">This is
+                                                invalid state.</div>
+                                        </div>
+                                    </div>
+                                    <div class="overflow-x-auto mx-0">
+                                        <div class="inline-block min-w-full align-middle">
+                                            <div class="overflow-hidden ">
+                                                <table
+                                                    class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 data-table">
+                                                    <thead class=" bg-slate-200 dark:bg-slate-700">
+                                                        <tr>
+                                                            <th scope="col" class=" table-th ">
+                                                                Site
+                                                            </th>
+                                                            <th scope="col" class=" table-th ">
+                                                                Departement
+                                                            </th>
+                                                            <th scope="col" class=" table-th ">
+                                                                Type
+                                                            </th>
+                                                            <th scope="col" class=" table-th ">
+                                                                Jumlah
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {{-- <ul class="nav nav-pills flex items-center flex-wrap list-none pl-0 mb-6 space-x-4 "
                                         id="pills-tabHorizontal" role="tablist">
                                         <li class="nav-item text-center" role="presentation">
                                             <a href="#pills-day"
@@ -97,65 +152,11 @@
                                                 data-bs-target="#pills-office" role="tab"
                                                 aria-controls="pills-office" aria-selected="false">Office</a>
                                         </li>
-                                    </ul>
+                                    </ul> --}}
+
                                     <div class="tab-content" id="pills-tabContentHorizontal">
                                         <div class="tab-pane fade show active" id="pills-day" role="tabpanel"
                                             aria-labelledby="pills-home-tabHorizontal">
-                                            <div class="overflow-x-auto -mx-6">
-                                                <div class="inline-block min-w-full align-middle">
-                                                    <div class="overflow-hidden ">
-                                                        <table
-                                                            class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700">
-                                                            <thead class="  bg-slate-200 dark:bg-slate-700">
-                                                                <tr>
-
-                                                                    <th scope="col" class=" table-th ">
-                                                                        Departement
-                                                                    </th>
-
-                                                                    <th scope="col" class=" table-th ">
-                                                                        Kategori
-                                                                    </th>
-
-                                                                    <th scope="col" class=" table-th ">
-                                                                        Total
-                                                                    </th>
-
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody
-                                                                class="bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700">
-                                                                @foreach ($day_count as $item)
-                                                                    <tr>
-                                                                        <td class="table-td">
-                                                                            <div class="flex items-center">
-                                                                                <h4
-                                                                                    class="text-sm font-medium text-slate-600 whitespace-nowrap">
-                                                                                    {{ $item->division }}
-                                                                                </h4>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td class="table-td">
-                                                                            <div class="flex items-center">
-                                                                                <h4
-                                                                                    class="text-sm font-medium text-slate-600 whitespace-nowrap">
-                                                                                    {{ $item->value }}
-                                                                                </h4>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td class="table-td ">
-                                                                            <div
-                                                                                class="flex space-x-6 items-center rtl:space-x-reverse">
-                                                                                <span>{{ $item->total }}</span>
-                                                                            </div>
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
 
                                         <div class="tab-pane fade" id="pills-night" role="tabpanel"
@@ -289,19 +290,33 @@
 
 
     @push('scripts')
+        @vite(['resources/js/plugins/flatpickr.js'])
         <script type="module">
+            $("#tanggal").flatpickr({
+                dateFormat: "Y-m-d",
+                defaultDate: "today",
+            });
             var table = $("#data-table, .data-table").DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{!! route('masters.division') !!}',
+                ajax: {
+                    url: '{!! route('dashboard.rekap_hadir') !!}',
+                    data: function(d) {
+                        return $.extend({}, d, {
+                            tanggal: $('#tanggal').val(),
+                            project: $('#project').val(),
+                            shift: $('#shift').val()
+                        })
+                    },
+                },
                 dom: "<'grid grid-cols-12 gap-5 px-6 mt-6'<'col-span-4'l><'col-span-8 flex justify-end'f><'#pagination.flex items-center'>><'min-w-full't><'flex justify-end items-center'p>",
-                paging: true,
+                paging: false,
                 ordering: true,
                 info: false,
                 searching: true,
-                pagingType: 'full_numbers',
+                // pagingType: 'full_numbers',
                 lengthChange: true,
-                lengthMenu: [10, 25, 50, 100],
+                // lengthMenu: [10, 25, 50, 100],
                 language: {
                     lengthMenu: "Show _MENU_",
                     paginate: {
@@ -326,135 +341,131 @@
                     }
                 ],
                 columns: [{
+                        data: 'site'
+                    },
+                    {
                         data: 'division',
-                        name: 'division'
                     },
+
                     {
-                        name: 'company',
-                        data: 'company.company',
+                        data: 'value',
                     },
+
                     {
-                        data: 'id',
-                        name: 'action',
-                        render: (data, type, row, meta) => {
-                            return `<div class="flex space-x-3 rtl:space-x-reverse">
-                              <button class="action-btn toolTip onTop cursor-pointer" data-tippy-content="Edit" id="btn-edit" data-id="${row.id}" data-tippy-theme="primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas">
-                                <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
-                              </button>
-                              <button class="action-btn toolTip onTop cursor-pointer" data-tippy-content="Hapus" id="btn-delete" data-id="${row.id}" data-tippy-theme="danger">
-                                <iconify-icon icon="heroicons:trash"></iconify-icon>
-                              </button>
-                            </div>`
-                        }
+                        data: 'total',
                     },
                 ],
             });
+            table.tables().body().to$().addClass('bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700');
 
-            $(document).on('submit', '#sending_form', (e) => {
-                e.preventDefault();
-                var type = $("#sending_form").data('type');
-                var data = $('#sending_form').serializeArray();
-                var id = $("#sending_form").find("input[name='id']").val()
-                var url = type == 'submit' ? '{!! route('masters.division.store') !!}' : '{!! route('masters.division.update', ['id' => ':id']) !!}';
-
-                $.post(url.replace(':id', id), data)
-                    .done(function(msg) {
-                        if (!msg.success) {
-                            Swal.fire({
-                                title: 'Error',
-                                text: 'data belum lengkap',
-                                icon: 'error',
-                                confirmButtonText: 'Oke'
-                            })
-                        } else {
-                            Swal.fire({
-                                title: 'success',
-                                text: msg.message,
-                                icon: 'success',
-                                confirmButtonText: 'Oke'
-                            }).then(() => {
-                                table.draw()
-                                $("#btn_cancel").click();
-                            })
-                        }
-                    })
-                    .fail(function(xhr, status, error) {
-                        Swal.fire({
-                            title: 'Error!',
-                            text: 'Internal Error',
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        })
-                    });
+            $('#tanggal,#shift,#project').bind('change', function() {
+                table.draw()
             })
+            // $(document).on('submit', '#sending_form', (e) => {
+            //     e.preventDefault();
+            //     var type = $("#sending_form").data('type');
+            //     var data = $('#sending_form').serializeArray();
+            //     var id = $("#sending_form").find("input[name='id']").val()
+            //     var url = type == 'submit' ? '{!! route('masters.division.store') !!}' : '{!! route('masters.division.update', ['id' => ':id']) !!}';
 
-            $(document).on('click', '#btn-add', () => {
-                $("#sending_form").data("type", "submit");
-            })
+            //     $.post(url.replace(':id', id), data)
+            //         .done(function(msg) {
+            //             if (!msg.success) {
+            //                 Swal.fire({
+            //                     title: 'Error',
+            //                     text: 'data belum lengkap',
+            //                     icon: 'error',
+            //                     confirmButtonText: 'Oke'
+            //                 })
+            //             } else {
+            //                 Swal.fire({
+            //                     title: 'success',
+            //                     text: msg.message,
+            //                     icon: 'success',
+            //                     confirmButtonText: 'Oke'
+            //                 }).then(() => {
+            //                     table.draw()
+            //                     $("#btn_cancel").click();
+            //                 })
+            //             }
+            //         })
+            //         .fail(function(xhr, status, error) {
+            //             Swal.fire({
+            //                 title: 'Error!',
+            //                 text: 'Internal Error',
+            //                 icon: 'error',
+            //                 confirmButtonText: 'OK'
+            //             })
+            //         });
+            // })
 
-            $('#data-table').on('draw.dt', function() {
-                $('[data-toggle="tooltip"]').tooltip();
-            });
+            // $(document).on('click', '#btn-add', () => {
+            //     $("#sending_form").data("type", "submit");
+            // })
 
-            table.on('draw', function() {
-                tippy(".onTop", {
-                    content: "Tooltip On Top!",
-                    placement: "top",
-                });
-            });
+            // $('#data-table').on('draw.dt', function() {
+            //     $('[data-toggle="tooltip"]').tooltip();
+            // });
 
-            $(document).on('click', '#btn-edit', (e) => {
-                $("#sending_form").data("type", "update");
-                var id = $(e.currentTarget).data('id');
-                var url = '{!! route('masters.division.edit', ['id' => ':id']) !!}';
-                url = url.replace(':id', id);
+            // table.on('draw', function() {
+            //     tippy(".onTop", {
+            //         content: "Tooltip On Top!",
+            //         placement: "top",
+            //     });
+            // });
 
-                $.ajax({
-                    type: 'GET',
-                    url: url,
-                    success: (msg) => {
-                        // $('#default_modal').modal();
-                        $("#sending_form").find("input[name='division']").val(msg.data.division)
-                        $("#sending_form").find("input[name='id']").val(id)
-                    }
-                })
-            })
+            // $(document).on('click', '#btn-edit', (e) => {
+            //     $("#sending_form").data("type", "update");
+            //     var id = $(e.currentTarget).data('id');
+            //     var url = '{!! route('masters.division.edit', ['id' => ':id']) !!}';
+            //     url = url.replace(':id', id);
 
-            $(document).on('click', '#btn-delete', (e) => {
-                var id = $(e.currentTarget).data('id');
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        var url = '{!! route('masters.division.destroy', ['id' => ':id']) !!}';
-                        url = url.replace(':id', id);
-                        $.ajax({
-                            url: url,
-                            type: 'DELETE',
-                            data: {
-                                "_token": "{{ csrf_token() }}"
-                            },
-                            success: (msg) => {
-                                if (msg.success) {
-                                    Swal.fire(
-                                        'Deleted!',
-                                        'Your file has been deleted.',
-                                        'success'
-                                    ).then(() => {
-                                        table.draw()
-                                    })
-                                }
-                            }
-                        })
-                    }
-                })
-            })
+            //     $.ajax({
+            //         type: 'GET',
+            //         url: url,
+            //         success: (msg) => {
+            //             // $('#default_modal').modal();
+            //             $("#sending_form").find("input[name='division']").val(msg.data.division)
+            //             $("#sending_form").find("input[name='id']").val(id)
+            //         }
+            //     })
+            // })
+
+            // $(document).on('click', '#btn-delete', (e) => {
+            //     var id = $(e.currentTarget).data('id');
+            //     Swal.fire({
+            //         title: 'Are you sure?',
+            //         text: "You won't be able to revert this!",
+            //         icon: 'warning',
+            //         showCancelButton: true,
+            //         confirmButtonColor: '#3085d6',
+            //         cancelButtonColor: '#d33',
+            //         confirmButtonText: 'Yes, delete it!'
+            //     }).then((result) => {
+            //         if (result.isConfirmed) {
+            //             var url = '{!! route('masters.division.destroy', ['id' => ':id']) !!}';
+            //             url = url.replace(':id', id);
+            //             $.ajax({
+            //                 url: url,
+            //                 type: 'DELETE',
+            //                 data: {
+            //                     "_token": "{{ csrf_token() }}"
+            //                 },
+            //                 success: (msg) => {
+            //                     if (msg.success) {
+            //                         Swal.fire(
+            //                             'Deleted!',
+            //                             'Your file has been deleted.',
+            //                             'success'
+            //                         ).then(() => {
+            //                             table.draw()
+            //                         })
+            //                     }
+            //                 }
+            //             })
+            //         }
+            //     })
+            // })
         </script>
     @endpush
 </x-appLayout>

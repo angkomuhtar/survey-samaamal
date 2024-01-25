@@ -23,7 +23,7 @@ use App\Http\Controllers\LoginController;
 |
 */
 
-Route::middleware('Admin:admin,superadmin')->get('/', function () {
+Route::middleware('superadmin')->get('/', function () {
     return view('welcome');
 });
 
@@ -37,6 +37,7 @@ Route::prefix('admin')->group(function()
 {
     Route::middleware('Admin:admin,superadmin,hrd')->group(function () {
         Route::get('/',[DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/rekap_hadir',[DashboardController::class, 'rekap_hadir'])->name('dashboard.rekap_hadir');
         Route::controller(EmployeeController::class)->prefix('employee')->group(function()
         {
             Route::get('/','index')->name('employee');

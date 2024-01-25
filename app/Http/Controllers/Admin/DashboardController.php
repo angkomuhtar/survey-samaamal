@@ -10,6 +10,7 @@ use App\Models\ViewClock;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Yajra\DataTables\Facades\DataTables;
 
 
 class DashboardController extends Controller
@@ -24,9 +25,9 @@ class DashboardController extends Controller
         ->get();
 
         $hadir=  DB::table('v_clock')
-        ->select('shift','value','division', DB::raw('count(*) as total'))
+        ->select('shift','value', 'site','division', DB::raw('count(*) as total'))
         ->where('date', $today)
-        ->groupBy('shift', 'value', 'division')
+        ->groupBy('shift', 'value', 'site', 'division')
         ->orderBy('division')
         ->get();
 
@@ -45,9 +46,20 @@ class DashboardController extends Controller
         return view('pages.dashboard.index', [
             'pageTitle' => 'Analytic Dashboard',
             'division_count' => $employee,
-            'day_count' => $groupped['day'],
-            'night_count' => $groupped['night'],
-            'office_count' => $groupped['office'],
+            'day_count' => $groupped['day'] ?? [],
+            'night_count' => $groupped['night'] ?? [],
+            'office_count' => $groupped['office'] ?? [],
         ]);
+    }
+
+    public function rekap_hadir(Request $request){
+        $hadir=  DB::table('v_clock')
+        ->select('shift','value', 'site','division', DB::raw('count(*) as total'))
+        ->where('date', $request->tanggal)
+        ->where('site', $request->project)
+        ->where('shift','LIKE', '%'.$request->shift.'%')
+        ->groupBy('shift', 'value', 'site', 'division')
+        ->orderBy('division')->get();
+        return DataTables::of($hadir)->toJson();
     }
 }
