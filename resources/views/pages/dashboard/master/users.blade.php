@@ -3,46 +3,77 @@
 
         <div class=" space-y-5">
             <div class="card">
-              <header class=" card-header noborder">
-                <h4 class="card-title">{{$pageTitle}}</h4>
-                <a href={{route('masters.users.create')}} class="btn btn-sm inline-flex justify-center btn-primary "> 
-                    <span class="flex items-center">
-                        <span>Tambah Data</span>
-                        <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2" icon="mdi:database-plus-outline"></iconify-icon>
-                    </span>
-                </a>
-              </header>
-              <div class="card-body px-6 pb-6">
-                <div class="overflow-x-auto -mx-6 dashcode-data-table">
-                  <span class=" col-span-8  hidden"></span>
-                  <span class="  col-span-4 hidden"></span>
-                  <div class="inline-block min-w-full align-middle">
-                    <div class="overflow-hidden ">
-                      <table class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 data-table">
-                        <thead class=" bg-slate-200 dark:bg-slate-700">
-                          <tr>
-                              <th scope="col" class=" table-th ">
-                                Username
-                              </th>
-                              <th scope="col" class=" table-th ">
-                                Email
-                              </th>
-                              <th scope="col" class=" table-th ">
-                                Created
-                              </th>
-                              <th scope="col" class=" table-th ">
-                                Roles
-                              </th>
-                              <th scope="col" class=" table-th ">
-                                Action
-                              </th>
-                          </tr>
-                        </thead>
-                      </table>
+                <header class=" card-header noborder">
+                    <h4 class="card-title">{{ $pageTitle }}</h4>
+                    <a href={{ route('masters.users.create') }}
+                        class="btn btn-sm inline-flex justify-center btn-primary ">
+                        <span class="flex items-center">
+                            <span>Tambah Data</span>
+                            <iconify-icon class="text-xl ltr:ml-2 rtl:mr-2"
+                                icon="mdi:database-plus-outline"></iconify-icon>
+                        </span>
+                    </a>
+                </header>
+                <div class="card-body px-6 pb-6">
+                    <div class="grid grid-cols-4 gap-3 ">
+                        <div class="input-area">
+                            <label for="username" class="form-label">Nama Karyawan</label>
+                            <input id="name" type="text" name="name" class="form-control" placeholder="Nama"
+                                required="required">
+                        </div>
+                        <div class="input-area">
+                            <label for="division_id" class="form-label">Departement</label>
+                            <select id="division_id" class="form-control" name="division_id">
+                                <option value="" selected class="dark:bg-slate-700 !text-slate-300">Pilih
+                                    Data</option>
+                                @foreach ($dept as $item)
+                                    <option value="{{ $item->id }}" class="dark:bg-slate-700">{{ $item->division }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">
+                                This is invalid state.</div>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </div>
+                <div class="card-body px-6 pb-6">
+                    <div class="overflow-x-auto -mx-6 dashcode-data-table">
+                        <span class=" col-span-8  hidden"></span>
+                        <span class="  col-span-4 hidden"></span>
+                        <div class="inline-block min-w-full align-middle">
+                            <div class="overflow-hidden ">
+                                <table
+                                    class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 data-table">
+                                    <thead class=" bg-slate-200 dark:bg-slate-700">
+                                        <tr>
+                                            <th scope="col" class=" table-th ">
+                                                Username
+                                            </th>
+                                            <th scope="col" class=" table-th ">
+                                                Nama
+                                            </th>
+                                            <th scope="col" class=" table-th ">
+                                                Departemen
+                                            </th>
+                                            <th scope="col" class=" table-th ">
+                                                Jabatan
+                                            </th>
+                                            <th scope="col" class=" table-th ">
+                                                Status
+                                            </th>
+                                            <th scope="col" class=" table-th ">
+                                                Roles
+                                            </th>
+                                            <th scope="col" class=" table-th ">
+                                                Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -51,83 +82,176 @@
     @push('scripts')
         <script type="module">
             var table = $("#data-table, .data-table").DataTable({
-                processing:true,
+                processing: true,
                 serverSide: true,
-                ajax : '{!! route('masters.users') !!}',
+                ajax: {
+                    url: '{!! route('masters.users') !!}',
+                    data: function(d) {
+                        return $.extend({}, d, {
+                            name: $('#name').val(),
+                            division: $('#division_id').val(),
+                        })
+                    },
+                },
                 dom: "<'grid grid-cols-12 gap-5 px-6 mt-6'<'col-span-4'l><'col-span-8 flex justify-end'f><'#pagination.flex items-center'>><'min-w-full't><'flex justify-end items-center'p>",
                 paging: true,
                 ordering: true,
                 info: false,
-                searching: true,
-                pagingType:'full_numbers',
+                searching: false,
+                pagingType: 'full_numbers',
                 lengthChange: true,
-                lengthMenu: [10, 25, 50, 100],
+                lengthMenu: [25, 50, 100],
                 language: {
-                  lengthMenu: "Show _MENU_",
-                  paginate: {
-                    previous: `<iconify-icon icon="heroicons:chevron-left-20-solid"></iconify-icon>`,
-                    next: `<iconify-icon icon="heroicons:chevron-right-20-solid"></iconify-icon>`,
-                    first: `<iconify-icon icon="heroicons:chevron-double-left-20-solid"></iconify-icon>`,
-                    last: `<iconify-icon icon="heroicons:chevron-double-right-20-solid"></iconify-icon>`,
-                  },
-                  search: "Search:",
+                    lengthMenu: "Show _MENU_",
+                    paginate: {
+                        previous: `<iconify-icon icon="heroicons:chevron-left-20-solid"></iconify-icon>`,
+                        next: `<iconify-icon icon="heroicons:chevron-right-20-solid"></iconify-icon>`,
+                        first: `<iconify-icon icon="heroicons:chevron-double-left-20-solid"></iconify-icon>`,
+                        last: `<iconify-icon icon="heroicons:chevron-double-right-20-solid"></iconify-icon>`,
+                    },
+                    search: "Search:",
                 },
-                "columnDefs": [
-                  { "searchable": false, "targets": [3, 4] },
-                  { "orderable" : false, "targets": [3, 4] },
-                  {
-                    'className' : 'table-td', 
-                    "targets" : "_all"
-                  }
+                "columnDefs": [{
+                        "searchable": false,
+                        "targets": [3, 4]
+                    },
+                    {
+                        "orderable": false,
+                        "targets": [3, 4]
+                    },
+                    {
+                        'className': 'table-td',
+                        "targets": "_all"
+                    }
                 ],
-                columns: [
-                  {
-                    data: 'username', 
-                    name :'username',
-                    render: ( data, type, row, meta ) =>{
-                        return `<span class="flex items-center">
+                columns: [{
+                        data: 'username',
+                        name: 'username',
+                        render: (data, type, row, meta) => {
+                            return `<span class="flex items-center">
                                   <span class="w-7 h-7 rounded-full ltr:mr-3 rtl:ml-3 flex-none">
                                     <img src={!! asset('images/avatar.png') !!} alt="" class="object-cover w-full h-full rounded-full">
                                   </span>
                                   <span class="text-sm text-slate-600 dark:text-slate-300 capitalize">${data}</span>
                                 </span>`;
-                      }
-                  },
-                  {
-                    data: 'email', 
-                    name :'email' 
-                  },
-                  {
-                    data: 'created_at', 
-                    name :'email_verified_at',
-                    render: function (data){
-                      return data ? moment(data).format('YYYY-MM-DD') : 'Not set';
-                    }
-                  },
-                  {
-                    data: 'username', 
-                    name :'roles' 
-                  },
-                  {
-                    data: 'id', 
-                    name :'action', 
-                    render: (data)=>{
-                      return  `<div class="flex space-x-3 rtl:space-x-reverse">
-                                  <a href={!! route('employee') !!} class="action-btn">
+                        }
+                    },
+                    {
+                        data: 'profile.name',
+                    },
+                    {
+                        data: 'employee.division.division'
+                    }, {
+                        data: 'employee.position.position'
+                    },
+                    {
+                        data: 'status',
+                        render: function(data) {
+                            return data == 'Y' ? 'Active' : 'Non-Active';
+                        }
+                    },
+                    {
+                        data: 'roles',
+                    },
+                    {
+                        data: 'id',
+                        name: 'action',
+                        render: (data) => {
+                            return `<div class="grid grid-cols-2 gap-x-3 gap-y-1 rtl:space-x-reverse">
+                                  <a href={!! route('employee') !!} class="action-btn btn-secondary cursor-pointer btn-sm text-md p-2">
                                     <iconify-icon icon="heroicons:eye"></iconify-icon>
                                   </a>
-                                  <a class="action-btn">
+                                  <a class="action-btn btn-secondary cursor-pointer btn-sm text-md p-2">
                                     <iconify-icon icon="heroicons:pencil-square"></iconify-icon>
                                   </a>
-                                  <a class="action-btn">
+                                  <a class="action-btn btn-secondary cursor-pointer btn-sm text-md p-2n" id="change_sts" data-id=${data}>
                                     <iconify-icon icon="heroicons:trash"></iconify-icon>
                                   </a>
+                                  <a class="action-btn btn-secondary cursor-pointer btn-sm text-md p-2" id="reset_phone" data-id=${data}>
+                                    <iconify-icon icon="fluent:phone-key-20-regular"></iconify-icon>
+                                  </a>
                                 </div>`
-                    }
-                 },
+                        }
+                    },
                 ],
             });
             table.tables().body().to$().addClass('bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700');
+
+            $('#name, #division_id').bind('change', function() {
+                table.draw()
+            })
+
+            $(document).on('click', '#change_sts', (e) => {
+                var id = $(e.currentTarget).data('id');
+                Swal.fire({
+                    title: 'Change Status?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Oke, Gasss.!!!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var url = '{!! route('masters.users.status', ['id' => ':id']) !!}';
+                        url = url.replace(':id', id);
+                        $.ajax({
+                            url: url,
+                            type: 'PATCH',
+                            data: {
+                                "_token": "{{ csrf_token() }}"
+                            },
+                            success: (msg) => {
+                                if (msg.success) {
+                                    Swal.fire(
+                                        'Resetted!',
+                                        'Status Update.',
+                                        'success'
+                                    ).then(() => {
+                                        table.ajax.reload(null, false)
+                                    })
+                                }
+                            }
+                        })
+                    }
+                })
+            })
+
+            $(document).on('click', '#reset_phone', (e) => {
+                var id = $(e.currentTarget).data('id');
+                Swal.fire({
+                    title: 'Reset Device Connect.?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Oke, Gasss.!!!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var url = '{!! route('masters.users.reset_phone', ['id' => ':id']) !!}';
+                        url = url.replace(':id', id);
+                        $.ajax({
+                            url: url,
+                            type: 'PATCH',
+                            data: {
+                                "_token": "{{ csrf_token() }}"
+                            },
+                            success: (msg) => {
+                                if (msg.success) {
+                                    Swal.fire(
+                                        'Resetted!',
+                                        'Phone Resetted',
+                                        'success'
+                                    ).then(() => {
+                                        table.ajax.reload(null, false)
+                                    })
+                                }
+                            }
+                        })
+                    }
+                })
+            })
         </script>
     @endpush
 </x-appLayout>

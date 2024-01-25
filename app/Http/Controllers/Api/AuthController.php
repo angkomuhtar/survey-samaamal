@@ -47,6 +47,9 @@ class AuthController extends Controller
                 // if ($phoneID->count() > 0) {
                 //     return ResponseHelper::jsonError('maaf, device telah terintegrasi dengan akun lain', 401);
                 // }
+                if ($user->status != 'Y') {
+                    return ResponseHelper::jsonError('Maaf, akun telah di nonaktifkan', 401);
+                }
                 $db = User::find($user->id);               
                 $db->phone_id = $request->phone_id;
                 $db->save();

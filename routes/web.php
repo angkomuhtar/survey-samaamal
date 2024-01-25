@@ -78,6 +78,8 @@ Route::prefix('admin')->group(function()
                 Route::controller(usersController::class)->prefix('users')->group(function()
                 {
                     Route::get('/','index')->name('masters.users');
+                    Route::patch('/{id}/status','status')->name('masters.users.status');
+                    Route::patch('/{id}/reset_phone','reset_phone')->name('masters.users.reset_phone');
                     Route::get('/create','create')->name('masters.users.create');
                 });
                 Route::controller(DivisionsController::class)->prefix('division')->group(function()
