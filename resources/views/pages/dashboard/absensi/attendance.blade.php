@@ -119,6 +119,20 @@
                         <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">
                             This is invalid state.</div>
                     </div>
+                    <div class="input-area">
+                        <label for="shift" class="form-label">Shift</label>
+                        <select id="shift" class="form-control" name="shift">
+                            <option value="" selected class="dark:bg-slate-700 !text-slate-300">Pilih
+                                Data</option>
+                            @foreach ($shift as $item)
+                                <option value="{{ $item->id }}" class="dark:bg-slate-700">
+                                    {{ $item->name . ' (' . $item->start . '-' . $item->end . ')' }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">
+                            This is invalid state.</div>
+                    </div>
                 </div>
                 <div class="card-body px-6 pb-6">
                     <div class="overflow-x-auto -mx-6 dashcode-data-table">
@@ -192,7 +206,8 @@
                         return $.extend({}, d, {
                             name: $('#name').val(),
                             tanggal: $('#tanggal').val(),
-                            division: $('#division_id').val()
+                            division: $('#division_id').val(),
+                            shift: $('#shift').val()
                         })
                     },
                 },
@@ -214,6 +229,8 @@
                         last: `<iconify-icon icon="heroicons:chevron-double-right-20-solid"></iconify-icon>`,
                     },
                     search: "Search:",
+                    'loadingRecords': '&nbsp;',
+                    'processing': 'Loading...'
                 },
                 "columnDefs": [
                     // { "searchable": false, "targets": [-1] },
@@ -236,11 +253,11 @@
                     }
                 }, {
                     render: (data, type, row) => {
-                        return row.absen[0]?.clock_in ?? ''
+                        return row?.absen[0]?.clock_in ?? ''
                     }
                 }, {
                     render: (data, type, row) => {
-                        return row.absen[0]?.clock_out ?? ''
+                        return row?.absen[0]?.clock_out ?? ''
                     }
                 }, {
                     render: (data, type, row, meta) => {
@@ -327,8 +344,8 @@
                     });
             })
 
-            $('#name,#tanggal,#division_id').bind('change', function() {
-                table.draw()
+            $('#name,#tanggal,#division_id,#shift').bind('change', function() {
+                table.ajax.reload()
             })
 
             $(document).on('click', '#btn-add', () => {

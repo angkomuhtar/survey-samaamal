@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Division;
 use App\Models\User;
 use App\Models\Clock;
+use App\Models\Shift;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -29,15 +30,23 @@ class AttendanceController extends Controller
           $dept = Division::where('id', $user->employee->division_id)->get(); 
         }
 
+        $shift = Shift::where('wh_code', '<>', 'HO')->get();
+
         if ($request->ajax()) {
             $data = User::where('username', '!=', 'Admin')->with('employee', 'employee.division', 'profile')
-                ->with('absen', function ($query) use ($request) {
-                    $query->where('date', '=', $request->tanggal)
-                    ->with('shift');
-                })
                 ->whereHas('employee', function($query) {
                     $query->where('division_id', '<>', 11);
                 });
+            $data->with('absen', function ($query) use ($request) {
+                $query->where('date', '=', $request->tanggal)->with('shift');
+            });
+
+            if ($request->shift != '') {
+                $data->whereHas('absen', function($query) use ($request) {
+                    $query->where('work_hours_id', $request->shift)->where('date', '=', $request->tanggal);
+                });
+            }
+            
 
             if ($request->name != '') {
                 $data->whereHas('profile', function($query) use ($request) {
@@ -54,7 +63,8 @@ class AttendanceController extends Controller
             return DataTables::eloquent($data)->toJson();
         }
         return view('pages.dashboard.absensi.attendance', [
-            'departement' => $dept
+            'departement' => $dept,
+            'shift' => $shift,
         ]);
     }
     
