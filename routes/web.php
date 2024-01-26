@@ -23,7 +23,7 @@ use App\Http\Controllers\LoginController;
 |
 */
 
-Route::middleware('superadmin')->get('/', function () {
+Route::middleware('Admin:superadmin')->get('/', function () {
     return view('welcome');
 });
 

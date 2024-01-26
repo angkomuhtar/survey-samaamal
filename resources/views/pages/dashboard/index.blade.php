@@ -47,15 +47,29 @@
                                     </div>
                                 </li>
 
+                                @php
+                                    $count = 0;
+                                @endphp
+
                                 @foreach ($division_count as $item)
                                     <li
                                         class="first:text-xs text-sm first:text-slate-600 text-slate-600 dark:text-slate-300 py-2 first:uppercase">
                                         <div class="flex justify-between">
                                             <span>{{ $item->division->division }}</span>
                                             <span>{{ $item->post_count }}</span>
+                                            @php
+                                                $count += $item->post_count;
+                                            @endphp
                                         </div>
                                     </li>
                                 @endforeach
+                                <li
+                                    class="first:text-xs text-sm first:text-slate-600 text-slate-600 dark:text-slate-300 py-2 first:uppercase">
+                                    <div class="flex justify-between">
+                                        <span class="text-sm font-bold">Total</span>
+                                        <span class="text-sm font-bold">{{ $count }}</span>
+                                    </div>
+                                </li>
 
 
                             </ul>

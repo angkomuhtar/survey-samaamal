@@ -20,7 +20,10 @@ class DashboardController extends Controller
     {
         $today = Carbon::now()->format('Y-m-d');
         $employee= Employee::select('division_id', DB::raw('count(*) as post_count'))->with('division')
-        ->where('division_id','<=', 200)
+        ->whereNotIn('division_id', [11, 11001])
+        ->whereHas('user', function($query){
+            $query->where('status','Y');
+        })
         ->groupBy('division_id')
         ->get();
 
