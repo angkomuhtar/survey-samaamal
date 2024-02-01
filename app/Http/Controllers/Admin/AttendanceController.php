@@ -246,7 +246,7 @@ class AttendanceController extends Controller
                     if($startTime->lte($finishTime)){
                         $totalDuration = $finishTime->diffInSeconds($startTime);
                         $activeWorksheet->setCellValue('G'.$num, gmdate('H:i',$totalDuration));
-                        if ($totalDuration / 60 >= 15) {
+                        if ($totalDuration / 60 >= 1) {
                             $activeWorksheet->getStyle('F'.$num.':G'.$num)
                             ->getFill()
                             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
@@ -263,7 +263,7 @@ class AttendanceController extends Controller
                     if($startTime->lte($finishTime)){
                         $totalDuration = $finishTime->diffInSeconds($startTime);
                         $activeWorksheet->setCellValue('I'.$num, gmdate('H:i',$totalDuration));
-                        if ($totalDuration / 60 >= 15) {
+                        if ($totalDuration / 60 >= 1) {
                             $activeWorksheet->getStyle('H'.$num.':I'.$num)
                             ->getFill()
                             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
