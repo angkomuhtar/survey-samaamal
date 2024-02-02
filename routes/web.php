@@ -66,10 +66,12 @@ Route::prefix('admin')->group(function()
             Route::controller(AttendanceController::class)->prefix('attendance')->group(function()
             {
                 Route::get('/','index')->name('absensi.attendance');
+                Route::get('/{id}/details','details')->name('absensi.attendance.details');
                 Route::get('/create','create')->name('absensi.attendance.create');
                 Route::post('/','store')->name('absensi.attendance.store');
                 Route::delete('/{id}','destroy')->name('absensi.attendance.destroy');
                 Route::get('/export','export')->name('absensi.attendance.export');
+                Route::get('/{id}/export','export_details')->name('absensi.attendance.export_details');
                 Route::get('/{id}','edit')->name('absensi.attendance.edit');
                 Route::post('/{id}','update')->name('absensi.attendance.update');
             });

@@ -197,6 +197,7 @@
                 defaultDate: 'today'
             });
             // table
+            var detail_url = '{!! route('absensi.attendance.details', ['id' => ':slug']) !!}';
             var table = $("#data-table, .data-table").DataTable({
                 processing: true,
                 serverSide: true,
@@ -245,7 +246,10 @@
                 ],
                 columns: [{
                     render: (data, type, row) => {
-                        return row.profile?.name ?? ''
+                        return `<a href="${ detail_url.replace(':slug', row.id)}" target="_blank" class="text-blue-500 cursor-pointer">
+                            ${row.profile?.name}
+                        </a>` ??
+                            ''
                     }
                 }, {
                     render: (data, type, row) => {

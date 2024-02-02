@@ -297,5 +297,238 @@ class AttendanceController extends Controller
 
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->save('php://output');
-    } 
+    }
+
+
+    public function export_details(Request $request, $id)
+    {
+        ini_set('max_execution_time', '300');
+        $today = Carbon::now()->setTimeZone('Asia/Makassar');
+        $user_data = User::find($id);
+        if ($request->tanggal) {
+            $date = explode(' to ', $request->tanggal);
+            $start = $date[0];
+            $end = $date[1] ?? $date[0];
+        }else{
+            $start = $today->format('d') > 25 ? $today->format('Y-m-26') : $today->subMonths(1)->format('Y-m-26');
+            $end = Carbon::createFromFormat('Y-m-d', $start)->addMonths(1)->format('Y-m-25');
+        }
+
+        $HeaderStyle = [
+            'font' => [
+                'bold' => true,
+                'size' => 14
+            ],
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+            ],
+        ];
+
+        $SubStyle = [
+            'font' => [
+                'bold' => true,
+                'size' => 14
+            ]
+        ];
+
+        $data = '';
+        $spreadsheet = new Spreadsheet();
+        $activeWorksheet = $spreadsheet->getActiveSheet();
+
+        $activeWorksheet->setCellValue('A2', 'ABSENSI HARIAN EMPAPPS');
+        $activeWorksheet->getStyle('A2')->applyFromArray($HeaderStyle);
+        $activeWorksheet->mergeCells('A2:F2');
+
+
+        $num=3;
+        $num++;
+
+        $activeWorksheet->setCellValue('A'.$num, 'Nama Karyawan')->getStyle('A'.$num)->applyFromArray($SubStyle);
+        $activeWorksheet->mergeCells('A'.$num.':B'.$num);
+        $activeWorksheet->setCellValue('C'.$num, $user_data->profile->name)->getStyle('C'.$num)->applyFromArray($SubStyle);
+        $activeWorksheet->mergeCells('C'.$num.':G'.$num);
+        $num++;
+        $activeWorksheet->setCellValue('A'.$num, 'Departement')->getStyle('A'.$num)->applyFromArray($SubStyle);
+        $activeWorksheet->mergeCells('A'.$num.':B'.$num);
+        $activeWorksheet->setCellValue('C'.$num, $user_data->employee->division->division)->getStyle('C'.$num)->applyFromArray($SubStyle);
+        $activeWorksheet->mergeCells('C'.$num.':G'.$num);
+        $num++;
+        $activeWorksheet->setCellValue('A'.$num, 'Jabatan')->getStyle('A'.$num)->applyFromArray($SubStyle);
+        $activeWorksheet->mergeCells('A'.$num.':B'.$num);
+        $activeWorksheet->setCellValue('C'.$num, $user_data->employee->position->position)->getStyle('C'.$num)->applyFromArray($SubStyle);
+        $activeWorksheet->mergeCells('C'.$num.':G'.$num);
+        $num++;
+        $activeWorksheet->setCellValue('A'.$num, 'Periode')->getStyle('A'.$num)->applyFromArray($SubStyle);
+        $activeWorksheet->mergeCells('A'.$num.':B'.$num);
+        $activeWorksheet->setCellValue('C'.$num, $start." - ".$end)->getStyle('C'.$num)->applyFromArray($SubStyle);
+        $activeWorksheet->mergeCells('C'.$num.':G'.$num);
+
+        $num++; 
+        $num++;
+        $activeWorksheet->setCellValue('A'.$num, 'Tanggal')->getStyle('A'.$num)->applyFromArray($HeaderStyle);
+        $activeWorksheet->setCellValue('B'.$num, 'Hari')->getStyle('B'.$num)->applyFromArray($HeaderStyle);
+        $activeWorksheet->setCellValue('C'.$num, 'Jam Masuk')->getStyle('C'.$num)->applyFromArray($HeaderStyle);
+        $activeWorksheet->setCellValue('D'.$num, 'Telat Masuk')->getStyle('D'.$num)->applyFromArray($HeaderStyle);
+        $activeWorksheet->setCellValue('E'.$num, 'Jam Pulang')->getStyle('E'.$num)->applyFromArray($HeaderStyle);
+        $activeWorksheet->setCellValue('F'.$num, 'Cepat Pulang')->getStyle('F'.$num)->applyFromArray($HeaderStyle);
+        $activeWorksheet->setCellValue('G'.$num, 'Jenis Shift')->getStyle('G'.$num)->applyFromArray($HeaderStyle);
+        $activeWorksheet->getStyle('A'.$num.':G'.$num)->applyFromArray($HeaderStyle);
+        $activeWorksheet->getRowDimension($num)->setRowHeight(40, 'pt');
+
+
+        foreach(range('A','G') as $columnID) {
+            $activeWorksheet->getColumnDimension($columnID)
+                ->setAutoSize(true);
+        }
+        $activeWorksheet->getStyle('A'.$num.':G'.$num)->applyFromArray([
+            'font' => [
+                'size' => 12
+            ],
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                'wrapText' => true,
+            ],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => 'FF000000'],
+                ],
+            ]
+        ]);
+
+        
+        $startDate = Carbon::parse($start);
+        $endDate = Carbon::parse($end);
+        $currentDate = $startDate;
+        $total_datang = 0;
+        $total_pulang = 0;
+        while ($currentDate->lte($endDate)) {
+            $today_data = Clock::where('user_id', $id)->where('date', $currentDate->format('Y-m-d'))->with('shift')->first();
+            $hit_pulang = '';
+            $sec_pulang = 0;
+            $hit_datang= '';
+            $sec_datang= 0;
+            if (isset($today_data->clock_in)) {
+                $user = Carbon::parse($today_data->clock_in) ;
+                $jam = Carbon::parse($today_data->shift->start);
+                if ($user->gte($jam)) {
+                    $sec_datang = $user->diffInSeconds($jam);
+                    $hit_datang = gmdate('H:i', $sec_datang);
+                }
+            }
+            if (isset($today_data->clock_out)) {
+                $user = Carbon::parse($today_data->clock_out) ;
+                $jam = Carbon::parse($today_data->shift->end) ;
+                if ($user->lte($jam)) {
+                    $sec_pulang = $jam->diffInSeconds($user);
+                    $hit_pulang = gmdate('H:i',$sec_pulang);
+                }
+            }
+            $num++;
+             $activeWorksheet->setCellValue('A'.$num, $currentDate->format('d-m-Y'));
+             $activeWorksheet->setCellValue('B'.$num, $currentDate->format('l'));
+             $activeWorksheet->setCellValue('C'.$num, $today_data->clock_in ?? '');
+             $activeWorksheet->setCellValue('D'.$num, $hit_datang);
+             $activeWorksheet->setCellValue('E'.$num, $today_data->clock_out ?? '');
+             $activeWorksheet->setCellValue('F'.$num, $hit_pulang);
+             $activeWorksheet->setCellValue('G'.$num, isset($today_data->clock_in) ? $today_data->shift->name : '');
+             if ($sec_datang / 60 >= 1) {
+                 $activeWorksheet->getStyle('C'.$num.':D'.$num)
+                 ->getFill()
+                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                 ->getStartColor()->setARGB('FFE3A6AA');
+             }
+             if ($sec_pulang / 60 >= 1) {
+                 $activeWorksheet->getStyle('E'.$num.':F'.$num)
+                 ->getFill()
+                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                 ->getStartColor()->setARGB('FFE3A6AA');
+             }$activeWorksheet->getRowDimension($num)->setRowHeight(30, 'pt');
+             $activeWorksheet->getStyle('A8'.':G'.$num)->applyFromArray([
+                 'font' => [
+                     'size' => 12
+                 ],
+                 'alignment' => [
+                     'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                     'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                     'wrapText' => true,
+                 ],
+             ]);
+             // $num++;
+            $currentDate->addDay();
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Rekap Absensi.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+    }
+    
+    public function details(Request $request, $id)
+    {
+        $user = Auth::guard('web')->user();
+        $dept; 
+        $start= ''; 
+        $end = '';
+        $today = Carbon::now()->setTimeZone('Asia/Makassar');
+
+        $user_details = User::find($id);
+        
+        if ($request->ajax()) {
+            if ($request->tanggal) {
+                $date = explode(' to ', $request->tanggal);
+                $start = $date[0];
+                $end = $date[1] ?? $date[0];
+            }else{
+                $start = $today->format('d') > 25 ? $today->format('Y-m-26') : $today->subMonths(1)->format('Y-m-26');
+                $end = Carbon::createFromFormat('Y-m-d', $start)->addMonths(1)->format('Y-m-25');
+            }
+            $data_collect = collect([]);
+    
+            $startDate = Carbon::parse($start);
+            $endDate = Carbon::parse($end);
+            $currentDate = $startDate;
+    
+            while ($currentDate->lte($endDate)) {
+                $today_data = Clock::where('user_id', $id)->where('date', $currentDate->format('Y-m-d'))->with('shift')->first();
+                $hit_pulang = '';
+                $hit_datang= '';
+                if (isset($today_data->clock_in)) {
+                    $user = Carbon::parse($today_data->clock_in) ;
+                    $jam = Carbon::parse($today_data->shift->start);
+                    if ($user->gte($jam)) {
+                        $hit_datang = gmdate('H:i',$user->diffInSeconds($jam));
+                    }
+                }
+                if (isset($today_data->clock_out)) {
+                    $user = Carbon::parse($today_data->clock_out) ;
+                    $jam = Carbon::parse($today_data->shift->end) ;
+                    if ($user->lte($jam)) {
+                        $hit_pulang = gmdate('H:i',$jam->diffInSeconds($user));
+                    }
+                }
+                $data_collect->push([
+                    'tanggal' => $currentDate->format('d-m-Y'),
+                    'hari' => $currentDate->format('l'),
+                    'masuk' => $today_data->clock_in ?? '',
+                    'telat' => $hit_datang ?? '',
+                    'pulang' => $today_data->clock_out ?? '',
+                    'cepat' => $hit_pulang ?? '',
+                    'shift' => isset($today_data->shift) ? $today_data->shift->name . " (" .$today_data->shift->start."-".$today_data->shift->end .")" : '',
+                    'data'=> $today_data
+                ]);
+    
+                $currentDate->addDays();
+            }
+            
+            return DataTables::of($data_collect)->toJson();
+        }
+        return view('pages.dashboard.absensi.attendance_details', [
+            'user' => $user_details,
+        ]);
+    }
 }
