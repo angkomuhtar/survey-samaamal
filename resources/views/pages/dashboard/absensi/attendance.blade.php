@@ -53,6 +53,17 @@
                                                     invalid state.</div>
                                             </div>
                                             <div class="input-area">
+                                                <label for="tanggal" class="form-label">Project</label>
+                                                <select id="" class="form-control" name="project" required>
+                                                    <option value="" selected class="dark:bg-slate-700 !text-slate-300">Pilih
+                                                        Data</option>
+                                                    @foreach ($project as $item)
+                                                        <option value="{{ $item->id }}" class="dark:bg-slate-700">{{ $item->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="input-area">
                                                 <label for="division_id" class="form-label">Departement</label>
                                                 <div class="grid grid-cols-2 gap-y-3">
                                                     @foreach ($departement as $item)

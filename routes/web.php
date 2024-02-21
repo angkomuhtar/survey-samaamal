@@ -40,9 +40,11 @@ Route::prefix('admin')->group(function()
         Route::get('/rekap_hadir',[DashboardController::class, 'rekap_hadir'])->name('dashboard.rekap_hadir');
         Route::controller(EmployeeController::class)->prefix('employee')->group(function()
         {
+            Route::middleware('Admin:superadmin,hrd')->group(function(){
+                Route::get('/create','create')->name('employee.create');
+                Route::post('/','store')->name('employee.store');
+            });
             Route::get('/','index')->name('employee');
-            Route::get('/create','create')->name('employee.create');
-            Route::post('/','store')->name('employee.store');
             Route::get('/{id}/profile','edit_profile')->name('employee.edit_profile');
             Route::post('/{id}/profile','update_profile')->name('employee.update_profile');
             Route::get('/{id}/employee','edit_employee')->name('employee.edit_employee');

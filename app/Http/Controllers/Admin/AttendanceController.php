@@ -8,6 +8,7 @@ use App\Models\Division;
 use App\Models\User;
 use App\Models\Clock;
 use App\Models\Shift;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -65,6 +66,7 @@ class AttendanceController extends Controller
         return view('pages.dashboard.absensi.attendance', [
             'departement' => $dept,
             'shift' => $shift,
+            'project' => Project::all()
         ]);
     }
     
@@ -152,6 +154,7 @@ class AttendanceController extends Controller
         $date = explode(' to ', $request->tanggal);
         $start = $date[0];
         $end = $date[1] ?? $date[0];
+        
 
         $HeaderStyle = [
             'font' => [
@@ -229,7 +232,8 @@ class AttendanceController extends Controller
                 });
     
             $data->whereHas('employee', function ($query) use ($request){
-                $query->whereIn('division_id', $request->dept)->with('shift');
+
+                $query->whereIn('division_id', $request->dept)->where('project_id', $request->project)->with('shift');
               });
             $absen = $data->orderby('username')->get();
             foreach ($absen as $key => $value) {
