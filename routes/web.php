@@ -38,6 +38,7 @@ Route::prefix('admin')->group(function()
     Route::middleware('Admin:admin,superadmin,hrd')->group(function () {
         Route::get('/',[DashboardController::class, 'index'])->name('dashboard');
         Route::get('/rekap_hadir',[DashboardController::class, 'rekap_hadir'])->name('dashboard.rekap_hadir');
+        Route::get('/import_data',[DashboardController::class, 'import_data'])->name('dashboard.import_data');
         Route::controller(EmployeeController::class)->prefix('employee')->group(function()
         {
             Route::middleware('Admin:superadmin,hrd')->group(function(){
@@ -137,7 +138,5 @@ Route::prefix('admin')->group(function()
             });
         });
     });
-
-
 }
 );

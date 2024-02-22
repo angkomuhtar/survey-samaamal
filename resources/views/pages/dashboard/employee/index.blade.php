@@ -42,6 +42,29 @@
                             <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">
                                 This is invalid state.</div>
                         </div>
+                        <div class="input-area">
+                            <label for="division_id" class="form-label">Project</label>
+                            <select id="project_id" class="form-control" name="project_id">
+                                <option value="" selected class="dark:bg-slate-700 !text-slate-300">Pilih
+                                    Data</option>
+                                @foreach ($project as $item)
+                                    <option value="{{ $item->id }}" class="dark:bg-slate-700">{{ $item->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">
+                                This is invalid state.</div>
+                        </div>
+                        <div class="input-area">
+                            <label for="division_id" class="form-label">NRP</label>
+                            <select id="nrp" class="form-control" name="npr">
+                                <option value="" selected class="dark:bg-slate-700 !text-slate-300">Pilih
+                                    Data</option>
+                                <option value="1" class="dark:bg-slate-700">NOT SET</option>
+                            </select>
+                            <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">
+                                This is invalid state.</div>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body px-6 pb-6">
@@ -59,6 +82,9 @@
                                             </th>
                                             <th scope="col" class=" table-th ">
                                                 Nama
+                                            </th>
+                                            <th scope="col" class=" table-th ">
+                                                NRP
                                             </th>
                                             <th scope="col" class=" table-th ">
                                                 Departement
@@ -108,6 +134,8 @@
                         return $.extend({}, d, {
                             name: $('#name').val(),
                             division: $('#division_id').val(),
+                            project: $('#project_id').val(),
+                            nrp: $('#nrp').val(),
                         })
                     },
                 },
@@ -156,6 +184,9 @@
                     },
                     {
                         data: 'profile.name'
+                    },
+                    {
+                        data: 'employee.nip'
                     },
                     {
                         data: 'employee.division.division'
@@ -259,7 +290,7 @@
                 table.draw()
             })
 
-            $('#name,#division_id').bind('change', function() {
+            $('#name,#division_id,#project_id,#nrp').bind('change', function() {
                 table.draw()
             })
 

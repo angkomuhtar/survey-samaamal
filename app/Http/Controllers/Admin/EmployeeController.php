@@ -55,6 +55,19 @@ class EmployeeController extends Controller
             });
           }
 
+          if ($request->nrp != null) {
+            $data->whereHas('employee', function ($query) use ($request){
+                $query->where('nip', '');
+            });
+          }
+
+          if ($request->project != null) {
+            $data->whereHas('employee', function ($query) use ($request){
+                $query->where('project_id', $request->project);
+            });
+          }
+
+
           if ($user->roles != 'superadmin' ) {
             if (!in_array($user->employee->division_id, [2,7])) {
               $data->whereHas('employee', function ($query) use ($user){
@@ -77,7 +90,8 @@ class EmployeeController extends Controller
             'pageTitle' => 'Data Karyawan',
             'category' => $category,
             'shift' => $shift,
-            'departement' => $dept 
+            'departement' => $dept,
+            'project' => Project::all()
         ]);
     }
 
