@@ -70,7 +70,7 @@ class DashboardController extends Controller
         return DataTables::of($hadir)->toJson();
     }
 
-    public function import_data(){
+    public function import_data(Request $request){
         // $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Csv');
         $file = public_path('images/BBEDATA.xlsx');
         $import = new UsersImport;
@@ -78,32 +78,39 @@ class DashboardController extends Controller
         $data_double = [];
         $data_null = [];
 
-        foreach ($import->data as $item) {
-            $data = Profile::where('name', '=',$item['nama'])->with('user')
+        // return $request->id;
+        $start = ($request->id - 1) * 200;
+        $item = $import->data;
+        for ($i=$start; $i < $start+200; $i++) { 
+         
+            if ($i + 1 >= count($item)) {
+                break;
+            }
+            $data = Profile::where('name', '=',$item[$i]['nama'])->with('user')
                 ->whereHas('user', function($query){
                     $query->where('status','Y');
                 })->get();
             if (count($data) > 1) {
-               array_push($data_double,[count($data), $item['nama']]);
+               array_push($data_double,[count($data), $item[$i]['nama']]);
             }else if (count($data) == 0) {
-                array_push($data_null,[count($data), $item['nama']]);
+                array_push($data_null,[count($data), $item[$i]['nama']]);
             }else if (count($data) == 1) {
                 // return $data[0]->user_id;
                 $employee = Employee::where('user_id', $data[0]->user_id)->update([
-                    'nip' => $item['nik'],
-                    'doh' => gmdate( 'Y-m-d', (($item['doh'] - 25569) * 86400))
+                    'nip' => $item[$i]['nik'],
+                    'doh' => gmdate( 'Y-m-d', (($item[$i]['doh'] - 25569) * 86400))
                 ]);
                 $profile = Profile::find($data[0]->id)->update([
-                    'card_id' => $item['card_id'],
-                    'kk' => $item['kk'],
-                    'tmp_lahir' => $item['tmp'],
-                    'tgl_lahir' => gmdate( 'Y-m-d', (($item['tgl'] - 25569) * 86400)) ,
-                    'gender' => $item['gender'],
-                    'religion' => $item['religion'],
-                    'marriage' => $item['marriage'],
-                    'id_addr' => $item['id_addr'],
-                    'live_addr' => $item['live_addr'],
-                    'phone' => $item['phone']
+                    'card_id' => $item[$i]['card_id'],
+                    'kk' => $item[$i]['kk'],
+                    'tmp_lahir' => $item[$i]['tmp'],
+                    'tgl_lahir' => gmdate( 'Y-m-d', (($item[$i]['tgl'] - 25569) * 86400)) ,
+                    'gender' => $item[$i]['gender'],
+                    'religion' => $item[$i]['religion'],
+                    'marriage' => $item[$i]['marriage'],
+                    'id_addr' => $item[$i]['id_addr'],
+                    'live_addr' => $item[$i]['live_addr'],
+                    'phone' => $item[$i]['phone']
                 ]);
             }
         }
