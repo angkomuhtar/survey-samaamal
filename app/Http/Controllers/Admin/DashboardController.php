@@ -84,6 +84,7 @@ class DashboardController extends Controller
         $item = $import->data;
         for ($i=$start; $i < $start+$offset; $i++) { 
          
+            // echo $i." ";
             if ($i + 1 >= count($item)) {
                 break;
             }
