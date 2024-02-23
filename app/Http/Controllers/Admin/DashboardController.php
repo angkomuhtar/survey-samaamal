@@ -79,9 +79,10 @@ class DashboardController extends Controller
         $data_null = [];
 
         // return $request->id;
-        $start = ($request->id - 1) * 200;
+        $offset = $request->offset;
+        $start = ($request->page - 1) * $offset;
         $item = $import->data;
-        for ($i=$start; $i < $start+200; $i++) { 
+        for ($i=$start; $i < $start+$offset; $i++) { 
          
             if ($i + 1 >= count($item)) {
                 break;
