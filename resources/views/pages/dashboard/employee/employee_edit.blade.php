@@ -99,6 +99,14 @@
                                     style="display: none">This is invalid state.</div>
                             </div>
                             <div class="input-area">
+                                <label for="nrp" class="form-label">NRP</label>
+                                <input id="nip" type="text" name="nip" class="form-control"
+                                    placeholder="Nama Karyawan" required="required" value="{{ $employee->nip }}">
+                                <div class="font-Inter text-sm text-danger-500 pt-2 error-message"
+                                    style="display: none">
+                                    This is invalid state.</div>
+                            </div>
+                            <div class="input-area">
                                 <label for="doh" class="form-label">Date of Hire (DOH)</label>
                                 <input class="form-control py-2 flatpickr flatpickr-input active" name="doh"
                                     id="default-picker" value="" type="text" readonly="readonly">

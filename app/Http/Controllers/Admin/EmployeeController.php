@@ -45,9 +45,9 @@ class EmployeeController extends Controller
               $query->where('name', 'LIKE', '%'.$request->name.'%');
             });
           
-          if ($user->roles != 'superadmin' ) {
-            $data->where('status', 'Y');
-          }
+          // if ($user->roles != 'superadmin' ) {
+          //   $data->where('status', 'Y');
+          // }
 
           if ($request->division != null || $request->departement != '') {
             $data->whereHas('employee', function ($query) use ($request){
@@ -279,6 +279,7 @@ class EmployeeController extends Controller
         'wh_code'  => 'required',
         'project_id'  => 'required',
         'doh'  => 'required|date',
+        'nip'  => 'required',
         'status'  => 'required',
       ],[
           'required' => 'tidak boleh kosong',
