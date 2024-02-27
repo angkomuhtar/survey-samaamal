@@ -43,16 +43,16 @@ class AuthController extends Controller
         }else{
             $user = Auth::guard('api')->user()->load(['employee','profile', 'employee.division', 'employee.position']);
             $phoneID = User::where('phone_id', $request->phone_id)->where('id','!=', $user->id)->get();
-            if ($user->phone_id == null || $user->phone_id == $request->phone_id) {
-                // if ($phoneID->count() > 0) {
-                //     return ResponseHelper::jsonError('maaf, device telah terintegrasi dengan akun lain', 401);
-                // }
+            if ($user->phone_id == null || $user->phone_id == $request->phone_id || $user->roles == 'superadmin') {
+                
                 if ($user->status != 'Y') {
                     return ResponseHelper::jsonError('Maaf, akun telah di nonaktifkan', 401);
                 }
-                $db = User::find($user->id);               
-                $db->phone_id = $request->phone_id;
-                $db->save();
+                if ($user->roles != 'superadmin') {
+                    $db = User::find($user->id);               
+                    $db->phone_id = $request->phone_id;
+                    $db->save();
+                }
                 return response()->json([
                         'status' => 'success',
                         'user' => $user,
