@@ -123,7 +123,7 @@ class EmployeeController extends Controller
         'nip'  => 'required',
         'doh'  => 'required|date',
         'wh_code'  => 'required',
-        // 'project_id'  => 'required',
+        'project_id'  => 'required',
         'doh'  => 'required|date',
         'status'  => 'required',
       ],[
@@ -166,7 +166,7 @@ class EmployeeController extends Controller
           'position_id' => $request->position_id,
           'wh_code' => $request->wh_code,
           'nip' => $request->nip,
-          'project_id' => 1,
+          'project_id' => $request->project_id,
           'doh' => $request->doh,
           'status' => $request->status,
         ]);

@@ -240,6 +240,20 @@
                                     style="display: none">This is invalid state.</div>
                             </div>
                             <div class="input-area">
+                                <label for="project_id" class="form-label">Project</label>
+                                <select id="project_id" class="form-control" name="project_id">
+                                    <option value="" selected disabled
+                                        class="dark:bg-slate-700 !text-slate-300">Pilih Data</option>
+                                    @foreach ($project as $item)
+                                        <option value="{{ $item->id }}" class="dark:bg-slate-700">
+                                            {{ $item->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="font-Inter text-sm text-danger-500 pt-2 error-message"
+                                    style="display: none">This is invalid state.</div>
+                            </div>
+                            <div class="input-area">
                                 <label for="division_id" class="form-label">Departement</label>
                                 <select id="division_id" class="form-control" name="division_id">
                                     <option value="" selected disabled
