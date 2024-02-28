@@ -62,15 +62,15 @@ class Employee extends Model
         return $this->belongsTo(Options::class, 'category_id', 'kode');
     }
 
-    public static function boot(){
-        parent::boot();
+    // public static function boot(){
+    //     parent::boot();
 
-        static::creating(function($model){
-            $prefix = $model->company_id == 1 ? 'MAM' : 'AT';
-            $number = Employee::where('nip','like', $prefix.'%')->max('number')+1;
-            $model->number = $number;
-            $date= Carbon::parse($model->doh);
-            $model->nip = $prefix.'.'.$date->format('ym').'.'.str_pad($number,4, '0',STR_PAD_LEFT);
-        });
-    }
+    //     static::creating(function($model){
+    //         $prefix = $model->company_id == 1 ? 'MAM' : 'AT';
+    //         $number = Employee::where('nip','like', $prefix.'%')->max('number')+1;
+    //         $model->number = $number;
+    //         $date= Carbon::parse($model->doh);
+    //         $model->nip = $prefix.'.'.$date->format('ym').'.'.str_pad($number,4, '0',STR_PAD_LEFT);
+    //     });
+    // }
 }

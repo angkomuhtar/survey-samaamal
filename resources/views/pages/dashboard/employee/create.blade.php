@@ -258,6 +258,14 @@
                                     style="display: none">This is invalid state.</div>
                             </div>
                             <div class="input-area">
+                                <label for="nrp" class="form-label">NRP</label>
+                                <input id="nip" type="text" name="nip" class="form-control"
+                                    placeholder="Nama Karyawan" required="required">
+                                <div class="font-Inter text-sm text-danger-500 pt-2 error-message"
+                                    style="display: none">
+                                    This is invalid state.</div>
+                            </div>
+                            <div class="input-area">
                                 <label for="wh_code" class="form-label">Work Hours Tipe</label>
                                 <select id="wh_code" class="form-control" name="wh_code">
                                     <option value="" selected disabled
