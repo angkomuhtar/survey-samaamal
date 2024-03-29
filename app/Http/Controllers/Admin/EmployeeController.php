@@ -45,9 +45,9 @@ class EmployeeController extends Controller
               $query->where('name', 'LIKE', '%'.$request->name.'%');
             });
           
-          // if ($user->roles != 'superadmin' ) {
-          //   $data->where('status', 'Y');
-          // }
+          if ($user->roles != 'superadmin' ) {
+            $data->where('status', 'Y');
+          }
 
           if ($request->division != null || $request->departement != '') {
             $data->whereHas('employee', function ($query) use ($request){

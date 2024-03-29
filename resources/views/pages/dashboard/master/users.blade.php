@@ -157,7 +157,7 @@
                         data: 'id',
                         name: 'action',
                         render: (data) => {
-                            return `<div class="grid grid-cols-2 gap-x-3 gap-y-1 rtl:space-x-reverse">
+                            return `<div class="grid md:grid-cols-2 gap-0.5 md:gap-2">
                                   <a href={!! route('employee') !!} class="action-btn btn-secondary cursor-pointer btn-sm text-md p-2">
                                     <iconify-icon icon="heroicons:eye"></iconify-icon>
                                   </a>
@@ -184,22 +184,54 @@
             $(document).on('click', '#change_sts', (e) => {
                 var id = $(e.currentTarget).data('id');
                 Swal.fire({
-                    title: 'Change Status?',
+                    title: 'Ganti Status',
                     text: "You won't be able to revert this!",
                     icon: 'warning',
+                    html: `
+                        <div class="w-full grid md:grid-cols-2 gap-2">
+                            <input class="p-2 border border-slate-200 rounded-sm" type="text" id="tgl_exp" placeholder="Tanggal (yyyy-mm-dd)">
+                            <select class="p-2 border border-slate-200 rounded-sm" id="type_exp" placeholder="Pilih Salah Satu">
+                                <option value="RESIGN">Resign</option>
+                                <option value="EXPIRED">Habis Kontrak</option>
+                                <option value="FIRED">PHK</option>
+                            </select>
+                        </div>
+                    `,
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Oke, Gasss.!!!'
+                    confirmButtonText: 'Oke, Gasss.!!!',
+                    preConfirm: () => {
+                        var tgl = $("#tgl_exp").val();
+                        var type = $("#type_exp").val();
+                        var reg = new RegExp(
+                            '[1-9][0-9][0-9]{2}-([0][1-9]|[1][0-2])-([1-2][0-9]|[0][1-9]|[3][0-1])');
+                        var check = reg.test(tgl)
+                        var succ = false;
+                        if (tgl == "" || type == "" || !check) {
+                            Swal.showValidationMessage(`periksa tanggal.!!`)
+                        } else {
+                            return {
+                                tgl,
+                                type
+                            }
+                        }
+                    },
                 }).then((result) => {
+                    let {
+                        tgl,
+                        type
+                    } = result.value
                     if (result.isConfirmed) {
                         var url = '{!! route('masters.users.status', ['id' => ':id']) !!}';
                         url = url.replace(':id', id);
                         $.ajax({
                             url: url,
-                            type: 'PATCH',
+                            type: 'POST',
                             data: {
-                                "_token": "{{ csrf_token() }}"
+                                "tgl": tgl,
+                                "type": type,
+                                "_token": "{{ csrf_token() }}",
                             },
                             success: (msg) => {
                                 if (msg.success) {

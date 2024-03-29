@@ -36,7 +36,7 @@ class UsersController extends Controller
         ]);
     }
 
-    public function status($id)
+    public function status(Request $request, $id)
     {
         $user = User::find($id);
         
@@ -44,7 +44,9 @@ class UsersController extends Controller
             'status' => $user->status == 'Y' ? 'N' : 'Y',
         ]);
         $employee = Employee::where('user_id', $id)->update([
-            'division_id' => 11
+            // 'division_id' => 11   
+            'end_date'=> $request->tgl, 
+            'contract_status' => $request->type     
         ]);
         if ($user) {
         return response()->json([
