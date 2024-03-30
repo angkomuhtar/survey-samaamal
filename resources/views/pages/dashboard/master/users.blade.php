@@ -145,10 +145,10 @@
                         data: 'employee.position.position'
                     },
                     {
-                        data: 'status',
-                        render: function(data) {
-                            return data == 'Y' ? 'Active' : 'Non-Active';
-                        }
+                        data: 'employee.contract_status',
+                        // render: function(data) {
+                        //     return data == 'Y' ? 'Active' : 'Non-Active';
+                        // }
                     },
                     {
                         data: 'roles',
@@ -229,9 +229,9 @@
                             url: url,
                             type: 'POST',
                             data: {
+                                "_token": "{{ csrf_token() }}",
                                 "tgl": tgl,
                                 "type": type,
-                                "_token": "{{ csrf_token() }}",
                             },
                             success: (msg) => {
                                 if (msg.success) {

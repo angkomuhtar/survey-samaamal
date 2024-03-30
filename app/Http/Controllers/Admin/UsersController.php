@@ -41,7 +41,7 @@ class UsersController extends Controller
         $user = User::find($id);
         
         $user->update([
-            'status' => $user->status == 'Y' ? 'N' : 'Y',
+            'status' => 'N',
         ]);
         $employee = Employee::where('user_id', $id)->update([
             // 'division_id' => 11   
