@@ -34,6 +34,7 @@ Route::prefix('v1')->group(function(){
             'controller'=> ClockController::class
         ], function(){
             Route::get('/', 'index');
+            Route::get('/{month}/history', 'history');
             Route::get('/shift', 'shift');
             Route::post('/', 'clock');
             Route::get('/today', 'today');

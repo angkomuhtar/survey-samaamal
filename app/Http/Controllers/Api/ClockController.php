@@ -39,6 +39,24 @@ class ClockController extends Controller
         }
     }
 
+    public function history($month){
+        try {
+            $selectedDay = Carbon::createFromFormat('Y-m-d', $month);
+            $day = $selectedDay->format('d');
+            $startDay = $selectedDay->format('Y-m-26');
+            $endDay = Carbon::createFromFormat('Y-m-d', $startDay)->addMonths(1)->format('Y-m-25');
+            $clock = Clock::with('shift')->whereBetween('date', [$startDay, $endDay])->where('user_id', Auth::user()->id)->orderBy('date', 'desc')->get();
+            $clock = $clock->map(function ($clock) {
+                $clock['late'] = $clock->late;
+                $clock['early'] = $clock->early;
+                return $clock;
+            });
+            return ResponseHelper::jsonSuccess('success get data', $clock);
+        } catch (\Exception $err) {
+            return ResponseHelper::jsonError($err->getMessage(), 500);
+        }
+    }
+
     public function home(Request $request){
         try {
             $day = $this->today->format('d');
