@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\WorkSchedule;
+use Carbon\Carbon;
+use App\Models\Clock;
 use App\Models\Shift;
+use App\Models\Sleep;
+use App\Models\WorkSchedule;
+use Illuminate\Http\Request;
+use App\Models\ClockLocation;
+use App\Helpers\ResponseHelper;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use App\Helpers\ResponseHelper;
-use App\Models\ClockLocation;
-use App\Models\Clock;
-use Carbon\Carbon;
 
 class ClockController extends Controller
 {
@@ -115,6 +116,8 @@ class ClockController extends Controller
 
     public function today(Request $request){
         try {
+            $start =Carbon::now()->setTimeZone('Asia/Makassar')->subDays(1)->format('Y-m-d 19:00:00'); 
+            $end =Carbon::now()->setTimeZone('Asia/Makassar')->format('Y-m-d 19:00:00'); 
             $work_hours = Shift::whereColumn('start', '>', 'end')->get();
             $wh_id = $work_hours->pluck('id')->toArray();
             $today = Clock::where(function($query) use($request) {
@@ -128,10 +131,15 @@ class ClockController extends Controller
                 ->whereIn('work_hours_id', $wh_id);
             })
             ->first();
+            $sleep = Sleep::where('user_id', Auth::user()->id)
+            ->where('start', '>', $start)
+            ->where('end', '<', $end)
+            ->get();
             if ($today) {
                 $today['late'] = $today->late;
                 $today['early'] = $today->early;
             }
+            $today['sleep'] = $sleep;
             return ResponseHelper::jsonSuccess('success get data', $today);
         } catch (\Exception $err) {
             return ResponseHelper::jsonError($err->getMessage(), 500);

@@ -97,6 +97,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Employee::class, 'id', 'atasan_id');
     }
 
+    public function sleep()
+    {
+        return $this->hasMany(Sleep::class, 'user_id', 'id');
+    }
+
     public function absen()
     {
         return $this->hasMany(Clock::class, 'user_id', 'id');

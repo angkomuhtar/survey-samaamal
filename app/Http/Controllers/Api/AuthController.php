@@ -3,15 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
+use App\Models\Version;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Helpers\ResponseHelper;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -142,8 +143,20 @@ class AuthController extends Controller
                 });
         return response()->json([
             'status' => 'success',
-            'user' => $data
+            'data' => $data
         ]);
+    }
+    
+    public function version(Request $request){
+        
+        if ($request->has('device')) {
+            $data = Version::where('device', $request->device)->first();
+            return response()->json([
+                'status' => 'success',
+                'data' => $data
+            ]);
+        }
+        return 'halo';
     }
 
     public function change_password(Request $request)

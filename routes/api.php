@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClockController;
+use App\Http\Controllers\Api\SleepController;
 use App\Http\Controllers\Api\LeaveApiController;
 
 
@@ -25,6 +26,7 @@ Route::prefix('v1')->group(function(){
 
         Route::get('/me', [AuthController::class, 'me']);
         Route::get('/team', [AuthController::class, 'team']);
+        Route::get('/version', [AuthController::class, 'version']);
         Route::POST('/change_password', [AuthController::class, 'change_password']);
         Route::POST('/change_avatar', [AuthController::class, 'change_avatar']);
         Route::get('/home', [ClockController::class, 'home']);
@@ -53,6 +55,14 @@ Route::prefix('v1')->group(function(){
             Route::GET('leave_type', 'getleavetype');
             Route::POST('change_status', 'change_status');
             Route::GET('/leave_request/{type}', 'leave_request');
+        });
+
+        Route::group([
+            'prefix' => 'sleep',
+            'controller'=> SleepController::class
+        ], function(){
+            // Route::GET('/', 'index');
+            Route::POST('/', 'store');
         });
     });
 });
