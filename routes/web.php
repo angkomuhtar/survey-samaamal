@@ -1,16 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\Admin\AjaxController;
+use App\Http\Controllers\Admin\SleepController;
+use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\DivisionsController;
 use App\Http\Controllers\Admin\PositionsController;
-use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\WorkhoursController;
+use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\ClocklocationsController;
-use App\Http\Controllers\Admin\AjaxController;
-use App\Http\Controllers\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,9 +64,14 @@ Route::prefix('admin')->group(function()
             Route::post('/profilevalidate','profilevalidate')->name('ajax.profilevalidate');
         });
 
+        Route::middleware('Admin:superadmin,hse')->group(function () {
+            Route::controller(SleepController::class)->prefix('sleep')->group(function()
+            {
+                Route::get('/','index')->name('sleep');
+            });
+        });
+
         Route::middleware('Admin:superadmin,hrd')->group(function () {
-
-
             Route::controller(AttendanceController::class)->prefix('attendance')->group(function()
             {
                 Route::get('/','index')->name('absensi.attendance');
