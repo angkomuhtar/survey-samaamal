@@ -131,6 +131,7 @@ class ClockController extends Controller
                 ->whereIn('work_hours_id', $wh_id);
             })
             ->first();
+            // return Carbon::now()->setTimeZone('Asia/Makassar')->format('Y-m-d 19:00:00');
             $sleep = Sleep::where('user_id', Auth::user()->id)
             ->where('start', '>', $start)
             ->where('end', '<', $end)
@@ -161,7 +162,8 @@ class ClockController extends Controller
                 'shift'     => 'required',
                 'date'  => 'required',
                 'time' => 'required',
-                'location' => 'required'
+                'location' => 'required',
+                // 'version' => 'required',
             ]);
             if ($validator->fails()) {
                 return ResponseHelper::jsonError($validator->errors(), 422);
