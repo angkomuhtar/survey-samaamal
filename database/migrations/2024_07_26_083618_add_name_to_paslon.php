@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('employees', function (Blueprint $table) {
-            $table->String('category_id')->default('OTH')->after('position_id');
+        Schema::table('paslons', function (Blueprint $table) {
+            //
+            $table->string('nama')->default('')->nullable()->after('no_urut');
         });
     }
 
@@ -21,8 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('employees', function (Blueprint $table) {
-            $table->dropColumn('category_id');
+        Schema::table('paslons', function (Blueprint $table) {
+            $table->dropColumn('lokasi');
         });
     }
 };

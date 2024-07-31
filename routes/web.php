@@ -2,16 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\Admin\DptController;
 use App\Http\Controllers\Admin\AjaxController;
-use App\Http\Controllers\Admin\SleepController;
-use App\Http\Controllers\Admin\UsersController;
-use App\Http\Controllers\Admin\EmployeeController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\MasterController;
+use App\Http\Controllers\Admin\SurveyController;
+use App\Http\Controllers\Admin\VerifyController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\DivisionsController;
-use App\Http\Controllers\Admin\PositionsController;
-use App\Http\Controllers\Admin\WorkhoursController;
-use App\Http\Controllers\Admin\AttendanceController;
-use App\Http\Controllers\Admin\ClocklocationsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,8 +21,8 @@ use App\Http\Controllers\Admin\ClocklocationsController;
 |
 */
 
-Route::middleware('Admin:superadmin')->get('/', function () {
-    return view('welcome');
+Route::get('/', function () {
+    return 'Welcome';
 });
 
 Route::controller(LoginController::class)->group(function() {
@@ -34,113 +31,38 @@ Route::controller(LoginController::class)->group(function() {
     Route::post('/logout', 'logout')->name('logout');
 });
 
-Route::prefix('admin')->group(function()
+Route::prefix('dashboard')->group(function()
 {
-    Route::middleware('Admin:admin,superadmin,hrd')->group(function () {
+    Route::middleware('Admin:0')->group(function () {
         Route::get('/',[DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/rekap_hadir',[DashboardController::class, 'rekap_hadir'])->name('dashboard.rekap_hadir');
-        Route::get('/import_data',[DashboardController::class, 'import_data'])->name('dashboard.import_data');
-        Route::controller(EmployeeController::class)->prefix('employee')->group(function()
-        {
-            Route::middleware('Admin:superadmin,hrd')->group(function(){
-                Route::get('/create','create')->name('employee.create');
-                Route::post('/','store')->name('employee.store');
+        Route::middleware('Admin:1')->prefix('master')->group(function(){
+            Route::controller(UserController::class)->prefix('users')->group(function(){
+                Route::get('/', 'index')->name('master.users');
+                Route::post('/', 'store')->name('master.users.store');
+                Route::get('/{id}', 'edit')->name('master.users.edit');
+                Route::post('/{id}', 'update')->name('master.users.update');
+                Route::delete('/{id}', 'delete')->name('master.users.delete');
             });
-            Route::get('/','index')->name('employee');
-            Route::get('/{id}/profile','edit_profile')->name('employee.edit_profile');
-            Route::post('/{id}/profile','update_profile')->name('employee.update_profile');
-            Route::get('/{id}/employee','edit_employee')->name('employee.edit_employee');
-            Route::post('/{id}/employee','update_employee')->name('employee.update_employee');
-            Route::get('/test','destroy')->name('employee.test');
-            Route::DELETE('/delete/{id}','pass_reset')->name('employee.reset_pass');
-            Route::GET('/update_category/{id}','update_category')->name('employee.update_category');
-            Route::GET('/update_shift/{id}','update_shift')->name('employee.update_shift');
-        });
-        Route::controller(AjaxController::class)->prefix('ajax')->group(function()
-        {
-            Route::get('/division/{id}','getDivision')->name('ajax.division');
-            Route::get('/position/{id}','getPosition')->name('ajax.position');
-            Route::post('/userValidate','userValidate')->name('ajax.uservalidate');
-            Route::post('/profilevalidate','profilevalidate')->name('ajax.profilevalidate');
-        });
-
-        Route::middleware('Admin:superadmin,hse')->group(function () {
-            Route::controller(SleepController::class)->prefix('sleep')->group(function()
-            {
-                Route::get('/','index')->name('sleep');
+            Route::controller(DptController::class)->prefix('dpt')->group(function(){
+                Route::get('/', 'index')->name('master.dpt');
+                Route::post('/', 'store')->name('master.dpt.store');
+                Route::get('/{id}', 'edit')->name('master.dpt.edit');
+                Route::post('/{id}', 'update')->name('master.dpt.update');
+                Route::delete('/{id}', 'delete')->name('master.dpt.delete');
             });
-        });
-
-        Route::middleware('Admin:superadmin,hrd')->group(function () {
-            Route::controller(AttendanceController::class)->prefix('attendance')->group(function()
-            {
-                Route::get('/','index')->name('absensi.attendance');
-                Route::get('/{id}/details','details')->name('absensi.attendance.details');
-                Route::get('/create','create')->name('absensi.attendance.create');
-                Route::post('/','store')->name('absensi.attendance.store');
-                Route::delete('/{id}','destroy')->name('absensi.attendance.destroy');
-                Route::get('/export','export')->name('absensi.attendance.export');
-                Route::get('/{id}/export','export_details')->name('absensi.attendance.export_details');
-                Route::get('/{id}','edit')->name('absensi.attendance.edit');
-                Route::post('/{id}','update')->name('absensi.attendance.update');
+            Route::controller(SurveyController::class)->prefix('survey')->group(function(){
+                Route::get('/', 'index')->name('survey');
+                Route::post('/', 'store')->name('survey.store');
+                Route::get('/{id}', 'edit')->name('survey.edit');
+                Route::post('/{id}', 'update')->name('survey.update');
+                Route::delete('/{id}', 'delete')->name('survey.delete');
             });
-
-            Route::middleware('Admin:superadmin')->group(function () {
-                Route::controller(usersController::class)->prefix('users')->group(function()
-                {
-                    Route::get('/','index')->name('masters.users');
-                    Route::post('/{id}/status','status')->name('masters.users.status');
-                    Route::patch('/{id}/reset_phone','reset_phone')->name('masters.users.reset_phone');
-                    Route::get('/create','create')->name('masters.users.create');
-                });
-                Route::controller(DivisionsController::class)->prefix('division')->group(function()
-                {
-                    Route::get('/','index')->name('masters.division');
-                    Route::get('/create','create')->name('masters.division.create');
-                    Route::post('/','store')->name('masters.division.store');
-                    Route::delete('/{id}','destroy')->name('masters.division.destroy');
-                    Route::get('/{id}','edit')->name('masters.division.edit');
-                    Route::post('/{id}','update')->name('masters.division.update');
-                });
-            
-                Route::controller(PositionsController::class)->prefix('position')->group(function()
-                {
-                    Route::get('/','index')->name('masters.position');
-                    Route::get('/create','create')->name('masters.position.create');
-                    Route::post('/','store')->name('masters.position.store');
-                    Route::delete('/{id}','destroy')->name('masters.position.destroy');
-                    Route::get('/{id}','edit')->name('masters.position.edit');
-                    Route::post('/{id}','update')->name('masters.position.update');
-                });
-
-                Route::controller(WorkhoursController::class)->prefix('work_schedule')->group(function()
-                {
-                    Route::get('/','index')->name('absensi.workhours');
-                    Route::get('/create','create')->name('absensi.workhours.create');
-                    Route::post('/','store')->name('absensi.workhours.store');
-                    Route::delete('/{id}','destroy')->name('absensi.workhours.destroy');
-                    Route::get('/{id}','edit')->name('absensi.workhours.edit');
-                    Route::post('/{id}','update')->name('absensi.workhours.update');
-                });
-                Route::controller(WorkhoursController::class)->prefix('shift')->group(function()
-                {
-                    Route::get('/','index_shift')->name('absensi.shift');
-                    // Route::get('/create','create')->name('absensi.shift.create');
-                    // Route::post('/','store')->name('absensi.shift.store');
-                    // Route::delete('/{id}','destroy')->name('absensi.shift.destroy');
-                    // Route::get('/{id}','edit')->name('absensi.shift.edit');
-                    // Route::post('/{id}','update')->name('absensi.shift.update');
-                });
-            
-                Route::controller(ClocklocationsController::class)->prefix('clocklocations')->group(function()
-                {
-                    Route::get('/','index')->name('absensi.clocklocations');
-                    Route::get('/create','create')->name('absensi.clocklocations.create');
-                    Route::post('/','store')->name('absensi.clocklocations.store');
-                    Route::delete('/{id}','destroy')->name('absensi.clocklocations.destroy');
-                    Route::get('/{id}','edit')->name('absensi.clocklocations.edit');
-                    Route::post('/{id}','update')->name('absensi.clocklocations.update');
-                });
+            Route::controller(VerifyController::class)->prefix('verify')->group(function(){
+                Route::get('/', 'index')->name('verify');
+                Route::post('/', 'store')->name('verify.store');
+                Route::get('/{id}', 'edit')->name('verify.edit');
+                Route::post('/{id}', 'update')->name('verify.update');
+                Route::delete('/{id}', 'delete')->name('verify.delete');
             });
         });
     });

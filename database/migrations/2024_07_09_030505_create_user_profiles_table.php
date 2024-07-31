@@ -11,16 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('employees', function (Blueprint $table) {
+        Schema::create('user_profiles', function (Blueprint $table) {
             $table->id();
-            $table->string('nip')->nullable();
-            $table->integer('number')->nullable();
-            $table->integer('company_id');
-            $table->integer('division_id');
-            $table->integer('position_id');
-            $table->date('doh');
-            $table->enum('status',['Contract', 'Permanent', 'Internship']);
             $table->integer('user_id');
+            $table->string('name');
+            $table->integer('level')->default(0);
             $table->timestamps();
         });
     }
@@ -30,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('employees');
+        Schema::dropIfExists('user_profiles');
     }
 };

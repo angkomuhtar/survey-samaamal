@@ -123,17 +123,28 @@
                                 placeholder="Nama" required="required">
                         </div>
                         <div class="input-area">
-                            <label for="level" class="form-label">Level</label>
-                            <select id="level" class="form-control" name="level">
+                            <label for="level" class="form-label">Kecamatan</label>
+                            <select id="kec" class="form-control" name="kec">
                                 <option value="" selected class="dark:bg-slate-700 !text-slate-300">Pilih Data
                                 </option>
-                                <option value="1" class="dark:bg-slate-700 !text-slate-300">Desa/Kelurahan
+                            </select>
+                            <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">
+                                This is invalid state.</div>
+                        </div>
+                        <div class="input-area">
+                            <label for="level" class="form-label">Desa/Kelurahan</label>
+                            <select id="desa" class="form-control" name="desa">
+                                <option value="" selected class="dark:bg-slate-700 !text-slate-300">Pilih Data
                                 </option>
-                                <option value="2" class="dark:bg-slate-700 !text-slate-300">Kecamatan
+                            </select>
+                            <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">
+                                This is invalid state.</div>
+                        </div>
+                        <div class="input-area">
+                            <label for="level" class="form-label">TPS</label>
+                            <select id="tps" class="form-control" name="tps">
+                                <option value="" selected class="dark:bg-slate-700 !text-slate-300">Pilih Data
                                 </option>
-                                <option value="3" class="dark:bg-slate-700 !text-slate-300">Kabupaten
-                                </option>
-                                <option value="6" class="dark:bg-slate-700 !text-slate-300">Admin</option>
                             </select>
                             <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">
                                 This is invalid state.</div>
@@ -151,19 +162,31 @@
                                     <thead class=" bg-slate-200 dark:bg-slate-700">
                                         <tr>
                                             <th scope="col" class=" table-th ">
-                                                Username
-                                            </th>
-                                            <th scope="col" class=" table-th ">
                                                 Nama
                                             </th>
                                             <th scope="col" class=" table-th ">
-                                                Level
+                                                Jenkel
                                             </th>
                                             <th scope="col" class=" table-th ">
-                                                Lokasi
+                                                Usia
                                             </th>
                                             <th scope="col" class=" table-th ">
-                                                Status
+                                                Desa/Kelurahan
+                                            </th>
+                                            <th scope="col" class=" table-th ">
+                                                RT
+                                            </th>
+                                            <th scope="col" class=" table-th ">
+                                                RW
+                                            </th>
+                                            <th scope="col" class=" table-th ">
+                                                Kecamatan
+                                            </th>
+                                            <th scope="col" class=" table-th ">
+                                                TPS
+                                            </th>
+                                            <th scope="col" class=" table-th ">
+                                                Status Pemilih
                                             </th>
                                             <th scope="col" class=" table-th ">
                                                 Action
@@ -190,7 +213,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{!! route('master.users') !!}',
+                    url: '{!! route('master.dpt') !!}',
                     data: function(d) {
                         return $.extend({}, d, {
                             name: $('#name').val(),
@@ -222,7 +245,7 @@
                     },
                     {
                         "orderable": false,
-                        "targets": [3, 4]
+                        "targets": [9]
                     },
                     {
                         'className': 'table-td',
@@ -230,28 +253,33 @@
                     }
                 ],
                 columns: [{
-                        data: 'username',
-                        name: 'username',
-                        render: (data, type, row, meta) => {
-                            return `<span class="flex items-center">
-                                  <span class="w-7 h-7 rounded-full ltr:mr-3 rtl:ml-3 flex-none">
-                                    <img src={!! asset('images/avatar.png') !!} alt="" class="object-cover w-full h-full rounded-full">
-                                  </span>
-                                  <span class="text-sm text-slate-600 dark:text-slate-300 lowercase">${data}</span>
-                                </span>`;
-                        }
+                        data: 'nama',
                     },
                     {
-                        data: 'profile.name',
+                        data: 'jenkel',
                     },
                     {
-                        data: 'type',
+                        data: 'usia',
                     },
                     {
-                        data: 'lokasi',
+                        data: 'kelurahan.desa',
+                        name: 'desa'
                     },
                     {
-                        data: 'status',
+                        data: 'rt',
+                    },
+                    {
+                        data: 'rw',
+                    },
+                    {
+                        data: 'kecamatan.kecamatan',
+                        name: 'kec'
+                    },
+                    {
+                        data: 'tps',
+                    },
+                    {
+                        data: 'status_pemilih',
                     },
                     {
                         data: 'id',

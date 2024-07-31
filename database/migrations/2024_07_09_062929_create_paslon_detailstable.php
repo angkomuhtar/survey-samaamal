@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('positions', function (Blueprint $table) {
+        Schema::create('paslon_details', function (Blueprint $table) {
             $table->id();
-            $table->integer('company_id');
-            $table->integer('division_id');
-            $table->string('position');
+            $table->integer('id_paslon');
+            $table->string('nama');
+            $table->enum('type', ['k', 'w'])->default('k');
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('positions');
+        Schema::dropIfExists('paslon_details');
     }
 };

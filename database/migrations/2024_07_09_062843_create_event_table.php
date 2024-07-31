@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('shifts', function (Blueprint $table) {
-            $table->set('days',['1', '2', '3', '4', '5', '6', '7'])->nullable()->after('rest');
+        Schema::create('events', function (Blueprint $table) {
+            $table->id();
+            $table->string('event');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('shifts', function (Blueprint $table) {
-            $table->dropColumn('days');
-        });
+        Schema::dropIfExists('events');
     }
 };

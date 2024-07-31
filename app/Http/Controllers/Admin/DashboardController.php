@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use Carbon\Carbon;
-use App\Models\Clock;
+use App\Models\User;
 use App\Models\Profile;
 use App\Models\Employee;
 use App\Models\ViewClock;
+use App\Models\UserProfile;
 use Illuminate\Support\Str;
 use App\Imports\UsersImport;
 use Illuminate\Http\Request;
@@ -22,41 +23,46 @@ class DashboardController extends Controller
 
     public function index ()
     {
-        $today = Carbon::now()->format('Y-m-d');
-        $employee= Employee::select('division_id', DB::raw('count(*) as post_count'))->with('division')
-        ->whereNotIn('division_id', [11, 11001])
-        ->whereHas('user', function($query){
-            $query->where('status','Y');
-        })
-        ->groupBy('division_id')
-        ->get();
-
-        $hadir=  DB::table('v_clock')
-        ->select('shift','value', 'site','division', DB::raw('count(*) as total'))
-        ->where('date', $today)
-        ->groupBy('shift', 'value', 'site', 'division')
-        ->orderBy('division')
-        ->get();
-
-        $data = $hadir->map(function($item){
-            if ($item->shift == 'Day Shift') {
-                $item->type = 'day';
-            }else if($item->shift == 'Night Shift'){
-                $item->type = 'night';
-            }else{
-                $item->type = 'office';
-            }
-            return $item;
-        });
-        $groupped= $data->groupBy('type');
-
         return view('pages.dashboard.index', [
-            'pageTitle' => 'Analytic Dashboard',
-            'division_count' => $employee,
-            'day_count' => $groupped['day'] ?? [],
-            'night_count' => $groupped['night'] ?? [],
-            'office_count' => $groupped['office'] ?? [],
-        ]);
+                'pageTitle' => 'Analytic Dashboard'
+            ]);
+        // $users =  User::get();
+        // dd(DB::getQueryLog());
+        // $today = Carbon::now()->format('Y-m-d');
+        // $employee= Employee::select('division_id', DB::raw('count(*) as post_count'))->with('division')
+        // ->whereNotIn('division_id', [11, 11001])
+        // ->whereHas('user', function($query){
+        //     $query->where('status','Y');
+        // })
+        // ->groupBy('division_id')
+        // ->get();
+
+        // $hadir=  DB::table('v_clock')
+        // ->select('shift','value', 'site','division', DB::raw('count(*) as total'))
+        // ->where('date', $today)
+        // ->groupBy('shift', 'value', 'site', 'division')
+        // ->orderBy('division')
+        // ->get();
+
+        // $data = $hadir->map(function($item){
+        //     if ($item->shift == 'Day Shift') {
+        //         $item->type = 'day';
+        //     }else if($item->shift == 'Night Shift'){
+        //         $item->type = 'night';
+        //     }else{
+        //         $item->type = 'office';
+        //     }
+        //     return $item;
+        // });
+        // $groupped= $data->groupBy('type');
+
+        // return view('pages.dashboard.index', [
+        //     'pageTitle' => 'Analytic Dashboard',
+        //     'division_count' => $employee,
+        //     'day_count' => $groupped['day'] ?? [],
+        //     'night_count' => $groupped['night'] ?? [],
+        //     'office_count' => $groupped['office'] ?? [],
+        // ]);
     }
 
     public function rekap_hadir(Request $request){

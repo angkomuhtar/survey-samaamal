@@ -23,10 +23,6 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'email_verified_at',
-        'roles',
-        'phone_id',
-        'avatar',
-        'status',
     ];
 
     /**
@@ -68,45 +64,50 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function getAvatarUrlAttribute()
+    public function profile()
     {
-        if($this->avatar !== null){
-            return asset('storage/images/avatar/'.$this->avatar);
-        }else{
-            return null;
+        return $this->hasOne(UserProfile::class);
+    }
+
+    public function getLokasiAttribute()
+    {
+        $level = $this->profile->level;
+        switch ($level) {
+            case 1:
+                return 'Desa/Kelurahan';
+                break;
+            case 2:
+                return 'Kecamatan';
+                break;
+            case 3:
+                return 'Kabupaten';
+                break;
+            default:
+                return 'Admin';
+                break;
         }
     }
 
-    public function profile()
+    public function getLeveltypeAttribute()
     {
-        return $this->hasOne(Profile::class);
+        $level = $this->profile->level;
+        switch ($level) {
+            case 1:
+                return 'Desa/Kelurahan';
+                break;
+            case 2:
+                return 'Kecamatan';
+                break;
+            case 3:
+                return 'Kabupaten';
+                break;
+            case 6:
+                    return 'Admin';
+                    break;
+            case 9:
+                return 'superadmin';
+                break;
+        }
     }
-
-    public function employee()
-    {
-        return $this->hasOne(Employee::class);
-    }
-
-    public function leaves()
-    {
-        return $this->hasMany(LeaveBalance::class)->where('start_date', '<=', now())->where('exp_date','>=', now());
-    }
-
-    public function bawahan()
-    {
-        return $this->hasMany(Employee::class, 'id', 'atasan_id');
-    }
-
-    public function sleep()
-    {
-        return $this->hasMany(Sleep::class, 'user_id', 'id');
-    }
-
-    public function absen()
-    {
-        return $this->hasMany(Clock::class, 'user_id', 'id');
-    }
-
-
 }
 

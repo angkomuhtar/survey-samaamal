@@ -20,11 +20,17 @@ class UsersSeeder extends Seeder
     public function run(): void
     {
         DB::table('users')->insert([
-            'email' => 'Angkomuhtar@gmail.com',
-            'username' => 'Admin',
+            'id' => 1,
+            'email' => 'dev.ngkmhtr@mail.com',
+            'username' => 'admin',
             'email_verified_at' => now(),
             'password' => bcrypt('password'),
             'remember_token' => Str::random(10),
+        ]);
+        DB::table('user_profiles')->insert([
+            'user_id' => 1,
+            'name' => 'admin',
+            'level' => '9',
         ]);
         
     }

@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('clock_locations', function (Blueprint $table) {
+        Schema::create('desas', function (Blueprint $table) {
             $table->id();
-            $table->double('latitude', 10, 7);
-            $table->double('longitude', 10, 7);
-            $table->string('name');
-            $table->enum('status', ['Y', 'N']);
+            $table->integer('id_kab');
+            $table->integer('id_kec');
+            $table->string('desa');
+            $table->enum('tipe', ['ds', 'kl']);
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('clock_locations');
+        Schema::dropIfExists('desas');
     }
 };

@@ -14,12 +14,11 @@ class isAdmin
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, ...$role): Response
+    public function handle(Request $request, Closure $next, $role): Response
     {
 
-        $user_roles = Auth::guard('web')->user()->roles ?? '';
-        // return response()->json($user_roles, 200);
-        if (in_array($user_roles, $role)) {
+        $user_roles = Auth::guard('web')->user()->profile->level ?? '';
+        if ($user_roles >= $role ) {
             return $next($request);
         }
         if (Auth::guard('web')->check()) {

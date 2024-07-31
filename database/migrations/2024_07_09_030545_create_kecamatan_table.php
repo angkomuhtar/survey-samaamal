@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->String('status')->default('Y')->after('roles');
+        Schema::create('kecamatans', function (Blueprint $table) {
+            $table->id();
+            $table->integer('id_kab');
+            $table->string('kecamatan');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('status');
-        });
+        Schema::dropIfExists('kecamatans');
     }
 };

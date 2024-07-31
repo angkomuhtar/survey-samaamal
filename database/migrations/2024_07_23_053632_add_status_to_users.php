@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('version', function (Blueprint $table) {
-            $table->id();
-            $table->enum('device', ['ANDROID','IOS'])->default('ANDROID');
-            $table->string('version');
-            $table->string('download');
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            //
+            $table->char('status')->default('Y')->nullable()->after('password');
         });
     }
 
@@ -25,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('version');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('status'); 
+        });
     }
 };

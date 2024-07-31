@@ -36,8 +36,7 @@ class LoginController extends Controller
         if(Auth::guard('web')->attempt($credentials))
         {
             $user = Auth::guard('web')->getLastAttempted();
-            // dd($user);
-            if (in_array($user->roles, array('admin', 'superadmin', 'hrd'))) {
+            if ($user->status == 'Y' ) {
                 $request->session()->regenerate();
                 return redirect()->route('dashboard')
                     ->withSuccess('You have successfully logged in!');
@@ -46,7 +45,7 @@ class LoginController extends Controller
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
                 return back()->withErrors([
-                    'email' => 'Your Roles not Permission',
+                    'email' => 'Akun Tidak Aktif',
                 ])->onlyInput('email', 'password');
             }
         }else {

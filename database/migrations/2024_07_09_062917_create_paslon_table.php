@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('leave_types', function (Blueprint $table) {
+        Schema::create('paslons', function (Blueprint $table) {
             $table->id();
-            $table->string('value');
-            $table->integer('max_day');
-            $table->boolean('allow_backdate')->default(false);
-            $table->enum('cut_leave', ['Y', 'N'])->default('N');
-            $table->enum('status', ['Y', 'N'])->default('Y');
+            $table->integer('id_event');
+            $table->string('no_urut');
+            $table->enum('type',['s', 'd']);
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('leave_types');
+        Schema::dropIfExists('paslons');
     }
 };
