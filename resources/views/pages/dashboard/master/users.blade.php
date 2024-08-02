@@ -186,7 +186,7 @@
 
 
     @push('scripts')
-        @vite(['resources/js/plugins/Select2.min.js'])
+        {{-- @vite(['resources/js/plugins/Select2.min.js']) --}}
         <script type="module">
             $('#lokasi').select2({
                 dropdownParent: $('#offcanvas'),

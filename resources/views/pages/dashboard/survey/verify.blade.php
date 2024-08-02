@@ -2,7 +2,7 @@
 
     {{-- form offcanvas --}}
     <div class="offcanvas offcanvas-end fixed bottom-0 flex flex-col max-w-full bg-white dark:bg-slate-800 invisible bg-clip-padding shadow-sm outline-none transition duration-300 ease-in-out text-gray-700 top-0 ltr:right-0 rtl:left-0 border-none w-96"
-        id="offcanvas" aria-labelledby="offcanvas">
+        id="offcanvas2" aria-labelledby="offcanvas">
         <div
             class="offcanvas-header flex items-center justify-between p-4 pt-3 border-b border-b-slate-300 dark:border-b-slate-900">
             <div>
@@ -84,7 +84,7 @@
         <div class=" space-y-5">
             <div class="card">
                 <header class=" card-header noborder">
-                    <h4 class="card-title">Survey</h4>
+                    <h4 class="card-title">Verifikasi Kecamatan</h4>
                 </header>
                 <div class="card-body px-6 pb-6">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 ">
@@ -94,8 +94,20 @@
                                 required="required">
                         </div>
                         <div class="input-area">
+                            <label for="level" class="form-label">Desa/Kelurahan</label>
+                            <select id="desa" class="form-control" name="desa">
+                                <option value="" selected class="dark:bg-slate-700 !text-slate-300">Pilih Data
+                                </option>
+                                @foreach ($tps as $item)
+                                    <option value="{{ $item->tps }}" class="dark:bg-slate-700 !text-slate-300">
+                                        {{ $item->tps }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="input-area">
                             <label for="level" class="form-label">TPS</label>
                             <select id="tps" class="form-control" name="tps">
+
                                 <option value="" selected class="dark:bg-slate-700 !text-slate-300">Pilih Data
                                 </option>
                                 @foreach ($tps as $item)
@@ -105,6 +117,7 @@
                             </select>
                             <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">
                                 This is invalid state.</div>
+
                         </div>
                     </div>
                 </div>
@@ -118,6 +131,9 @@
                                     class="min-w-full divide-y divide-slate-100 table-fixed dark:divide-slate-700 data-table">
                                     <thead class=" bg-slate-200 dark:bg-slate-700">
                                         <tr>
+                                            <th scope="col" class=" table-th ">
+                                                Verifikasi
+                                            </th>
                                             <th scope="col" class=" table-th ">
                                                 Nama
                                             </th>
@@ -148,7 +164,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{!! route('survey') !!}',
+                    url: '{!! route('verify') !!}',
                     data: function(d) {
                         return $.extend({}, d, {
                             name: $('#name').val(),
@@ -188,10 +204,30 @@
                     },
                     {
                         width: '200px',
-                        targets: "_all"
+                        targets: [0]
                     }
                 ],
                 columns: [{
+                        data: 'kelurahan.survey',
+                        name: 'status',
+                        render: (data, type, row, meta) => {
+                            if (row.survey[0].kec_verify == 'N') {
+                                return `<div class="flex-1">
+                                        <a href="#" class="btn btn-sm inline-flex justify-center btn-outline-primary items-center" id="btn-edit" data-id="${row.id}" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas">
+                                            <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="heroicons-outline:newspaper"></iconify-icon>
+                                            <span>Verifikasi</span>
+                                        </a>
+                                    </div>`;
+                            } else {
+                                return `<div class="flex-1">
+                                            <div class="text-slate-800 dark:text-slate-300 text-sm font-medium mb-1">${row.survey[0].pilihan == '5' ? 'Belum Memilih - ' : row.survey[0].pilihan == '1' ? 'Memilih - ' : 'Netral'} ${row.survey[0].paslon.nama}</div>
+                                            <div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300">${row.survey[0].kordinator  == 'NULL' ? '' : row.survey[0].kordinator} - ${row.survey[0].kec_verify == 'N' ? 'Belum diverifikasi' : 'Terverifikasi'}</div> 
+                                            <div class="text-slate-400 dark:text-slate-400 text-xs mt-1" >${row.survey[0].ket}</div>
+                                        </div>`;
+                            }
+                        }
+                    },
+                    {
                         data: 'nama',
                         name: 'nama',
                         render: (data, type, row, meta) => {
@@ -217,20 +253,11 @@
                         data: 'kelurahan.survey',
                         name: 'status',
                         render: (data, type, row, meta) => {
-                            if (row.survey.length > 0) {
-                                return `<div class="flex-1">
-                                            <div class="text-slate-800 dark:text-slate-300 text-sm font-medium mb-1">${row.survey[0].pilihan == '5' ? 'Belum Memilih - ' : row.survey[0].pilihan == '1' ? 'Memilih - ' : 'Netral'} ${row.survey[0].paslon.nama}</div>
-                                            <div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300">${row.survey[0].kordinator  == 'NULL' ? '' : row.survey[0].kordinator} - ${row.survey[0].kec_verify == 'N' ? 'Belum diverifikasi' : 'Terverifikasi'}</div> 
-                                            <div class="text-slate-400 dark:text-slate-400 text-xs mt-1" >${row.survey[0].ket}</div>
-                                        </div>`;
-                            } else {
-                                return `<div class="flex-1">
-                                        <a href="#" class="btn btn-sm inline-flex justify-center btn-outline-primary items-center" id="btn-edit" data-id="${row.id}" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas">
-                                            <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="heroicons-outline:newspaper"></iconify-icon>
-                                            <span>survey</span>
-                                        </a>
+                            return `<div class="flex-1">
+                                        <div class="text-slate-800 dark:text-slate-300 text-sm font-medium mb-1">${row.survey[0].pilihan == '5' ? 'Belum Memilih - ' : row.survey[0].pilihan == '1' ? 'Memilih - ' : 'Netral'} ${row.survey[0].paslon.nama}</div>
+                                        <div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300">${row.survey[0].kordinator  == 'NULL' ? '' : row.survey[0].kordinator} - ${row.survey[0].kec_verify == 'N' ? 'Belum diverifikasi' : 'Terverifikasi'}</div> 
+                                        <div class="text-slate-400 dark:text-slate-400 text-xs mt-1" >${row.survey[0].ket}</div>
                                     </div>`;
-                            }
                         }
                     },
                 ],
