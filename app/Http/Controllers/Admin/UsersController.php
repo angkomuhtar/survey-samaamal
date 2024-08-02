@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Division;
 use App\Models\Employee;
+use App\Models\Kecamatan;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 
 class UsersController extends Controller
@@ -14,7 +15,7 @@ class UsersController extends Controller
     public function index(Request $request)
     {
         $data =  User::all();
-        $departemen = Division::all();
+        $kecamatan = Kecamatan::all();
 
         if ($request->ajax()) {
             $data = User::with('employee', 'employee.division', 'employee.position', 'profile')
@@ -31,8 +32,7 @@ class UsersController extends Controller
 
         return view('pages.dashboard.master.users', [
             'pageTitle' => 'Users',
-            'tableData' => $data,
-            'dept'=>$departemen
+            'kec'=>$kecamatan
         ]);
     }
 

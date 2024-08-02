@@ -14,6 +14,7 @@ class UserProfile extends Model
         'user_id', 
         'name', 
         'level',
+        'lokasi',
     ];
 
     public function user(): BelongsTo

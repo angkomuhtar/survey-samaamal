@@ -9,6 +9,7 @@
     <title>SAMA - AMAL</title>
 
     @vite(['resources/css/app.scss', 'resources/js/custom/store.js'])
+
 </head>
 
 <body class="font-inter dashcode-app" id="body_class">

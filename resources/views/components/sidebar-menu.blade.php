@@ -52,7 +52,7 @@
                     </a>
                 </li>
             @endif
-            @if (Auth::guard('web')->user()->profile->level > 1)
+            @if (Auth::guard('web')->user()->profile->level > 5)
                 <li class="{{ \Request::route()->getName() == 'absensi*' ? 'active' : '' }}">
                     <a href="#" class="navItem">
                         <span class="flex items-center">

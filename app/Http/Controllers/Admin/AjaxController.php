@@ -2,17 +2,41 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Models\Desa;
+use App\Models\User;
 use App\Models\Division;
 use App\Models\Position;
-use App\Models\User;
+use App\Models\Kecamatan;
 use Illuminate\Http\Request;
+use App\Helpers\ResponseHelper;
+use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
-use App\Helpers\ResponseHelper;
 
 class AjaxController extends Controller
 {
+    public function getKecamatan(Request $request, $id)
+    {
+        if ($request->ajax()) {
+            $data = Kecamatan::where('id_kab', $id)->get();
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+        }
+    }
+
+    public function getKelurahan(Request $request, $id)
+    {
+        if ($request->ajax()) {
+            $data = Desa::where('id_kec', $id)->get();
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+        }
+    }
+
     public function getDivision(Request $request, $id)
     {
         if ($request->ajax()) {

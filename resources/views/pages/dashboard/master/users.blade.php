@@ -32,6 +32,14 @@
                             </div>
                         </div>
                         <div class="input-area relative">
+                            <label for="largeInput" class="form-label">Email</label>
+                            <div class="relative">
+                                <input type="email" name="email" class="form-control !pl-9" placeholder="Email">
+                                <iconify-icon icon="heroicons:globe-alt"
+                                    class="absolute left-2 top-1/2 -translate-y-1/2 text-base text-slate-500"></iconify-icon>
+                            </div>
+                        </div>
+                        <div class="input-area relative">
                             <label for="largeInput" class="form-label">Password</label>
                             <div class="relative">
                                 <input type="password" name="password" class="form-control !pl-9"
@@ -51,7 +59,7 @@
                         <div class="input-area relative">
                             <label for="largeInput" class="form-label">Level Akun</label>
                             <div class="relative">
-                                <select id="select" class="form-control !pl-9" name="level">
+                                <select id="level" class="form-control !pl-9" name="level">
                                     <option value="" selected disabled class="dark:bg-slate-700 text-slate-300">
                                         Pilih Data</option>
                                     <option value="1" class="dark:bg-slate-700 !text-slate-300">Desa/Kelurahan
@@ -67,25 +75,22 @@
                             </div>
                         </div>
                         <div class="input-area relative">
-                            <label for="largeInput" class="form-label">Lokasi</label>
+                            <label for="largeInput" class="form-label">Kecamatan</label>
                             <div class="relative">
-                                <select id="lokasi" class="form-control !pl-9" name="lokasi">
-                                    <option selected disabled class="dark:bg-slate-700 text-slate-300">Pilih Data
-                                    </option>
-                                    <option value="6" class="dark:bg-slate-700 !text-slate-300">Admin</option>
-                                    <option value="6" class="dark:bg-slate-700 !text-slate-300">Admin</option>
-                                    <option value="6" class="dark:bg-slate-700 !text-slate-300">Admin</option>
-                                    <option value="6" class="dark:bg-slate-700 !text-slate-300">Admin</option>
-
+                                <select id="kecamatan" class="form-control !pl-9" name="kecamatan" disabled>
+                                    <option value="" selected disabled class="dark:bg-slate-700 !text-slate-300">
+                                        Pilih Data</option>
+                                    @foreach ($kec as $item)
+                                        <option value="{{ $item->id }}" class="dark:bg-slate-700 !text-slate-300">
+                                            {{ $item->kecamatan }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
                         <div class="input-area relative">
-                            <label for="largeInput" class="form-label">Username</label>
+                            <label for="largeInput" class="form-label">Kelurahan/Desa</label>
                             <div class="relative">
-                                <input type="text" name="username" class="form-control !pl-9" placeholder="username">
-                                <iconify-icon icon="heroicons:globe-alt"
-                                    class="absolute left-2 top-1/2 -translate-y-1/2 text-base text-slate-500"></iconify-icon>
+                                <select id="desa" class="form-control !pl-9" name="desa" disabled></select>
                             </div>
                         </div>
                         <div class="flex justify-end space-x-3">
@@ -119,12 +124,12 @@
                     <div class="grid grid-cols-4 gap-3 ">
                         <div class="input-area">
                             <label for="username" class="form-label">Nama</label>
-                            <input id="name" type="text" name="name" class="form-control"
+                            <input id="f_name" type="text" name="name" class="form-control"
                                 placeholder="Nama" required="required">
                         </div>
                         <div class="input-area">
                             <label for="level" class="form-label">Level</label>
-                            <select id="level" class="form-control" name="level">
+                            <select id="f_level" class="form-control" name="level">
                                 <option value="" selected class="dark:bg-slate-700 !text-slate-300">Pilih Data
                                 </option>
                                 <option value="1" class="dark:bg-slate-700 !text-slate-300">Desa/Kelurahan
@@ -184,7 +189,8 @@
         @vite(['resources/js/plugins/Select2.min.js'])
         <script type="module">
             $('#lokasi').select2({
-                dropdownParent: $('#offcanvas')
+                dropdownParent: $('#offcanvas'),
+                placeholder: 'Pilih Data'
             });
             var table = $("#data-table, .data-table").DataTable({
                 processing: true,
@@ -193,8 +199,8 @@
                     url: '{!! route('master.users') !!}',
                     data: function(d) {
                         return $.extend({}, d, {
-                            name: $('#name').val(),
-                            level: $('#level').val(),
+                            name: $('#f_name').val(),
+                            level: $('#f_level').val(),
                         })
                     },
                 },
@@ -265,7 +271,7 @@
 
             table.tables().body().to$().addClass('bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700');
 
-            $('#name, #level').bind('change', function() {
+            $('#f_name, #f_level').bind('change', function() {
                 table.draw()
             })
 
@@ -379,6 +385,62 @@
                             confirmButtonText: 'OK'
                         })
                     });
+            })
+
+            $(document).on('change', '#level', function(e) {
+                e.preventDefault();
+                let val = $(this).val();
+                if (val <= 2) {
+                    $("#kecamatan").prop('disabled', false);
+                    $("#kecamatan").val("");
+                    $("#kecamatan").select2({
+                        dropdownParent: $('#offcanvas'),
+                        placeholder: 'Pilih Data'
+                    });
+                } else {
+                    $("#kecamatan").prop('disabled', true);
+                    $("#kecamatan").val("");
+                    $("#kecamatan").select2('destroy');
+                    $('#desa').val("");
+                    $("#desa").prop('disabled', true);
+                    $('#desa').select2('destroy');
+
+                }
+            })
+
+            $(document).on('change', '#kecamatan', function(e) {
+                e.preventDefault();
+                let val = $(this).val();
+                let level = $("#level").val()
+                let dataOption = '<option value="" class="dark:bg-slate-700">Pilih Data</option>';
+                if (level == 1) {
+                    var url = '{!! route('ajax.kelurahan', ['id' => ':id']) !!}';
+                    url = url.replace(':id', val);
+                    $.ajax({
+                        type: 'GET',
+                        url: url,
+                        success: (res) => {
+                            if (res.data.length > 0) {
+                                res.data.map((data) => {
+                                    dataOption +=
+                                        `<option value="${data.id}" class="dark:bg-slate-700">${data.desa}</option>`
+                                })
+                            }
+                            $('#desa').html(dataOption);
+                            $("#desa").prop('disabled', false);
+                            $('#desa').select2({
+                                dropdownParent: $('#offcanvas'),
+                                placeholder: 'Pilih Data'
+                            });
+                        },
+                        error: () => {
+                            $('select[name="desa"]').html(dataOption)
+                        }
+                    })
+                } else {
+                    $('#desa').val("");
+                    $("#desa").prop('disabled', true);
+                }
             })
         </script>
     @endpush

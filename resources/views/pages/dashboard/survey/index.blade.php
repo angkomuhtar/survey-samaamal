@@ -86,7 +86,7 @@
                 <header class=" card-header noborder">
                     <h4 class="card-title">Survey</h4>
                 </header>
-                <div class="card-body px-6">
+                <div class="card-body px-6 pb-6">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 ">
                         <div class="input-area">
                             <label for="username" class="form-label">Nama</label>
@@ -140,7 +140,6 @@
 
 
     @push('scripts')
-        @vite(['resources/js/plugins/Select2.min.js'])
         <script type="module">
             $('#lokasi').select2({
                 dropdownParent: $('#offcanvas')

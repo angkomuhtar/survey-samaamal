@@ -18,11 +18,13 @@ class SurveyController extends Controller
         $user = Auth::guard('web')->user();
         if ($request->ajax()) {
             $data = Pemilih::with('kelurahan', 'kecamatan', 'survey', 'survey.paslon')->where('nama','LIKE','%'.$request->name.'%');
+            
             if ($user->profile->level == 1) {
                 $data->where('desa', $user->profile->lokasi);
-            }
-            if ($user->profile->level == 2) {
+            }elseif ($user->profile->level == 2) {
                 $data->where('kec', $user->profile->lokasi);
+            }elseif ($user->profile->level <= 6) {
+                $data->where('kab', $user->profile->lokasi);
             }
 
             if ($request->tps) {

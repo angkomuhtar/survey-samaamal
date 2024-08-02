@@ -35,6 +35,10 @@ Route::prefix('dashboard')->group(function()
 {
     Route::middleware('Admin:0')->group(function () {
         Route::get('/',[DashboardController::class, 'index'])->name('dashboard');
+        Route::controller(AjaxController::class)->prefix('ajax')->group(function(){
+            Route::get('/{id}/kecamatan', 'getKecamatan')->name('ajax.kecamatan');
+            Route::get('/{id}/desa', 'getKelurahan')->name('ajax.kelurahan');
+        });
         Route::middleware('Admin:1')->prefix('master')->group(function(){
             Route::controller(UserController::class)->prefix('users')->group(function(){
                 Route::get('/', 'index')->name('master.users');
