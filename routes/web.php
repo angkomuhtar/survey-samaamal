@@ -21,9 +21,7 @@ use App\Http\Controllers\Admin\DashboardController;
 |
 */
 
-Route::get('/', function () {
-    return 'Welcome';
-});
+Route::get('/',[DashboardController::class, 'index'])->name('dashboard')->middleware('Admin:0');
 
 Route::controller(LoginController::class)->group(function() {
     Route::get('/login', 'login')->name('login');
