@@ -63,8 +63,7 @@ Route::prefix('dashboard')->group(function()
                 Route::get('/', 'index')->name('verify');
                 Route::post('/', 'store')->name('verify.store');
                 Route::get('/{id}', 'edit')->name('verify.edit');
-                Route::post('/{id}', 'update')->name('verify.update');
-                Route::delete('/{id}', 'delete')->name('verify.delete');
+                Route::post('/{id}', 'verify')->name('verify.verified');
             });
         });
     });

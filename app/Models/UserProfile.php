@@ -13,6 +13,7 @@ class UserProfile extends Model
     protected $fillable = [
         'user_id', 
         'name', 
+        'alamat',
         'level',
         'lokasi',
     ];

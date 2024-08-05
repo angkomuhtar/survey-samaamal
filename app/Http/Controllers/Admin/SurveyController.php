@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Paslon;
 use App\Models\Survey;
 use App\Models\Pemilih;
+use App\Models\Kecamatan;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -30,15 +31,25 @@ class SurveyController extends Controller
             if ($request->tps) {
                 $data->where('tps', $request->tps);
             }
+            if ($request->kec) {
+                $data->where('kec', $request->kec);
+            }
+            if ($request->desa) {
+                $data->where('desa', $request->desa);
+            }
             return DataTables::eloquent($data)->toJson();
         }
         $paslon = Paslon::all();
         $tps = Pemilih::select('tps')->groupBy('tps')->get();
-
+        $kecamatan = Kecamatan::where('id_kab', 1);
+        if ($user->profile->level <= 2) {
+            $kecamatan->where('id', $user->profile->lokasi);
+        }
         return view('pages.dashboard.survey.index', [
             'pageTitle' => 'Daftar Pemilih Tetap',
             'paslon'=> $paslon,
             'tps'=> $tps,
+            'kecamatan'=> $kecamatan->get(),
         ]);
     }
 
@@ -56,7 +67,7 @@ class SurveyController extends Controller
                   'data' => $validator->errors()
               ]);
         }
-        $paslon = $request->paslon ? $request->paslon : '1';
+        $paslon = $request->paslon ? $request->paslon : '999';
 
         $data = Survey::create([
             'event_id' => 1,
@@ -64,6 +75,7 @@ class SurveyController extends Controller
             'pilihan' => $request->pilihan,
             'paslon_id' => $paslon,
             'ket' => $request->ket,
+            'relawan' => $request->relawan ? 'Y' : 'N',
             'kec_verify' => 'N',
             'kordinator' => $request->kord
             ]);
@@ -72,5 +84,20 @@ class SurveyController extends Controller
                 'message' => 'Data Divisi Berhasil Disimpan'
             ]);
 
+    }
+
+    public function delete(String $id){
+        $data = Survey::destroy($id);
+        if ($data) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Data Resetted'
+            ]);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'Error'
+            ]);
+        }
     }
 }

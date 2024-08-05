@@ -20,7 +20,6 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $fillable = [
         'username',
-        'email',
         'password',
         'email_verified_at',
     ];
@@ -74,13 +73,15 @@ class User extends Authenticatable implements JWTSubject
         $level = $this->profile->level;
         switch ($level) {
             case 1:
-                return 'Desa/Kelurahan';
+                $data = Desa::find($this->profile->lokasi);
+                return $data->desa;
                 break;
             case 2:
-                return 'Kecamatan';
+                $data = Kecamatan::find($this->profile->lokasi);
+                return $data->kecamatan;
                 break;
             case 3:
-                return 'Kabupaten';
+                return 'Buton Tengah';
                 break;
             default:
                 return 'Admin';

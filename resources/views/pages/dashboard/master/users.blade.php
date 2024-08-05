@@ -32,20 +32,18 @@
                             </div>
                         </div>
                         <div class="input-area relative">
-                            <label for="largeInput" class="form-label">Email</label>
-                            <div class="relative">
-                                <input type="email" name="email" class="form-control !pl-9" placeholder="Email">
-                                <iconify-icon icon="heroicons:globe-alt"
-                                    class="absolute left-2 top-1/2 -translate-y-1/2 text-base text-slate-500"></iconify-icon>
-                            </div>
-                        </div>
-                        <div class="input-area relative">
                             <label for="largeInput" class="form-label">Password</label>
                             <div class="relative">
                                 <input type="password" name="password" class="form-control !pl-9"
                                     placeholder="password">
                                 <iconify-icon icon="heroicons:globe-alt"
                                     class="absolute left-2 top-1/2 -translate-y-1/2 text-base text-slate-500"></iconify-icon>
+                            </div>
+                        </div>
+                        <div class="input-area relative">
+                            <label for="largeInput" class="form-label">Alamat</label>
+                            <div class="relative justify-start items-start">
+                                <textarea class="form-control" name="alamat" id="" cols="30" rows="3"></textarea>
                             </div>
                         </div>
                         <div class="input-area relative">
@@ -168,6 +166,9 @@
                                                 Lokasi
                                             </th>
                                             <th scope="col" class=" table-th ">
+                                                Alamat
+                                            </th>
+                                            <th scope="col" class=" table-th ">
                                                 Status
                                             </th>
                                             <th scope="col" class=" table-th ">
@@ -255,6 +256,9 @@
                     },
                     {
                         data: 'lokasi',
+                    },
+                    {
+                        data: 'profile.alamat',
                     },
                     {
                         data: 'status',

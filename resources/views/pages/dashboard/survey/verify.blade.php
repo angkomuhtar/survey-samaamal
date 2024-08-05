@@ -213,17 +213,16 @@
                         render: (data, type, row, meta) => {
                             if (row.survey[0].kec_verify == 'N') {
                                 return `<div class="flex-1">
-                                        <a href="#" class="btn btn-sm inline-flex justify-center btn-outline-primary items-center" id="btn-edit" data-id="${row.id}" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas">
+                                        <a href="#" class="btn btn-sm inline-flex justify-center btn-outline-primary items-center" id="btn-verify" data-id="${row.survey[0].id}" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas">
                                             <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="heroicons-outline:newspaper"></iconify-icon>
                                             <span>Verifikasi</span>
                                         </a>
                                     </div>`;
                             } else {
-                                return `<div class="flex-1">
-                                            <div class="text-slate-800 dark:text-slate-300 text-sm font-medium mb-1">${row.survey[0].pilihan == '5' ? 'Belum Memilih - ' : row.survey[0].pilihan == '1' ? 'Memilih - ' : 'Netral'} ${row.survey[0].paslon.nama}</div>
-                                            <div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300">${row.survey[0].kordinator  == 'NULL' ? '' : row.survey[0].kordinator} - ${row.survey[0].kec_verify == 'N' ? 'Belum diverifikasi' : 'Terverifikasi'}</div> 
-                                            <div class="text-slate-400 dark:text-slate-400 text-xs mt-1" >${row.survey[0].ket}</div>
-                                        </div>`;
+                                return `<div href="#" class="btn btn-sm inline-flex justify-center btn-outline-success items-center"> 
+                                    <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon ="heroicons:check-badge-20-solid"></iconify-icon>
+                                    <span> Terverifikasi </span> 
+                                    </div>`;
                             }
                         }
                     },
@@ -254,9 +253,13 @@
                         name: 'status',
                         render: (data, type, row, meta) => {
                             return `<div class="flex-1">
-                                        <div class="text-slate-800 dark:text-slate-300 text-sm font-medium mb-1">${row.survey[0].pilihan == '5' ? 'Belum Memilih - ' : row.survey[0].pilihan == '1' ? 'Memilih - ' : 'Netral'} ${row.survey[0].paslon.nama}</div>
-                                        <div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300">${row.survey[0].kordinator  == 'NULL' ? '' : row.survey[0].kordinator} - ${row.survey[0].kec_verify == 'N' ? 'Belum diverifikasi' : 'Terverifikasi'}</div> 
-                                        <div class="text-slate-400 dark:text-slate-400 text-xs mt-1" >${row.survey[0].ket}</div>
+                                        <div class="text-slate-800 dark:text-slate-300 text-sm font-medium mb-1">${row.survey[0].pilihan == '5' ? 'Belum Memilih - ' : row.survey[0].pilihan == '1' ? 'Memilih - ' : 'Netral'} ${row.survey[0].paslon.id != '999' ? row.survey[0].paslon.nama : '' }</div>
+                                        ${row.survey[0].kec_verify == 'Y' ? 
+                                        `<div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300 flex justify-start items-center "><iconify-icon class="text-sm mr-1" icon="heroicons:check-badge-20-solid"></iconify-icon><span>terverifikasi</span></div>` : ''}
+                                        ${row.survey[0].kordinator != null ?  
+                                        `<div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300 flex justify-start items-center "><iconify-icon class="text-sm mr-1" icon="heroicons:user-group-20-solid"></iconify-icon><span>${row.survey[0].kordinator} ${row.survey[0].relawan == 'Y' ? '(Relawan)' : ''}</span></div>` : ''}              
+                                        ${row.survey[0].ket ?
+                                        `<div class="text-slate-400 dark:text-slate-400 text-xs mt-1" >${row.survey[0].ket}</div>` : '' }
                                     </div>`;
                         }
                     },
@@ -321,6 +324,42 @@
                 } else {
                     $("#paslon").prop('disabled', false);
                 }
+            })
+
+            $(document).on('click', '#btn-verify', (e) => {
+                var id = $(e.currentTarget).data('id');
+                Swal.fire({
+                    title: 'Anda Yakin.?',
+                    text: "Data Survey Akan di verifikasi",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var url = '{!! route('verify.verified', ['id' => ':id']) !!}';
+                        url = url.replace(':id', id);
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            data: {
+                                "_token": "{{ csrf_token() }}"
+                            },
+                            success: (msg) => {
+                                if (msg.success) {
+                                    Swal.fire(
+                                        'Success!',
+                                        'Data terverifikasi',
+                                        'success'
+                                    ).then(() => {
+                                        table.draw()
+                                    })
+                                }
+                            }
+                        })
+                    }
+                })
             })
         </script>
     @endpush

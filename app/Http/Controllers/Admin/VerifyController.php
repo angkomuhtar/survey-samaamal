@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Paslon;
+use App\Models\Survey;
 use App\Models\Pemilih;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -36,4 +37,23 @@ class VerifyController extends Controller
             'tps'=> $tps,
         ]);
     }
+
+    public function verify(String $id){
+        $data= Survey::find($id)->update([
+            'kec_verify' => 'Y'
+        ]);
+
+        if ($data) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Data Berhasil Disimpan'
+            ]);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'Data Berhasil Disimpan'
+            ]);
+        }
+    }
 }
+

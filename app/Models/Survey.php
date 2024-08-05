@@ -17,6 +17,7 @@ class Survey extends Model
         'paslon_id',
         'ket',
         'kec_verify',
+        'relawan',
         'kordinator'
     ];
     

@@ -46,8 +46,8 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'username'     => 'required|string|unique:users',
-            'email'     => 'required|email:rfc|string|unique:users',
             'password'  => 'required|min:6',
+            'alamat'     => 'required|string',
             'name'     => 'required',
             'level'  => 'required|numeric',
             'kecamatan'  => 'required_if:level,<=,2',
@@ -68,7 +68,6 @@ class UserController extends Controller
           try {
             $users = User::create([
               'username' => $request->username, 
-              'email' => $request->email,
               'email_verified_at' => now(),
               'password' => bcrypt($request->password)
             ]);
@@ -88,6 +87,7 @@ class UserController extends Controller
 
             $profile = $users->profile()->create([
                 'name'=> $request->name,
+                'alamat'=> $request->alamat,
                 'level'=> $request->level,
                 'lokasi'=> $lokasi
             ]);
