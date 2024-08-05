@@ -422,7 +422,6 @@
                 placeholder: 'Pilih Data'
             });
             $(document).on('change', '#kec', function(e) {
-                alert('hallo');
                 e.preventDefault();
                 let val = $(this).val();
                 let level = $("#level").val()
