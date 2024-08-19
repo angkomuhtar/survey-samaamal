@@ -37,6 +37,24 @@ class SurveyController extends Controller
             if ($request->desa) {
                 $data->where('desa', $request->desa);
             }
+            if ($request->filter) {
+                if (in_array('V', $request->filter)) {
+                    $data->whereHas('survey', function ($query){
+                        $query->where('kec_verify', 'Y');
+                      });
+                }
+                if (in_array('BV', $request->filter)) {
+                    $data->whereHas('survey', function ($query){
+                        $query->where('kec_verify', 'N');
+                      });
+                }
+                if (in_array('BS', $request->filter)) {
+                    $data->doesntHave('survey');
+                }
+                if (in_array('S', $request->filter)) {
+                    $data->has('survey');
+                }
+            }
             return DataTables::eloquent($data)->toJson();
         }
         $paslon = Paslon::all();
@@ -71,11 +89,11 @@ class SurveyController extends Controller
 
         $data = Survey::create([
             'event_id' => 1,
-            'dpt_id' => $request->id,
+            'dpt_id' => $request->dpt_id,
             'pilihan' => $request->pilihan,
             'paslon_id' => $paslon,
             'ket' => $request->ket,
-            'relawan' => $request->relawan ? 'Y' : 'N',
+            'relawan' => $request->relawan == 'on' ? 'Y' : 'N',
             'kec_verify' => 'N',
             'kordinator' => $request->kord
             ]);
@@ -97,6 +115,37 @@ class SurveyController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error'
+            ]);
+        }
+    }
+
+
+    public function edit(String $id){
+        $data = Survey::find($id);
+        return response()->json([
+            'success' => true,
+            'message' => 'Data get successfully',
+            'data' => $data
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $paslon = $request->paslon ? $request->paslon : '999';
+        $update = Survey::find($id)->update([
+            'event_id' => 1,
+            'pilihan' => $request->pilihan,
+            'paslon_id' => $paslon,
+            'ket' => $request->ket,
+            'relawan' => $request->relawan == 'on' ? 'Y' : 'N',
+            'kec_verify' => 'N',
+            'kordinator' => $request->kord
+        ]);
+        if($update){
+            return response()->json([
+                'success' => true,
+                'message' => 'Survey di Update',
+                'data' => $update
             ]);
         }
     }

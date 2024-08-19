@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Paslon;
+use App\Models\Pemilih;
 use App\Models\Profile;
 use App\Models\Employee;
 use App\Models\ViewClock;
@@ -13,6 +15,7 @@ use App\Imports\UsersImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Reader\Xls;
@@ -23,78 +26,70 @@ class DashboardController extends Controller
 
     public function index ()
     {
+        $user = Auth::guard('web')->user();
+        $data = Pemilih::with('kelurahan', 'kecamatan', 'survey', 'survey.paslon');
+            if ($user->profile->level == 1) {
+                $data->where('desa', $user->profile->lokasi);
+            }elseif ($user->profile->level == 2) {
+                $data->where('kec', $user->profile->lokasi);
+            }elseif ($user->profile->level <= 6) {
+                $data->where('kab', $user->profile->lokasi);
+            }
+        $totalCount = $data->count();
+        $totalSurvey = $data->has('survey')->count();
+        $totalVerified = $data->whereHas('survey', function ($query){
+            $query->where('kec_verify', 'Y');
+          })->count();
+        $paslon = Paslon::all();
+        $paslonArray = array();
+        foreach ($paslon as $key) {
+            array_push($paslonArray, $key->nama);
+        }
+
+        $now = Carbon::now()->format('Y');
+        $genz = $now - 2012;
+        $millenial = $now - 1996;
+        $genx = $now - 1980;
+        $boomer = $now - 1964;
+
+        $byGen = DB::table('view_survey')
+        ->select('nama_paslon', 'pilihan', DB::raw('count(*) as total'));
+        if ($user->profile->level == 1) {
+            $byGen->where('desa', $user->profile->lokasi);
+        }elseif ($user->profile->level == 2) {
+            $byGen->where('kec', $user->profile->lokasi);
+        }elseif ($user->profile->level <= 6) {
+            $byGen->where('kab', $user->profile->lokasi);
+        }
+
+        $totalboomer = $byGen->groupBy('nama_paslon', 'pilihan')->get();
+        // return $totalboomer;
+        
         $chartData = [
-            'yearlyRevenue' => [
-                'year' => [1991, 1992, 1993, 1994, 1995],
-                'revenue' => [350, 500, 950, 700, 900],
-                'total' => 3500,
-                'currencySymbol' => '$',
+            'countDpt' =>[
+                'total' => $totalCount,
+                'verified'=> $totalVerified,
+                'survey'=> $totalSurvey,
             ],
-            'productSold' => [
-                'year' => [1991, 1992, 1993, 1994, 1995],
-                'quantity' => [800, 600, 1000, 800, 900],
-                'total' => 4000,
-            ],
-            'growth' => [
-                'year' => [1991, 1992, 1993, 1994, 1995],
-                'perYearRate' => [10, 20, 30, 40, 100],
-                'total' => 10,
-                'preSymbol' => '+',
-                'postSymbol' => '%',
-            ],
-            'revenueReport' => [
-                'month' => ["Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct"],
-                'revenue' => [
-                    'title' => 'Revenue',
-                    'data' => [76, 85, 101, 98, 87, 105, 91, 114, 94],
+            'byGeneration' => [
+                'paslon' => $paslonArray,
+                'genZ' => [
+                    'title' => 'Gen Z',
+                    'data' => [116, 85, 101, 98],
                 ],
-                'netProfit' => [
-                    'title' => 'Net Profit',
-                    'data' => [35, 41, 36, 26, 45, 48, 52, 53, 41],
+                'millenial' => [
+                    'title' => 'Millenial',
+                    'data' => [35, 41, 36, 26],
                 ],
-                'cashFlow' => [
-                    'title' => 'Cash Flow',
-                    'data' => [44, 55, 57, 56, 61, 58, 63, 60, 66],
+                'genX' => [
+                    'title' => 'Gen X',
+                    'data' => [44, 55, 57, 56],
+                ],
+                'boomer' => [
+                    'title' => 'Boomer',
+                    'data' => [44, 55, 57, 56],
                 ],
             ],
-            'productGrowthOverview' => [
-                'productNames' => ["Books", "Pens", "Pencils", "Box"],
-                'data' => [88, 77, 66, 55],
-            ],
-            'thisYearGrowth' => [
-                'label' => ['Yearly Growth'],
-                'data' => [66],
-            ],
-            'investmentAmount' => [
-                [
-                    'title' => 'Investment',
-                    'amount' => 1000,
-                    'currencySymbol' => '$',
-                    'profit' => 10,
-                    'profitPercentage' => 50,
-                    'loss' => 0,
-                    'lossPercentage' => 0,
-                ],
-                [
-                    'title' => 'Investment',
-                    'amount' => 1000,
-                    'currencySymbol' => '$',
-                    'profit' => 10,
-                    'profitPercentage' => 50,
-                    'loss' => 0,
-                    'lossPercentage' => 0,
-                ],
-                [
-                    'title' => 'Investment',
-                    'amount' => 1000,
-                    'currencySymbol' => '$',
-                    'profit' => 0,
-                    'profitPercentage' => 0,
-                    'loss' => 20,
-                    'lossPercentage' => 30,
-                ]
-            ],
-            'users' => User::latest()->paginate(5),
         ];
         return view('pages.dashboard.index', [
                 'pageTitle' => 'Analytic Dashboard',
@@ -139,15 +134,32 @@ class DashboardController extends Controller
         // ]);
     }
 
-    public function rekap_hadir(Request $request){
-        $hadir=  DB::table('v_clock')
-        ->select('shift','value', 'site','division', DB::raw('count(*) as total'))
-        ->where('date', $request->tanggal)
-        ->where('site', $request->project)
-        ->where('shift','LIKE', '%'.$request->shift.'%')
-        ->groupBy('shift', 'value', 'site', 'division')
-        ->orderBy('division')->get();
-        return DataTables::of($hadir)->toJson();
+    public function profile(){
+        $user = Auth::guard('web')->user();
+        $data = Pemilih::with('kelurahan', 'kecamatan', 'survey', 'survey.paslon');
+            if ($user->profile->level == 1) {
+                $data->where('desa', $user->profile->lokasi);
+            }elseif ($user->profile->level == 2) {
+                $data->where('kec', $user->profile->lokasi);
+            }elseif ($user->profile->level <= 6) {
+                $data->where('kab', $user->profile->lokasi);
+            }
+        $totalCount = $data->count();
+        $totalSurvey = $data->has('survey')->count();
+        $totalVerified = $data->whereHas('survey', function ($query){
+            $query->where('kec_verify', 'Y');
+          })->count();
+        $chartData = [
+            'countDpt' =>[
+                'total' => $totalCount,
+                'verified'=> $totalVerified,
+                'survey'=> $totalSurvey,
+            ]
+        ];
+        return view('pages.dashboard.profile', [
+            'pageTitle' => 'Analytic Dashboard',
+            'data' => collect($chartData),
+        ]);
     }
 
     public function import_data(Request $request){

@@ -22,13 +22,29 @@
                 <div class="p-6">
                     <form class="space-y-4" id="sending_form">
                         <input type="hidden" name="id" id="id" value="">
+                        <input type="hidden" name="dpt_id" id="dpt_id" value="">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                        <div class="card-text h-full space-y-4 pt-2">
+                            <div class="flex items-center space-x-7 flex-wrap">
+                                <div class="checkbox-area">
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="hidden" name="relawan">
+                                        <span
+                                            class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                            <img src="{{ asset('images/icon/ck-white.svg') }}" alt=""
+                                                class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                        <span
+                                            class="text-slate-500 dark:text-slate-400 text-sm leading-6">Relawan</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                         <div class="input-area relative">
                             <label for="largeInput" class="form-label">Kategori</label>
                             <div class="relative">
                                 <select id="pilihan" class="form-control !pl-9" name="pilihan">
                                     <option value="" selected disabled class="dark:bg-slate-700 text-slate-300">
-                                        Pilih Data</option>
+                                        Pilih Kategori</option>
                                     <option value="0" class="dark:bg-slate-700 !text-slate-300">Netral</option>
                                     <option value="5" class="dark:bg-slate-700 !text-slate-300">Belum Memilih
                                         (Abu-Abu)
@@ -43,7 +59,8 @@
                             <label for="largeInput" class="form-label">Paslon</label>
                             <div class="relative">
                                 <select class="form-control !pl-9" id="paslon" name="paslon">
-                                    <option value="0" disabled class="dark:bg-slate-700 text-slate-300">Pilih Data
+                                    <option value="0" disabled selected class="dark:bg-slate-700 text-slate-300">
+                                        Pilih Paslon
                                     </option>
                                     @foreach ($paslon as $item)
                                         <option value="{{ $item->id }}" class="dark:bg-slate-700 !text-slate-300">
@@ -60,21 +77,6 @@
                                     placeholder="subkord lapangan">
                                 <iconify-icon icon="heroicons:globe-alt"
                                     class="absolute left-2 top-1/2 -translate-y-1/2 text-base text-slate-500"></iconify-icon>
-                            </div>
-                            <div class="card-text h-full space-y-4 pt-2">
-                                <div class="flex items-center space-x-7 flex-wrap">
-                                    <div class="checkbox-area">
-                                        <label class="inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" class="hidden" name="relawan" disabled>
-                                            <span
-                                                class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
-                                                <img src="{{ asset('images/icon/ck-white.svg') }}" alt=""
-                                                    class="h-[10px] w-[10px] block m-auto opacity-0"></span>
-                                            <span
-                                                class="text-slate-500 dark:text-slate-400 text-sm leading-6">Relawan</span>
-                                        </label>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                         <div class="input-area relative">
@@ -102,7 +104,7 @@
                 <header class=" card-header noborder">
                     <h4 class="card-title">Survey</h4>
                 </header>
-                <div class="card-body px-6 pb-6">
+                <div class="card-body px-6 pb-6 space-y-2">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 ">
                         <div class="input-area">
                             <label for="username" class="form-label">Nama</label>
@@ -136,6 +138,7 @@
                                     style="display: none">
                                     This is invalid state.</div>
                             </div>
+
                         @endif
                         <div class="input-area">
                             <label for="level" class="form-label">TPS</label>
@@ -149,6 +152,21 @@
                             </select>
                             <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">
                                 This is invalid state.</div>
+                        </div>
+                        <div class="input-area">
+                            <label for="level" class="form-label">Filter</label>
+                            <select id="filter" class="form-control" name="filter[]" multiple="multiple">
+                                <option value="BS" class="dark:bg-slate-700 !text-slate-300">Belum survey
+                                </option>
+                                <option value="S" class="dark:bg-slate-700 !text-slate-300">Tersurvey
+                                </option>
+                                <option value="BV" class="dark:bg-slate-700 !text-slate-300">Belum
+                                    Verifikasi
+                                </option>
+                                <option value="V" class="dark:bg-slate-700 !text-slate-300">
+                                    Terverifikasi
+                                </option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -191,6 +209,10 @@
             $('#lokasi').select2({
                 dropdownParent: $('#offcanvas')
             });
+
+            $('#filter').select2();
+            var usersLevel = {!! Auth::guard('web')->user()->profile->level !!};
+
             var table = $("#data-table, .data-table").DataTable({
                 processing: true,
                 serverSide: true,
@@ -202,6 +224,7 @@
                             tps: $('#tps').val(),
                             kec: $('#kec').val(),
                             desa: $('#desa').val(),
+                            filter: $('#filter').val(),
                         })
                     },
                 },
@@ -247,17 +270,34 @@
                 columns: [{
                         name: 'action',
                         render: (data, type, row, meta) => {
+                            console.log(usersLevel);
                             if (row.survey.length > 0) {
-                                // console.log(row.survey);
-                                return `<div class="flex-1">
-                                        <a href="#" class="btn btn-sm inline-flex justify-center btn-outline-danger items-center" id="btn-reset" data-id="${row.survey[0].id}" >
-                                            <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="heroicons:arrow-path-rounded-square-16-solid"></iconify-icon>
-                                            <span>Reset Data</span>
-                                        </a>
-                                    </div>`
+                                if (row.survey[0].kec_verify == 'Y') {
+                                    if (usersLevel > 1) {
+                                        return `<div class="flex-1">
+                                            <a href="#" class="btn btn-sm inline-flex justify-center btn-danger items-center" id="btn-reset" data-id="${row.survey[0].id}" >
+                                                <iconify-icon class="text-sm" icon="heroicons:arrow-path-rounded-square-16-solid"></iconify-icon>
+                                            </a>
+                                            <a href="#" class="btn btn-sm inline-flex justify-center btn-warning items-center" id="btn-edit" data-id="${row.survey[0].id}" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas">
+                                                <iconify-icon class="text-sm" icon="heroicons:pencil-square-20-solid"></iconify-icon>
+                                            </a>
+                                        </div>`
+                                    } else {
+                                        return '';
+                                    }
+                                } else {
+                                    return `<div class="flex-1">
+                                            <a href="#" class="btn btn-sm inline-flex justify-center btn-danger items-center" id="btn-reset" data-id="${row.survey[0].id}" >
+                                                <iconify-icon class="text-sm" icon="heroicons:arrow-path-rounded-square-16-solid"></iconify-icon>
+                                            </a>
+                                            <a href="#" class="btn btn-sm inline-flex justify-center btn-warning items-center" id="btn-edit" data-id="${row.survey[0].id}" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas">
+                                                <iconify-icon class="text-sm" icon="heroicons:pencil-square-20-solid"></iconify-icon>
+                                            </a>
+                                        </div>`
+                                }
                             } else {
                                 return `<div class="flex-1">
-                                        <a href="#" class="btn btn-sm inline-flex justify-center btn-outline-primary items-center" id="btn-edit" data-id="${row.id}" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas">
+                                        <a href="#" class="btn btn-sm inline-flex justify-center btn-outline-primary items-center" id="btn-add" data-id="${row.id}" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas">
                                             <iconify-icon class="text-xl ltr:mr-2 rtl:ml-2" icon="heroicons-outline:newspaper"></iconify-icon>
                                             <span>survey</span>
                                         </a>
@@ -295,8 +335,7 @@
                                         <div class="text-slate-800 dark:text-slate-300 text-sm font-medium mb-1">${row.survey[0].pilihan == '5' ? 'Belum Memilih - ' : row.survey[0].pilihan == '1' ? 'Memilih - ' : 'Netral'} ${row.survey[0].paslon.id != '999' ? row.survey[0].paslon.nama : '' }</div>
                                         ${row.survey[0].kec_verify == 'Y' ? 
                                         `<div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300 flex justify-start items-center "><iconify-icon class="text-sm mr-1" icon="heroicons:check-badge-20-solid"></iconify-icon><span>terverifikasi</span></div>` : ''}
-                                        ${row.survey[0].kordinator != null ?  
-                                        `<div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300 flex justify-start items-center "><iconify-icon class="text-sm mr-1" icon="heroicons:user-group-20-solid"></iconify-icon><span>${row.survey[0].kordinator} ${row.survey[0].relawan == 'Y' ? '(Relawan)' : ''}</span></div>` : ''}              
+                                        ${row.survey[0].kordinator != null || row.survey[0].relawan == 'Y' ? `<div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300 flex justify-start items-center "><iconify-icon class="text-sm mr-1" icon="heroicons:user-group-20-solid"></iconify-icon><span>${row.survey[0].kordinator != null ? row.survey[0].kordinator : ''} ${row.survey[0].relawan == 'Y' ? '(Relawan)' : ''}</span></div> ` : ''}
                                         ${row.survey[0].ket ?
                                         `<div class="text-slate-400 dark:text-slate-400 text-xs mt-1" >${row.survey[0].ket}</div>` : '' }
                                     </div>`;
@@ -312,14 +351,15 @@
 
             table.tables().body().to$().addClass('bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700');
 
-            $('#name, #tps, #kec, #desa').bind('change', function() {
+            $('#name, #tps, #kec, #desa, #filter').bind('change', function() {
                 table.draw()
             })
 
-            $(document).on('click', '#btn-edit', (e) => {
+            $(document).on('click', '#btn-add', (e) => {
                 $("#sending_form")[0].reset();
+                $("#sending_form").data('type', 'submit');
                 var id = $(e.currentTarget).data('id');
-                $("#id").val(id);
+                $("#dpt_id").val(id);
             })
 
             $(document).on('submit', '#sending_form', (e) => {
@@ -327,9 +367,10 @@
                 var type = $("#sending_form").data('type');
                 var data = $('#sending_form').serializeArray();
                 var id = $("#sending_form").find("input[name='id']").val()
-                var url = '{!! route('survey.store') !!}';
+                var url = type == 'submit' ? '{!! route('survey.store') !!}' : '{!! route('survey.update', ['id' => ':id']) !!}';
 
-                $.post(url, data)
+
+                $.post(url.replace(':id', id), data)
                     .done(function(msg) {
                         if (!msg.success) {
                             Swal.fire({
@@ -377,13 +418,14 @@
                 // alert(id)
                 // return false;
                 Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
+                    title: 'Anda yakin?',
+                    text: "Anda Akan Menghapus hasil survey",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
+                    confirmButtonText: 'YA',
+                    cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         var url = '{!! route('survey.delete', ['id' => ':id']) !!}';
@@ -410,11 +452,34 @@
                 })
             })
 
-            $(document).on('change', 'input[name=kord]', (e) => {
-                if ($(e.currentTarget).val() == '') {
-                    $("input[name=relawan]").attr('disabled', true).prop('checked', false);
-                } else {
-                    $("input[name=relawan]").attr('disabled', false);
+            $(document).on('click', '#btn-edit', (e) => {
+                $("#sending_form").data("type", "update");
+                var id = $(e.currentTarget).data('id');
+                var url = '{!! route('survey.edit', ['id' => ':id']) !!}';
+                url = url.replace(':id', id);
+
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: (msg) => {
+                        $("#sending_form").find("input[name='id']").val(msg.data.id);
+                        $("#sending_form").find("select[name='pilihan']").val(msg.data.pilihan);
+                        $("#sending_form").find("select[name='paslon']").val(msg.data.paslon_id);
+                        if (msg.data.relawan == 'Y') {
+                            $("input[name=relawan]").prop('checked', true);
+                        } else {
+                            $("input[name=relawan]").prop('checked', false);
+                        }
+                        $("#sending_form").find("textarea[name='ket']").val(msg.data.ket);
+                        $("#sending_form").find("input[name='kord']").val(msg.data.kordinator);
+                    }
+                })
+            })
+
+            $(document).on('change', 'input[name=relawan]', e => {
+                if ($(e.currentTarget).is(':checked')) {
+                    $("#pilihan").val("1");
+                    $("#paslon").val("1");
                 }
             })
 
