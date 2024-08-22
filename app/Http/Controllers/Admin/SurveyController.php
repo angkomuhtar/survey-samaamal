@@ -58,7 +58,6 @@ class SurveyController extends Controller
             return DataTables::eloquent($data)->toJson();
         }
         $paslon = Paslon::all();
-        $tps = Pemilih::select('tps')->groupBy('tps')->get();
         $kecamatan = Kecamatan::where('id_kab', 1);
         if ($user->profile->level <= 2) {
             $kecamatan->where('id', $user->profile->lokasi);
@@ -66,7 +65,6 @@ class SurveyController extends Controller
         return view('pages.dashboard.survey.index', [
             'pageTitle' => 'Daftar Pemilih Tetap',
             'paslon'=> $paslon,
-            'tps'=> $tps,
             'kecamatan'=> $kecamatan->get(),
         ]);
     }

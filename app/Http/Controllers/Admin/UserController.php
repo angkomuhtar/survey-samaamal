@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
 use App\Models\Kecamatan;
+use App\Models\UserProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -21,7 +22,7 @@ class UserController extends Controller
         if ($request->ajax()) {
             $data = User::with('profile')
             ->whereHas('profile', function($query) use($request) {
-                    $query->where('name','LIKE','%'.$request->name.'%');
+                    $query->where('name','LIKE','%'.$request->name.'%')->where('level', '<>', '9');
             });
             if ($request->level) {
                 $data->whereHas('profile', function ($query) use ($request){
@@ -105,5 +106,69 @@ class UserController extends Controller
                 'success' => true,
                 'message' => 'Data Berhasil Disimpan'
             ]);
+    }
+
+    public function reset($id)
+    {
+        // return User::find($id);
+        $user = User::find($id);
+
+        $user->password = bcrypt('secret123');
+
+          if ($user->save()) {
+            return response()->json([
+                'success' => true,
+                'data' => 'Data Reset'
+            ]);
+          }else{
+            return response()->json([
+              'success' => false,
+              'msg' => 'Errorki tolo'
+            ]);
+          }
+    }
+
+    public function status($id)
+    {
+        // return User::find($id);
+        $user = User::find($id);
+
+        $user->status = $user->status == 'Y' ? 'N' : 'Y';
+
+          if ($user->save()) {
+            return response()->json([
+                'success' => true,
+                'data' => 'Data Reset'
+            ]);
+          }else{
+            return response()->json([
+              'success' => false,
+              'msg' => 'Errorki tolo'
+            ]);
+          }
+    }
+
+    public function delete($id)
+    {
+        // return User::find($id);
+        $user = User::find($id);
+
+        DB::beginTransaction();
+          try {
+            $users = User::destroy($id);
+            $profile = UserProfile::where('user_id', $id)->delete();
+            DB::commit();
+          } catch (Exception $th) {
+            DB::rollBack();
+            return response()->json([
+              'success' => false,
+              'type' => 'err',
+              'data' => $th
+          ]);
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Data Berhasil Disimpan'
+        ]);
     }
 }

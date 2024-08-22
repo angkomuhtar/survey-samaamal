@@ -145,10 +145,6 @@
                             <select id="tps" class="form-control" name="tps">
                                 <option value="" selected class="dark:bg-slate-700 !text-slate-300">Pilih Data
                                 </option>
-                                @foreach ($tps as $item)
-                                    <option value="{{ $item->tps }}" class="dark:bg-slate-700 !text-slate-300">
-                                        {{ $item->tps }}</option>
-                                @endforeach
                             </select>
                             <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">
                                 This is invalid state.</div>
@@ -362,6 +358,30 @@
                 $("#dpt_id").val(id);
             })
 
+            $(document).on('click', '#btn-edit', (e) => {
+                $("#sending_form").data("type", "update");
+                var id = $(e.currentTarget).data('id');
+                var url = '{!! route('survey.edit', ['id' => ':id']) !!}';
+                url = url.replace(':id', id);
+
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: (msg) => {
+                        $("#sending_form").find("input[name='id']").val(msg.data.id);
+                        $("#sending_form").find("select[name='pilihan']").val(msg.data.pilihan);
+                        $("#sending_form").find("select[name='paslon']").val(msg.data.paslon_id);
+                        if (msg.data.relawan == 'Y') {
+                            $("input[name=relawan]").prop('checked', true);
+                        } else {
+                            $("input[name=relawan]").prop('checked', false);
+                        }
+                        $("#sending_form").find("textarea[name='ket']").val(msg.data.ket);
+                        $("#sending_form").find("input[name='kord']").val(msg.data.kordinator);
+                    }
+                })
+            })
+
             $(document).on('submit', '#sending_form', (e) => {
                 e.preventDefault();
                 var type = $("#sending_form").data('type');
@@ -452,29 +472,7 @@
                 })
             })
 
-            $(document).on('click', '#btn-edit', (e) => {
-                $("#sending_form").data("type", "update");
-                var id = $(e.currentTarget).data('id');
-                var url = '{!! route('survey.edit', ['id' => ':id']) !!}';
-                url = url.replace(':id', id);
 
-                $.ajax({
-                    type: 'GET',
-                    url: url,
-                    success: (msg) => {
-                        $("#sending_form").find("input[name='id']").val(msg.data.id);
-                        $("#sending_form").find("select[name='pilihan']").val(msg.data.pilihan);
-                        $("#sending_form").find("select[name='paslon']").val(msg.data.paslon_id);
-                        if (msg.data.relawan == 'Y') {
-                            $("input[name=relawan]").prop('checked', true);
-                        } else {
-                            $("input[name=relawan]").prop('checked', false);
-                        }
-                        $("#sending_form").find("textarea[name='ket']").val(msg.data.ket);
-                        $("#sending_form").find("input[name='kord']").val(msg.data.kordinator);
-                    }
-                })
-            })
 
             $(document).on('change', 'input[name=relawan]', e => {
                 if ($(e.currentTarget).is(':checked')) {
@@ -511,6 +509,66 @@
                     },
                     error: () => {
                         $('select[name="desa"]').html(dataOption)
+                    }
+                })
+
+            })
+
+            $(document).on('change', '#desa', function(e) {
+                e.preventDefault();
+                let val = $(this).val();
+                let level = $("#level").val()
+                let dataOption = '<option value="" class="dark:bg-slate-700">Pilih Data</option>';
+                var url = '{!! route('ajax.tps', ['id' => ':id']) !!}';
+                url = url.replace(':id', val);
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: (res) => {
+                        if (res.data.length > 0) {
+                            res.data.map((data) => {
+                                dataOption +=
+                                    `<option value="${data.tps}" class="dark:bg-slate-700">${data.tps}</option>`
+                            })
+                        }
+                        $('#tps').html(dataOption);
+                        $("#tps").prop('disabled', false);
+                        $('#tps').select2({
+                            placeholder: 'Pilih Data'
+                        });
+                    },
+                    error: () => {
+                        $('select[name="tps"]').html(dataOption)
+                    }
+                })
+
+            })
+
+            $(document).on('change', '#desa', function(e) {
+                e.preventDefault();
+                let val = $(this).val();
+                let level = $("#level").val()
+                let dataOption = '<option value="" class="dark:bg-slate-700">Pilih Data</option>';
+                var url = '{!! route('ajax.tps', ['id' => ':id']) !!}';
+                url = url.replace(':id', val);
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: (res) => {
+                        if (res.data.length > 0) {
+                            res.data.map((data) => {
+                                dataOption +=
+                                    `<option value="${data.tps}" class="dark:bg-slate-700">${data.tps}</option>`
+                            })
+                        }
+                        $('#tps').html(dataOption);
+                        $("#tps").prop('disabled', false);
+                        $('#tps').select2({
+                            placeholder: 'Pilih Data'
+                        });
+                    },
+                    error: () => {
+                        $('select[name="tps"]').html(dataOption)
                     }
                 })
 

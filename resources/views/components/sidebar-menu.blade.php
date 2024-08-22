@@ -71,6 +71,11 @@
                                 class="navItem {{ stripos(\Request::route()->getName(), 'master.dpt') !== false ? 'active' : '' }}">Daftar
                                 Pemilih</a>
                         </li>
+                        <li>
+                            <a href="{{ route('master.relawan') }}"
+                                class="navItem {{ stripos(\Request::route()->getName(), 'master.relawan') !== false ? 'active' : '' }}">Daftar
+                                Relawan</a>
+                        </li>
                     </ul>
                 </li>
             @endif

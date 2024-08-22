@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Desa;
 use App\Models\User;
+use App\Models\Pemilih;
 use App\Models\Division;
 use App\Models\Position;
 use App\Models\Kecamatan;
@@ -30,6 +31,17 @@ class AjaxController extends Controller
     {
         if ($request->ajax()) {
             $data = Desa::where('id_kec', $id)->get();
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+        }
+    }
+
+    public function getTps(Request $request, $id)
+    {
+        if ($request->ajax()) {
+            $data = Pemilih::select('tps')->where('desa', $id)->groupBy('tps')->get();
             return response()->json([
                 'success' => true,
                 'data' => $data

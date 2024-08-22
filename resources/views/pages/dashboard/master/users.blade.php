@@ -262,12 +262,76 @@
                     },
                     {
                         data: 'status',
+                        render: (data) => {
+                            if (data == 'Y') {
+                                return `<div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] text-white
+                                          bg-success-500">
+                                        Active
+                                      </div>`
+                            } else {
+                                return `<div class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] text-white
+                                          bg-danger-500">
+                                        disabled
+                                      </div>`
+                            }
+                        }
                     },
                     {
                         data: 'id',
                         name: 'action',
-                        render: (data) => {
-                            return `<div class="grid md:grid-cols-2 gap-0.5 md:gap-2"></div>`
+                        render: (data, type, row, meta) => {
+                            return `<div>
+                                  <div class="relative">
+                                    <div class="dropdown relative">
+                                      <button
+                                        class="text-xl text-center block w-full "
+                                        type="button"
+                                        id=""
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <iconify-icon icon="heroicons-outline:dots-vertical"></iconify-icon>
+                                      </button>
+                                      <ul class=" dropdown-menu min-w-[120px] absolute text-sm text-slate-700 dark:text-white hidden bg-white dark:bg-slate-700
+                                          shadow z-[2] float-left overflow-hidden list-none text-left rounded-lg mt-1 m-0 bg-clip-padding border-none">
+                                        <li>
+                                          <a
+                                            href="#"
+                                            id="reset_password"
+                                            data-id="${row.id}"
+                                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                              dark:hover:text-white">
+                                            Reset Password</a>
+                                        </li>
+                                        <li>
+                                          <a
+                                            href="#"
+                                            id="status_chg"
+                                            data-id="${row.id}"
+                                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                              dark:hover:text-white">
+                                                ${row.status == 'Y' ? 'disable' : 'active'}
+                                            </a>
+                                        </li>
+                                        <li>
+                                          <a
+                                            href="#"
+                                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                              dark:hover:text-white">
+                                            Edit</a>
+                                        </li>
+                                        <li>
+                                          <a
+                                            href="#"
+                                            id="delete_action"
+                                            data-id="${row.id}"
+                                            class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
+                                              dark:hover:text-white">
+                                            Delete</a>
+                                        </li>
+                                      </ul>
+                                    </div>
+                                  </div>
+                                </div>`
                         }
                     },
                 ],
@@ -279,63 +343,40 @@
                 table.draw()
             })
 
-            $(document).on('click', '#change_sts', (e) => {
+            $(document).on('click', '#btn-add', () => {
+                $("#sending_form")[0].reset();
+                $("#sending_form").data("type", "submit");
+            })
+
+            $(document).on('click', '#reset_password', (e) => {
                 var id = $(e.currentTarget).data('id');
                 Swal.fire({
-                    title: 'Ganti Status',
-                    text: "You won't be able to revert this!",
+                    title: 'Reset Password',
+                    text: "Aksi ini akan mereset password akun menjadi 'secret123'",
                     icon: 'warning',
-                    html: `
-                        <div class="w-full grid md:grid-cols-2 gap-2">
-                            <input class="p-2 border border-slate-200 rounded-sm" type="text" id="tgl_exp" placeholder="Tanggal (yyyy-mm-dd)">
-                            <select class="p-2 border border-slate-200 rounded-sm" id="type_exp" placeholder="Pilih Salah Satu">
-                                <option value="RESIGN">Resign</option>
-                                <option value="EXPIRED">Habis Kontrak</option>
-                                <option value="FIRED">PHK</option>
-                            </select>
-                        </div>
-                    `,
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Oke, Gasss.!!!',
-                    preConfirm: () => {
-                        var tgl = $("#tgl_exp").val();
-                        var type = $("#type_exp").val();
-                        var reg = new RegExp(
-                            '[1-9][0-9][0-9]{2}-([0][1-9]|[1][0-2])-([1-2][0-9]|[0][1-9]|[3][0-1])');
-                        var check = reg.test(tgl)
-                        var succ = false;
-                        if (tgl == "" || type == "" || !check) {
-                            Swal.showValidationMessage(`periksa tanggal.!!`)
-                        } else {
-                            return {
-                                tgl,
-                                type
-                            }
-                        }
-                    },
+                    confirmButtonText: 'Oke, Lanjut',
                 }).then((result) => {
                     let {
                         tgl,
                         type
                     } = result.value
                     if (result.isConfirmed) {
-                        var url = '{!! route('master.users') !!}';
+                        var url = '{!! route('master.users.reset', ['id' => ':id']) !!}';
                         url = url.replace(':id', id);
                         $.ajax({
                             url: url,
                             type: 'POST',
                             data: {
-                                "_token": "{{ csrf_token() }}",
-                                "tgl": tgl,
-                                "type": type,
+                                "_token": "{{ csrf_token() }}"
                             },
                             success: (msg) => {
                                 if (msg.success) {
                                     Swal.fire(
                                         'Resetted!',
-                                        'Status Update.',
+                                        'Password Berhasil direset',
                                         'success'
                                     ).then(() => {
                                         table.ajax.reload(null, false)
@@ -347,10 +388,84 @@
                 })
             })
 
-            $(document).on('click', '#btn-add', () => {
-                $("select[name='company']").val("").change();
-                $("#sending_form")[0].reset();
-                $("#sending_form").data("type", "submit");
+            $(document).on('click', '#status_chg', (e) => {
+                var id = $(e.currentTarget).data('id');
+                Swal.fire({
+                    title: 'Ubah Status',
+                    text: "Aksi ini akan mengubah status",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Oke, Lanjut',
+                }).then((result) => {
+                    let {
+                        tgl,
+                        type
+                    } = result.value
+                    if (result.isConfirmed) {
+                        var url = '{!! route('master.users.status', ['id' => ':id']) !!}';
+                        url = url.replace(':id', id);
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            data: {
+                                "_token": "{{ csrf_token() }}"
+                            },
+                            success: (msg) => {
+                                if (msg.success) {
+                                    Swal.fire(
+                                        'Success!',
+                                        'Status Berhasil diubah',
+                                        'success'
+                                    ).then(() => {
+                                        table.ajax.reload(null, false)
+                                    })
+                                }
+                            }
+                        })
+                    }
+                })
+            })
+
+            $(document).on('click', '#delete_action', (e) => {
+                var id = $(e.currentTarget).data('id');
+                Swal.fire({
+                    title: 'Hapus Akun',
+                    text: "Aksi ini akan Menghapus Akun dan tidak dapat di kembalikan",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Oke, Lanjut',
+                }).then((result) => {
+                    let {
+                        tgl,
+                        type
+                    } = result.value
+                    if (result.isConfirmed) {
+                        var url = '{!! route('master.users.delete', ['id' => ':id']) !!}';
+                        url = url.replace(':id', id);
+                        $.ajax({
+                            url: url,
+                            type: 'DELETE',
+                            data: {
+                                "_token": "{{ csrf_token() }}"
+                            },
+                            success: (msg) => {
+                                if (msg.success) {
+                                    Swal.fire(
+                                        'Success!',
+                                        'User Berhasil dihapus',
+                                        'success'
+                                    ).then(() => {
+                                        table.ajax.reload(null, false)
+                                    })
+                                }
+                            }
+                        })
+                    }
+                })
             })
 
             $(document).on('submit', '#sending_form', (e) => {

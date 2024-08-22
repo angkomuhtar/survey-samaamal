@@ -37,15 +37,37 @@ Route::prefix('dashboard')->group(function()
         Route::controller(AjaxController::class)->prefix('ajax')->group(function(){
             Route::get('/{id}/kecamatan', 'getKecamatan')->name('ajax.kecamatan');
             Route::get('/{id}/desa', 'getKelurahan')->name('ajax.kelurahan');
+            Route::get('/{id}/tps', 'getTps')->name('ajax.tps');
         });
 
-        Route::middleware('Admin:1')->prefix('master')->group(function(){
+        Route::middleware('Admin:1')->group(function () {
+            Route::controller(SurveyController::class)->prefix('survey')->group(function(){
+                Route::get('/', 'index')->name('survey');
+                Route::post('/', 'store')->name('survey.store');
+                Route::get('/{id}', 'edit')->name('survey.edit');
+                Route::post('/{id}', 'update')->name('survey.update');
+                Route::delete('/{id}', 'delete')->name('survey.delete');
+            });
+        });
+        
+        Route::middleware('Admin:2')->group(function () {
+            Route::controller(VerifyController::class)->prefix('verify')->group(function(){
+                Route::get('/', 'index')->name('verify');
+                Route::post('/', 'store')->name('verify.store');
+                Route::get('/{id}', 'edit')->name('verify.edit');
+                Route::post('/{id}', 'verify')->name('verify.verified');
+            });
+        });
+
+        Route::middleware('Admin:3')->prefix('master')->group(function(){
             Route::controller(UserController::class)->prefix('users')->group(function(){
                 Route::get('/', 'index')->name('master.users');
                 Route::post('/', 'store')->name('master.users.store');
                 Route::get('/{id}', 'edit')->name('master.users.edit');
                 Route::post('/{id}', 'update')->name('master.users.update');
                 Route::delete('/{id}', 'delete')->name('master.users.delete');
+                Route::post('/{id}/reset', 'reset')->name('master.users.reset');
+                Route::post('/{id}/status', 'status')->name('master.users.status');
             });
             Route::controller(DptController::class)->prefix('dpt')->group(function(){
                 Route::get('/', 'index')->name('master.dpt');
@@ -54,18 +76,8 @@ Route::prefix('dashboard')->group(function()
                 Route::post('/{id}', 'update')->name('master.dpt.update');
                 Route::delete('/{id}', 'delete')->name('master.dpt.delete');
             });
-            Route::controller(SurveyController::class)->prefix('survey')->group(function(){
-                Route::get('/', 'index')->name('survey');
-                Route::post('/', 'store')->name('survey.store');
-                Route::get('/{id}', 'edit')->name('survey.edit');
-                Route::post('/{id}', 'update')->name('survey.update');
-                Route::delete('/{id}', 'delete')->name('survey.delete');
-            });
-            Route::controller(VerifyController::class)->prefix('verify')->group(function(){
-                Route::get('/', 'index')->name('verify');
-                Route::post('/', 'store')->name('verify.store');
-                Route::get('/{id}', 'edit')->name('verify.edit');
-                Route::post('/{id}', 'verify')->name('verify.verified');
+            Route::controller(DptController::class)->prefix('relawan')->group(function(){
+                Route::get('/', 'relawan')->name('master.relawan');
             });
         });
     });

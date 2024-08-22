@@ -1,83 +1,6 @@
 <x-appLayout>
 
-    {{-- form offcanvas --}}
-    <div class="offcanvas offcanvas-end fixed bottom-0 flex flex-col max-w-full bg-white dark:bg-slate-800 invisible bg-clip-padding shadow-sm outline-none transition duration-300 ease-in-out text-gray-700 top-0 ltr:right-0 rtl:left-0 border-none w-96"
-        id="offcanvas2" aria-labelledby="offcanvas">
-        <div
-            class="offcanvas-header flex items-center justify-between p-4 pt-3 border-b border-b-slate-300 dark:border-b-slate-900">
-            <div>
-                <h3 class="block text-xl font-Inter text-slate-900 font-medium dark:text-[#eee]">
-                    Survey DPT
-                </h3>
-            </div>
-            <button type="button"
-                class="box-content text-2xl w-4 h-4 p-2 pt-0 -my-5 -mr-2 text-black dark:text-white border-none rounded-none opacity-100 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
-                data-bs-dismiss="offcanvas">
-                <iconify-icon icon="line-md:close"></iconify-icon>
-            </button>
-        </div>
-        <div class="offcanvas-body flex-grow overflow-y-auto">
-            <div class="settings-modal">
-                <div class="divider"></div>
-                <div class="p-6">
-                    <form class="space-y-4" id="sending_form">
-                        <input type="hidden" name="id" id="id" value="">
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-                        <div class="input-area relative">
-                            <label for="largeInput" class="form-label">Kategori</label>
-                            <div class="relative">
-                                <select id="pilihan" class="form-control !pl-9" name="pilihan">
-                                    <option value="" selected disabled class="dark:bg-slate-700 text-slate-300">
-                                        Pilih Data</option>
-                                    <option value="0" class="dark:bg-slate-700 !text-slate-300">Netral</option>
-                                    <option value="5" class="dark:bg-slate-700 !text-slate-300">Belum Memilih
-                                    </option>
-                                    <option value="1" class="dark:bg-slate-700 !text-slate-300">Memilih</option>
-                                </select>
-                                <iconify-icon icon="heroicons-outline:building-office-2"
-                                    class="absolute left-2 top-1/2 -translate-y-1/2 text-base text-slate-500"></iconify-icon>
-                            </div>
-                        </div>
-                        <div class="input-area relative">
-                            <label for="largeInput" class="form-label">Paslon</label>
-                            <div class="relative">
-                                <select class="form-control !pl-9" id="paslon" name="paslon">
-                                    <option value="0" disabled class="dark:bg-slate-700 text-slate-300">Pilih Data
-                                    </option>
-                                    @foreach ($paslon as $item)
-                                        <option value="{{ $item->id }}" class="dark:bg-slate-700 !text-slate-300">
-                                            {{ $item->nama }}</option>
-                                    @endforeach
 
-                                </select>
-                            </div>
-                        </div>
-                        <div class="input-area relative">
-                            <label for="largeInput" class="form-label">sub kordinator</label>
-                            <div class="relative">
-                                <input type="text" name="kord" class="form-control !pl-9"
-                                    placeholder="subkord lapangan">
-                                <iconify-icon icon="heroicons:globe-alt"
-                                    class="absolute left-2 top-1/2 -translate-y-1/2 text-base text-slate-500"></iconify-icon>
-                            </div>
-                        </div>
-                        <div class="input-area relative">
-                            <label for="largeInput" class="form-label">Catatan</label>
-                            <div class="relative">
-                                <textarea type="text" name="ket" class="form-control" placeholder="Catatan Tambahan"></textarea>
-                            </div>
-                        </div>
-                        <div class="flex justify-end space-x-3">
-                            <button type="submit"
-                                class="btn btn-sm inline-flex justify-center btn-dark">Simpan</button>
-                            <button type="reset" id="btn_cancel" data-bs-dismiss="offcanvas"
-                                class="btn btn-sm btn-outline-danger inline-flex justify-center btn-dark">Batal</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
     <div class="space-y-8">
@@ -86,28 +9,45 @@
                 <header class=" card-header noborder">
                     <h4 class="card-title">Verifikasi Kecamatan</h4>
                 </header>
-                <div class="card-body px-6 pb-6">
+                <div class="card-body px-6 pb-6 space-y-2">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 ">
                         <div class="input-area">
                             <label for="username" class="form-label">Nama</label>
                             <input id="name" type="text" name="name" class="form-control" placeholder="Nama"
                                 required="required">
                         </div>
-                        <div class="input-area">
-                            <label for="level" class="form-label">Desa/Kelurahan</label>
-                            <select id="desa" class="form-control" name="desa">
-                                <option value="" selected class="dark:bg-slate-700 !text-slate-300">Pilih Data
-                                </option>
-                                @foreach ($tps as $item)
-                                    <option value="{{ $item->tps }}" class="dark:bg-slate-700 !text-slate-300">
-                                        {{ $item->tps }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                        @if (Auth::guard('web')->user()->profile->level > 1)
+                            <div class="input-area">
+                                <label for="level" class="form-label">Kecamatan</label>
+                                <select id="kec" class="form-control" name="kec">
+                                    <option value="" selected class="dark:bg-slate-700 !text-slate-300">Pilih
+                                        Data
+                                    </option>
+                                    @foreach ($kecamatan as $item)
+                                        <option value="{{ $item->id }}" class="dark:bg-slate-700 !text-slate-300">
+                                            {{ $item->kecamatan }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="font-Inter text-sm text-danger-500 pt-2 error-message"
+                                    style="display: none">
+                                    This is invalid state.</div>
+                            </div>
+                            <div class="input-area">
+                                <label for="level" class="form-label">Desa/Kelurahan</label>
+                                <select id="desa" class="form-control" name="desa">
+                                    <option value="" selected class="dark:bg-slate-700 !text-slate-300">Pilih
+                                        Data
+                                    </option>
+                                </select>
+                                <div class="font-Inter text-sm text-danger-500 pt-2 error-message"
+                                    style="display: none">
+                                    This is invalid state.</div>
+                            </div>
+
+                        @endif
                         <div class="input-area">
                             <label for="level" class="form-label">TPS</label>
                             <select id="tps" class="form-control" name="tps">
-
                                 <option value="" selected class="dark:bg-slate-700 !text-slate-300">Pilih Data
                                 </option>
                                 @foreach ($tps as $item)
@@ -117,7 +57,17 @@
                             </select>
                             <div class="font-Inter text-sm text-danger-500 pt-2 error-message" style="display: none">
                                 This is invalid state.</div>
-
+                        </div>
+                        <div class="input-area">
+                            <label for="level" class="form-label">Filter</label>
+                            <select id="filter" class="form-control" name="filter[]" multiple="multiple">
+                                <option value="BV" class="dark:bg-slate-700 !text-slate-300">Belum
+                                    Verifikasi
+                                </option>
+                                <option value="V" class="dark:bg-slate-700 !text-slate-300">
+                                    Terverifikasi
+                                </option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -169,6 +119,9 @@
                         return $.extend({}, d, {
                             name: $('#name').val(),
                             tps: $('#tps').val(),
+                            kec: $('#kec').val(),
+                            desa: $('#desa').val(),
+                            filter: $('#filter').val(),
                         })
                     },
                 },
@@ -268,7 +221,7 @@
 
             table.tables().body().to$().addClass('bg-white divide-y divide-slate-100 dark:bg-slate-800 dark:divide-slate-700');
 
-            $('#name, #tps').bind('change', function() {
+            $('#name, #tps, #kec, #desa, #filter').bind('change', function() {
                 table.draw()
             })
 
@@ -360,6 +313,42 @@
                         })
                     }
                 })
+            })
+
+            $('#filter').select2();
+            var usersLevel = {!! Auth::guard('web')->user()->profile->level !!};
+
+            $('#kec').select2({
+                placeholder: 'Pilih Data'
+            });
+            $(document).on('change', '#kec', function(e) {
+                e.preventDefault();
+                let val = $(this).val();
+                let level = $("#level").val()
+                let dataOption = '<option value="" class="dark:bg-slate-700">Pilih Data</option>';
+                var url = '{!! route('ajax.kelurahan', ['id' => ':id']) !!}';
+                url = url.replace(':id', val);
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: (res) => {
+                        if (res.data.length > 0) {
+                            res.data.map((data) => {
+                                dataOption +=
+                                    `<option value="${data.id}" class="dark:bg-slate-700">${data.desa}</option>`
+                            })
+                        }
+                        $('#desa').html(dataOption);
+                        $("#desa").prop('disabled', false);
+                        $('#desa').select2({
+                            placeholder: 'Pilih Data'
+                        });
+                    },
+                    error: () => {
+                        $('select[name="desa"]').html(dataOption)
+                    }
+                })
+
             })
         </script>
     @endpush
