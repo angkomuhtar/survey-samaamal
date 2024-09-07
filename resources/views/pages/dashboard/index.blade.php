@@ -262,7 +262,7 @@
                     text: 'Jumlah Suara'
                 },
                 xaxis: {
-                    categories: ['Paslon 1', 'Paslon 2', 'Paslon 3', 'Netral'],
+                    categories: {{ Js::from($data['byGeneration']['paslon']) }},
                     labels: {
                         formatter: function(val) {
                             return val
