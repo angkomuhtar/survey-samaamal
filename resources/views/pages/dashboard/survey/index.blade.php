@@ -79,6 +79,21 @@
                                     class="absolute left-2 top-1/2 -translate-y-1/2 text-base text-slate-500"></iconify-icon>
                             </div>
                         </div>
+                        <div class="card-text h-full space-y-4 pt-2">
+                            <div class="flex items-center space-x-7 flex-wrap">
+                                <div class="checkbox-area">
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="hidden" name="luar_kota">
+                                        <span
+                                            class="h-4 w-4 border flex-none border-slate-100 dark:border-slate-800 rounded inline-flex ltr:mr-3 rtl:ml-3 relative transition-all duration-150 bg-slate-100 dark:bg-slate-900">
+                                            <img src="{{ asset('images/icon/ck-white.svg') }}" alt=""
+                                                class="h-[10px] w-[10px] block m-auto opacity-0"></span>
+                                        <span class="text-slate-500 dark:text-slate-400 text-sm leading-6">Luar
+                                            Kota</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                         <div class="input-area relative">
                             <label for="largeInput" class="form-label">Catatan</label>
                             <div class="relative">
@@ -332,6 +347,7 @@
                                         ${row.survey[0].kec_verify == 'Y' ? 
                                         `<div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300 flex justify-start items-center "><iconify-icon class="text-sm mr-1" icon="heroicons:check-badge-20-solid"></iconify-icon><span>terverifikasi</span></div>` : ''}
                                         ${row.survey[0].kordinator != null || row.survey[0].relawan == 'Y' ? `<div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300 flex justify-start items-center "><iconify-icon class="text-sm mr-1" icon="heroicons:user-group-20-solid"></iconify-icon><span>${row.survey[0].kordinator != null ? row.survey[0].kordinator : ''} ${row.survey[0].relawan == 'Y' ? '(Relawan)' : ''}</span></div> ` : ''}
+                                        ${row.survey[0].luar_kota == 'Y' ? `<div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300 flex justify-start items-center "><p>luar kota</p></div>`: ''}
                                         ${row.survey[0].ket ?
                                         `<div class="text-slate-400 dark:text-slate-400 text-xs mt-1" >${row.survey[0].ket}</div>` : '' }
                                     </div>`;
@@ -375,6 +391,11 @@
                             $("input[name=relawan]").prop('checked', true);
                         } else {
                             $("input[name=relawan]").prop('checked', false);
+                        }
+                        if (msg.data.luar_kota == 'Y') {
+                            $("input[name=luar_kota]").prop('checked', true);
+                        } else {
+                            $("input[name=luar_kota]").prop('checked', false);
                         }
                         $("#sending_form").find("textarea[name='ket']").val(msg.data.ket);
                         $("#sending_form").find("input[name='kord']").val(msg.data.kordinator);
@@ -474,12 +495,12 @@
 
 
 
-            $(document).on('change', 'input[name=relawan]', e => {
-                if ($(e.currentTarget).is(':checked')) {
-                    $("#pilihan").val("1");
-                    $("#paslon").val("1");
-                }
-            })
+            // $(document).on('change', 'input[name=relawan]', e => {
+            //     if ($(e.currentTarget).is(':checked')) {
+            //         $("#pilihan").val("1");
+            //         $("#paslon").val("1");
+            //     }
+            // })
 
             $('#kec').select2({
                 placeholder: 'Pilih Data'

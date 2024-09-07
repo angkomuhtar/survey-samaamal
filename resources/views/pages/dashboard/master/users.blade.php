@@ -32,7 +32,11 @@
                             </div>
                         </div>
                         <div class="input-area relative">
-                            <label for="largeInput" class="form-label">Password</label>
+                            <label for="largeInput" class="form-label">Password <span class="text-[10px]"
+                                    id="pass_edit">(Biarkan
+                                    kosong
+                                    jika tidak ingin
+                                    mengubah password)</span></label>
                             <div class="relative">
                                 <input type="password" name="password" class="form-control !pl-9"
                                     placeholder="password">
@@ -41,17 +45,17 @@
                             </div>
                         </div>
                         <div class="input-area relative">
-                            <label for="largeInput" class="form-label">Alamat</label>
-                            <div class="relative justify-start items-start">
-                                <textarea class="form-control" name="alamat" id="" cols="30" rows="3"></textarea>
-                            </div>
-                        </div>
-                        <div class="input-area relative">
                             <label for="largeInput" class="form-label">Nama</label>
                             <div class="relative">
                                 <input type="text" name="name" class="form-control !pl-9" placeholder="name">
                                 <iconify-icon icon="heroicons:globe-alt"
                                     class="absolute left-2 top-1/2 -translate-y-1/2 text-base text-slate-500"></iconify-icon>
+                            </div>
+                        </div>
+                        <div class="input-area relative">
+                            <label for="largeInput" class="form-label">Alamat</label>
+                            <div class="relative justify-start items-start">
+                                <textarea class="form-control" name="alamat" id="" cols="30" rows="3"></textarea>
                             </div>
                         </div>
                         <div class="input-area relative">
@@ -256,6 +260,15 @@
                     },
                     {
                         data: 'lokasi',
+                        render: (data, type, row, meta) => {
+                            if (row.profile.level > 2) {
+                                return data
+                            } else if (row.profile.level > 1) {
+                                return row.lokasi.kecamatan
+                            } else {
+                                return row.lokasi.desa
+                            }
+                        }
                     },
                     {
                         data: 'profile.alamat',
@@ -315,6 +328,9 @@
                                         <li>
                                           <a
                                             href="#"
+                                            id="btn-edit"
+                                            data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvas"
+                                            data-id="${row.id}"
                                             class="text-slate-600 dark:text-white block font-Inter font-normal px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-600
                                               dark:hover:text-white">
                                             Edit</a>
@@ -344,8 +360,16 @@
             })
 
             $(document).on('click', '#btn-add', () => {
+                $("#pass_edit").css('display', 'none');
+                $("#sending_form").find("input[name='username']").prop('disabled', false);
                 $("#sending_form")[0].reset();
                 $("#sending_form").data("type", "submit");
+                $("#kecamatan").prop('disabled', true);
+                $("#kecamatan").val("");
+                $("#kecamatan").select2('destroy');
+                $('#desa').val("");
+                $("#desa").prop('disabled', true);
+                $('#desa').select2('destroy');
             })
 
             $(document).on('click', '#reset_password', (e) => {
@@ -527,10 +551,7 @@
                 }
             })
 
-            $(document).on('change', '#kecamatan', function(e) {
-                e.preventDefault();
-                let val = $(this).val();
-                let level = $("#level").val()
+            function setDesa(level, val, selected = false) {
                 let dataOption = '<option value="" class="dark:bg-slate-700">Pilih Data</option>';
                 if (level == 1) {
                     var url = '{!! route('ajax.kelurahan', ['id' => ':id']) !!}';
@@ -547,6 +568,9 @@
                             }
                             $('#desa').html(dataOption);
                             $("#desa").prop('disabled', false);
+                            if (selected) {
+                                $("#desa").val(selected);
+                            }
                             $('#desa').select2({
                                 dropdownParent: $('#offcanvas'),
                                 placeholder: 'Pilih Data'
@@ -560,6 +584,50 @@
                     $('#desa').val("");
                     $("#desa").prop('disabled', true);
                 }
+            }
+
+
+            $(document).on('change', '#kecamatan', function(e) {
+                e.preventDefault();
+                let val = $(this).val();
+                let level = $("#level").val()
+                setDesa(level, val)
+            })
+
+
+
+            $(document).on('click', '#btn-edit', (e) => {
+                $("#pass_edit").css('display', 'inline');
+                $("#sending_form").find("input[name='username']").prop('disabled', true);
+                $("#sending_form").data("type", "update");
+                var id = $(e.currentTarget).data('id');
+                var url = '{!! route('master.users.edit', ['id' => ':id']) !!}';
+                url = url.replace(':id', id);
+
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: (msg) => {
+                        console.log(msg);
+                        $("#sending_form").find("input[name='id']").val(msg.data.id);
+                        $("#sending_form").find("input[name='username']").val(msg.data.username);
+                        $("#sending_form").find("input[name='name']").val(msg.data.profile.name);
+                        $("#sending_form").find("textarea[name='alamat']").val(msg.data.profile.alamat);
+                        $("#sending_form").find("select[name='level']").val(msg.data.profile.level);
+                        if (msg.data.profile.level <= 1) {
+                            $("#kecamatan").prop('disabled', false);
+                            $("#kecamatan").val(msg.data.lokasi.id_kec);
+                            $("#kecamatan").select2({
+                                dropdownParent: $('#offcanvas'),
+                                placeholder: 'Pilih Data'
+                            });
+                            setDesa(msg.data.profile.level, msg.data.lokasi.id_kec, msg.data.lokasi.id)
+                        } else {
+
+                        }
+
+                    }
+                })
             })
         </script>
     @endpush

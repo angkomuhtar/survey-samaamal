@@ -17,7 +17,7 @@
                             <span class="block font-normal">{{ __('Hello') }},</span>
                             <span class="block capitalize">{{ auth()->guard('web')->user()->profile->name }}</span>
                         </div>
-                        <p class="text-sm text-slate-900 font-normal"> Welcome to SAMA AMAL </p>
+                        <p class="text-sm text-slate-900 font-normal"> Welcome to SUPADIADOLA </p>
                     </div>
                 </div>
                 <div class="flex-none"> <img src="{{ asset('/images/svg/widgetvector.svg') }}" alt=""
@@ -228,10 +228,10 @@
             var options = {
                 series: [{
                     name: 'Memilih',
-                    data: [44, 55, 20, 21]
+                    data: {{ Js::from($data['byPasti']['fix']) }}
                 }, {
                     name: 'Abu-Abu',
-                    data: [53, 32, 30, 0]
+                    data: {{ Js::from($data['byPasti']['abu']) }}
                 }],
                 chart: {
                     type: 'bar',

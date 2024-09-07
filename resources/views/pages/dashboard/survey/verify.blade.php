@@ -211,6 +211,7 @@
                                         `<div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300 flex justify-start items-center "><iconify-icon class="text-sm mr-1" icon="heroicons:check-badge-20-solid"></iconify-icon><span>terverifikasi</span></div>` : ''}
                                         ${row.survey[0].kordinator != null ?  
                                         `<div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300 flex justify-start items-center "><iconify-icon class="text-sm mr-1" icon="heroicons:user-group-20-solid"></iconify-icon><span>${row.survey[0].kordinator} ${row.survey[0].relawan == 'Y' ? '(Relawan)' : ''}</span></div>` : ''}              
+                                        ${row.survey[0].luar_kota == 'Y' ? `<div class="text-xs hover:text-[#68768A] font-normal text-slate-600 dark:text-slate-300 flex justify-start items-center "><p>luar kota</p></div>`: ''}
                                         ${row.survey[0].ket ?
                                         `<div class="text-slate-400 dark:text-slate-400 text-xs mt-1" >${row.survey[0].ket}</div>` : '' }
                                     </div>`;

@@ -108,6 +108,74 @@ class UserController extends Controller
             ]);
     }
 
+    public function update (Request $request, String $id)
+    {
+        $validator = Validator::make($request->all(), [
+            // 'username'     => 'required|string|unique:users',
+            'password'  => ($request->password != '') ? 'min:6' : '',
+            'alamat'     => 'required|string',
+            'name'     => 'required',
+            'level'  => 'required|numeric',
+            'kecamatan'  => 'required_if:level,<=,2',
+            'desa'  => 'required_if:level,<=,1',
+            ],[
+                'required' => 'tidak boleh kosong',
+                'min' => 'minimal :min karakter',
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'data' => $validator->errors()
+            ]);
+        }
+
+        DB::beginTransaction();
+          try {
+            $users = User::find($id)->update([
+              // 'username' => $request->username, 
+              'email_verified_at' => now(),
+              'password' => bcrypt($request->password)
+            ]);
+
+
+            $lokasi = '';
+            switch ($request->level) {
+                case '1':
+                   $lokasi = $request->desa;
+                    break;
+                case '2':
+                    $lokasi = $request->kecamatan;
+                        break;                
+                default:
+                   $lokasi = '1';
+                    break;
+            };
+
+            $profile = UserProfile::where('user_id',$id)->update([
+                'name'=> $request->name,
+                'alamat'=> $request->alamat,
+                'level'=> $request->level,
+                'lokasi'=> $lokasi
+            ]);
+            DB::commit();
+          } catch (Exception $th) {
+            DB::rollBack();
+            return response()->json([
+              'success' => false,
+              'type' => 'err',
+              'data' => $th
+          ]);
+        }
+
+        return response()->json([
+                'success' => true,
+                'message' => 'Data Berhasil Disimpan'
+            ]);
+    }
+
+  
+
     public function reset($id)
     {
         // return User::find($id);
@@ -170,5 +238,16 @@ class UserController extends Controller
             'success' => true,
             'message' => 'Data Berhasil Disimpan'
         ]);
+    }
+
+    public function edit($id)
+    {
+      $data = User::with('profile')->where('id', $id)->first();
+      
+      return response()->json([
+          'success' => true,
+          'message' => 'Data get successfully',
+          'data' => $data->append('lokasi')->toArray()
+      ]);
     }
 }

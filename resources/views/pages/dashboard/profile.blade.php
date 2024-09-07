@@ -91,7 +91,14 @@
                                         class="uppercase text-xs text-slate-500 dark:text-slate-300 mb-1 leading-[12px]">
                                         Lokasi Kerja
                                     </div>
-                                    {{ auth()->guard('web')->user()->lokasi ?: 'N/A' }}
+                                    @if (auth()->guard('web')->user()->profile->level == 1)
+                                        {{ auth()->guard('web')->user()->lokasi->desa ?: 'N/A' }}
+                                    @elseif(auth()->guard('web')->user()->profile->level == 2)
+                                        {{ auth()->guard('web')->user()->lokasi->kecamatan ?: 'N/A' }}
+                                    @else
+                                        {{ 'KABUPATEN' }}
+                                    @endif
+
                                 </div>
                             </li>
                             <!-- end single list -->
@@ -121,21 +128,6 @@
                         </h4>
                     </header>
                     <div class="card-body px-5 py-6">
-
-                        {{-- Alert start --}}
-                        {{-- @if (session('message'))
-                            <x-alert :message="session('message')" :type="'success'" />
-                            <br />
-                        @endif
-                        @if (auth()->user()->getPendingEmail())
-                            <x-alert :message="__(
-                                'Please check your email to verify your new email address. You cant use your new email to login until you verify it.',
-                            )" :type="'danger'" />
-                            <br />
-                        @endif --}}
-                        {{-- Alert end --}}
-
-
                         <form action="" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
@@ -155,25 +147,43 @@
                                     </label>
                                     <input name="name" type="text" id="name" class="form-control"
                                         placeholder="{{ __('Masukkan Alamat') }}" required
-                                        value="{{ auth()->guard('web')->user()->profile->name }}">
+                                        value="{{ auth()->guard('web')->user()->profile->alamat }}">
+                                    <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                                </div>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" class="btn btn-dark mt-3">
+                                    {{ __('Ubah Profile') }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card-body px-5 py-6">
+                        <form action="" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            @method('PUT')
+                            <div class="grid sm:grid-cols-2 gap-5">
+                                <div class="input-area">
+                                    <label for="name" class="form-label">
+                                        {{ __('Password Lama') }}
+                                    </label>
+                                    <input name="name" type="password" id="name" class="form-control"
+                                        placeholder="{{ __('Masukkan Password Lama Anda') }}" required>
                                     <x-input-error :messages="$errors->get('name')" class="mt-2" />
                                 </div>
                                 <div class="input-area">
                                     <label for="name" class="form-label">
-                                        {{ __('Password') }}
+                                        {{ __('Password Baru') }}
                                     </label>
-                                    <input name="name" type="text" id="name" class="form-control"
-                                        placeholder="{{ __('Masukkan Alamat') }}" required
-                                        value="{{ auth()->guard('web')->user()->profile->name }}">
+                                    <input name="name" type="password" id="name" class="form-control"
+                                        placeholder="{{ __('Masukkan Password Baru Anda') }}" required>
                                     <x-input-error :messages="$errors->get('name')" class="mt-2" />
                                 </div>
-
-
-
                             </div>
                             <div class="flex justify-end">
                                 <button type="submit" class="btn btn-dark mt-3">
-                                    {{ __('Save Changes') }}
+                                    {{ __('Ganti Password') }}
                                 </button>
                             </div>
                         </form>

@@ -9,6 +9,7 @@ use App\Models\Pemilih;
 use App\Models\Profile;
 use App\Models\Employee;
 use App\Models\ViewClock;
+use App\Models\SurveyCount;
 use App\Models\UserProfile;
 use Illuminate\Support\Str;
 use App\Imports\UsersImport;
@@ -40,31 +41,52 @@ class DashboardController extends Controller
         $totalVerified = $data->whereHas('survey', function ($query){
             $query->where('kec_verify', 'Y');
           })->count();
-        $paslon = Paslon::all();
-        $paslonArray = array();
-        foreach ($paslon as $key) {
-            array_push($paslonArray, $key->nama);
-        }
 
-        $now = Carbon::now()->format('Y');
-        $genz = $now - 2012;
-        $millenial = $now - 1996;
-        $genx = $now - 1980;
-        $boomer = $now - 1964;
-
-        $byGen = DB::table('view_survey')
-        ->select('nama_paslon', 'pilihan', DB::raw('count(*) as total'));
+        $dataCount = SurveyCount::where('usia','>', '10');
         if ($user->profile->level == 1) {
-            $byGen->where('desa', $user->profile->lokasi);
+            $dataCount->where('desa', $user->profile->lokasi);
         }elseif ($user->profile->level == 2) {
-            $byGen->where('kec', $user->profile->lokasi);
+            $dataCount->where('kec', $user->profile->lokasi);
         }elseif ($user->profile->level <= 6) {
-            $byGen->where('kab', $user->profile->lokasi);
+            $dataCount->where('kab', $user->profile->lokasi);
+        }
+        
+        $gengroupbypaslon = $dataCount->orderBy('no_urut')->get()->groupBy('nama_paslon')->all();
+
+
+        $paslonData = array();
+        $genz = array();
+        $milenial = array();
+        $genx = array();
+        $boomer = array();
+        $abu = array();
+        $fix = array();
+        foreach ($gengroupbypaslon as $key => $value) {
+            array_push($paslonData, $key);
+            if (count($value) > 0) {
+                $data = $value->groupBy('kategori_usia')->all();
+                array_push($genz, isset($data['Generasi Z']) ? $data['Generasi Z']->count() : 0);
+                array_push($milenial, isset($data['Millenial']) ? $data['Millenial']->count() : 0);
+                array_push($genx, isset($data['Generasi X']) ? $data['Generasi X']->count() : 0);
+                array_push($boomer, isset($data['Boomer']) ? $data['Boomer']->count() : 0);
+                $datafix = $value->groupBy('pilihan')->all();
+                if ($key == 'NETRAL') {
+                    array_push($abu, 0);
+                    array_push($fix, count($value));
+                }else{
+                    array_push($abu, isset($datafix['5']) ? $datafix['5']->count() : 0);
+                    array_push($fix, isset($datafix['1']) ? $datafix['1']->count() : 0);
+                }
+            }else{
+                array_push($genz, 0);
+                array_push($milenial, 0);
+                array_push($genx, 0);
+                array_push($boomer, 0);
+                array_push($abu, 0);
+                array_push($fix, 0);
+            }
         }
 
-        $totalboomer = $byGen->groupBy('nama_paslon', 'pilihan')->get();
-        // return $totalboomer;
-        
         $chartData = [
             'countDpt' =>[
                 'total' => $totalCount,
@@ -72,66 +94,33 @@ class DashboardController extends Controller
                 'survey'=> $totalSurvey,
             ],
             'byGeneration' => [
-                'paslon' => $paslonArray,
+                'paslon' => $paslonData,
                 'genZ' => [
                     'title' => 'Gen Z',
-                    'data' => [116, 85, 101, 98],
+                    'data' => $genz,
                 ],
                 'millenial' => [
                     'title' => 'Millenial',
-                    'data' => [35, 41, 36, 26],
+                    'data' => $milenial,
                 ],
                 'genX' => [
                     'title' => 'Gen X',
-                    'data' => [44, 55, 57, 56],
+                    'data' => $genx,
                 ],
                 'boomer' => [
                     'title' => 'Boomer',
-                    'data' => [44, 55, 57, 56],
+                    'data' => $boomer,
                 ],
             ],
+            'byPasti' => [
+                'fix' => $fix,
+                'abu' => $abu
+            ]
         ];
         return view('pages.dashboard.index', [
                 'pageTitle' => 'Analytic Dashboard',
                 'data' => collect($chartData),
             ]);
-        // $users =  User::get();
-        // dd(DB::getQueryLog());
-        // $today = Carbon::now()->format('Y-m-d');
-        // $employee= Employee::select('division_id', DB::raw('count(*) as post_count'))->with('division')
-        // ->whereNotIn('division_id', [11, 11001])
-        // ->whereHas('user', function($query){
-        //     $query->where('status','Y');
-        // })
-        // ->groupBy('division_id')
-        // ->get();
-
-        // $hadir=  DB::table('v_clock')
-        // ->select('shift','value', 'site','division', DB::raw('count(*) as total'))
-        // ->where('date', $today)
-        // ->groupBy('shift', 'value', 'site', 'division')
-        // ->orderBy('division')
-        // ->get();
-
-        // $data = $hadir->map(function($item){
-        //     if ($item->shift == 'Day Shift') {
-        //         $item->type = 'day';
-        //     }else if($item->shift == 'Night Shift'){
-        //         $item->type = 'night';
-        //     }else{
-        //         $item->type = 'office';
-        //     }
-        //     return $item;
-        // });
-        // $groupped= $data->groupBy('type');
-
-        // return view('pages.dashboard.index', [
-        //     'pageTitle' => 'Analytic Dashboard',
-        //     'division_count' => $employee,
-        //     'day_count' => $groupped['day'] ?? [],
-        //     'night_count' => $groupped['night'] ?? [],
-        //     'office_count' => $groupped['office'] ?? [],
-        // ]);
     }
 
     public function profile(){

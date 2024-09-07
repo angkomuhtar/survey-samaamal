@@ -34,6 +34,8 @@ class User extends Authenticatable implements JWTSubject
         'remember_token',
     ];
 
+    protected $appends = ['lokasi'];
+
     /**
      * The attributes that should be cast.
      *
@@ -74,11 +76,11 @@ class User extends Authenticatable implements JWTSubject
         switch ($level) {
             case 1:
                 $data = Desa::find($this->profile->lokasi);
-                return $data->desa;
+                return $data;
                 break;
             case 2:
                 $data = Kecamatan::find($this->profile->lokasi);
-                return $data->kecamatan;
+                return $data;
                 break;
             case 3:
                 return 'Buton Tengah';

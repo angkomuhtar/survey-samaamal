@@ -18,6 +18,7 @@ class Survey extends Model
         'ket',
         'kec_verify',
         'relawan',
+        'luar_kota',
         'kordinator'
     ];
     

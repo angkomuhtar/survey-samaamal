@@ -7,6 +7,7 @@ use App\Models\Survey;
 use App\Models\Pemilih;
 use App\Models\Kecamatan;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
@@ -57,7 +58,7 @@ class SurveyController extends Controller
             }
             return DataTables::eloquent($data)->toJson();
         }
-        $paslon = Paslon::all();
+        $paslon = Paslon::where('id', '<>', '999')->get();
         $kecamatan = Kecamatan::where('id_kab', 1);
         if ($user->profile->level <= 2) {
             $kecamatan->where('id', $user->profile->lokasi);
@@ -73,6 +74,7 @@ class SurveyController extends Controller
     public function store(Request $request) {
         $validator = Validator::make($request->all(), [
             'pilihan'     => 'required',
+            'paslon' => Rule::requiredIf($request->pilihan != '0')
           ],[
               'required' => 'tidak boleh kosong',
           ]);
@@ -92,6 +94,7 @@ class SurveyController extends Controller
             'paslon_id' => $paslon,
             'ket' => $request->ket,
             'relawan' => $request->relawan == 'on' ? 'Y' : 'N',
+            'luar_kota' => $request->luar_kota == 'on' ? 'Y' : 'N',
             'kec_verify' => 'N',
             'kordinator' => $request->kord
             ]);
@@ -136,6 +139,7 @@ class SurveyController extends Controller
             'paslon_id' => $paslon,
             'ket' => $request->ket,
             'relawan' => $request->relawan == 'on' ? 'Y' : 'N',
+            'luar_kota' => $request->luar_kota == 'on' ? 'Y' : 'N',
             'kec_verify' => 'N',
             'kordinator' => $request->kord
         ]);
