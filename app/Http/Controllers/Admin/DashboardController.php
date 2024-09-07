@@ -52,8 +52,7 @@ class DashboardController extends Controller
         }
         
         $gengroupbypaslon = $dataCount->orderBy('no_urut')->get()->groupBy('nama_paslon')->all();
-
-
+        $paslon = Paslon::orderBy('no_urut')->get();
         $paslonData = array();
         $genz = array();
         $milenial = array();
@@ -61,31 +60,43 @@ class DashboardController extends Controller
         $boomer = array();
         $abu = array();
         $fix = array();
-        foreach ($gengroupbypaslon as $key => $value) {
-            array_push($paslonData, $key);
-            if (count($value) > 0) {
-                $data = $value->groupBy('kategori_usia')->all();
-                array_push($genz, isset($data['Generasi Z']) ? $data['Generasi Z']->count() : 0);
-                array_push($milenial, isset($data['Millenial']) ? $data['Millenial']->count() : 0);
-                array_push($genx, isset($data['Generasi X']) ? $data['Generasi X']->count() : 0);
-                array_push($boomer, isset($data['Boomer']) ? $data['Boomer']->count() : 0);
-                $datafix = $value->groupBy('pilihan')->all();
-                if ($key == 'NETRAL') {
-                    array_push($abu, 0);
-                    array_push($fix, count($value));
+
+        foreach ($paslon as $key => $value) {
+            array_push($paslonData, $value->nama);
+            if (isset($gengroupbypaslon[$value->nama])) {
+                $dataArr = $gengroupbypaslon[$value->nama];
+                if (count($dataArr) > 0) {
+                    $data = $dataArr->groupBy('kategori_usia')->all();
+                    array_push($genz, isset($data['Generasi Z']) ? $data['Generasi Z']->count() : 0);
+                    array_push($milenial, isset($data['Millenial']) ? $data['Millenial']->count() : 0);
+                    array_push($genx, isset($data['Generasi X']) ? $data['Generasi X']->count() : 0);
+                    array_push($boomer, isset($data['Boomer']) ? $data['Boomer']->count() : 0);
+                    $datafix = $dataArr->groupBy('pilihan')->all();
+                    if ($value->nama == 'NETRAL') {
+                        array_push($abu, 0);
+                        array_push($fix, count($value));
+                    }else{
+                        array_push($abu, isset($datafix['5']) ? $datafix['5']->count() : 0);
+                        array_push($fix, isset($datafix['1']) ? $datafix['1']->count() : 0);
+                    }
                 }else{
-                    array_push($abu, isset($datafix['5']) ? $datafix['5']->count() : 0);
-                    array_push($fix, isset($datafix['1']) ? $datafix['1']->count() : 0);
+                    array_push($genz, 0);
+                    array_push($milenial, 0);
+                    array_push($genx, 0);
+                    array_push($boomer, 0);
+                    array_push($abu, 0);
+                    array_push($fix, 0);
                 }
             }else{
                 array_push($genz, 0);
-                array_push($milenial, 0);
-                array_push($genx, 0);
-                array_push($boomer, 0);
-                array_push($abu, 0);
-                array_push($fix, 0);
+                    array_push($milenial, 0);
+                    array_push($genx, 0);
+                    array_push($boomer, 0);
+                    array_push($abu, 0);
+                    array_push($fix, 0);
             }
         }
+        // return $paslonData;
 
         $chartData = [
             'countDpt' =>[
